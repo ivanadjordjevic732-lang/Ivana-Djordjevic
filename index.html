@@ -1,0 +1,2977 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mindéa">
+<title>Mindéa Workspace</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g:#8b6432; --gl:#b8904a; --b:#4a7a96; --p:#6b5a8e;
+  --bg:#f1e4cf; --bc:#fdfaf5; --bi:#ffffff;
+  --bd:rgba(139,100,50,.13); --gbg:rgba(139,100,50,.09); --gba:rgba(139,100,50,.15);
+  --tc:#2c1f0e; --ts:#7a5c38; --tm:rgba(139,100,50,.45);
+  --sh:0 2px 14px rgba(139,100,50,.09),0 1px 4px rgba(139,100,50,.06);
+  --sm:0 4px 22px rgba(139,100,50,.13),0 2px 8px rgba(139,100,50,.07);
+  --gg:linear-gradient(135deg,#8b6432,#b8904a);
+  --cr:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;overflow:hidden;position:fixed;width:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tc);height:100%;width:100%;margin:0;display:flex;flex-direction:column;overflow:hidden;position:fixed;top:0;left:0;right:0;bottom:0}
+@media(min-width:768px){body{flex-direction:row;max-width:100%;background:#e8ddd0;position:fixed;top:0;left:0;right:0;bottom:0}
+#sidebar{width:260px;min-width:260px;background:var(--bg);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;height:100%;flex-shrink:0;-webkit-overflow-scrolling:touch}
+#main-panel{flex:1;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;height:100%;min-height:0}
+#app-header{display:none}
+#right-panel{display:none}
+}
+@media(max-width:767px){#sidebar{display:none}#main-panel{width:100%;max-width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden}#right-panel{display:none}}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dp{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1.1)}}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.sb-item{width:100%;background:transparent;border:none;border-radius:9px;padding:8px 10px;cursor:pointer;text-align:left;font-size:12px;font-weight:500;color:var(--tc);font-family:'DM Sans',sans-serif;transition:background .15s}
+.sb-item:hover{background:var(--gba)}
+.sb-item.active{background:var(--gba);color:var(--g);font-weight:700}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:rgba(139,100,50,.2);border-radius:4px}
+
+/* HEADER */
+#app-header{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:9px;background:rgba(241,228,207,.92);backdrop-filter:blur(12px);flex-shrink:0;z-index:10}
+.hdr-logo-badge{width:32px;height:32px;border-radius:9px;background:var(--gg);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.hdr-title{font-size:12px;font-weight:700;color:var(--tc);letter-spacing:2px;font-family:'Playfair Display',serif}
+.hdr-sub{font-size:9px;letter-spacing:1.5px;font-weight:600;color:var(--tm)}
+.hdr-actions{display:flex;gap:5px;margin-left:auto}
+.hdr-btn{background:var(--bc);border:1px solid var(--bd);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:11px;color:var(--tc)}
+
+/* SCREENS */
+.screen{display:none;flex:1;overflow-y:auto;overflow-x:hidden;flex-direction:column;-webkit-overflow-scrolling:touch;min-height:0}
+.screen.active{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+
+/* HOME */
+#home-screen .scroll-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px;-webkit-overflow-scrolling:touch;min-height:0}
+
+/* HERO BANNER */
+.hero-banner{margin-bottom:14px;background:var(--bc);border:1.5px solid rgba(139,100,50,.3);border-radius:18px;overflow:hidden;box-shadow:var(--sm)}
+.hero-top{padding:14px 16px 10px;background:var(--gg)}
+.hero-row{display:flex;justify-content:space-between;margin-bottom:8px}
+.hero-date{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.6);font-weight:600}
+.hero-label{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.5)}
+.hero-clock{display:flex;justify-content:center;gap:7px;margin-bottom:4px}
+.clock-unit{background:rgba(255,255,255,.15);border-radius:9px;padding:6px 8px;text-align:center;min-width:42px}
+.clock-val{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#fff;line-height:1}
+.clock-lbl{font-size:7px;letter-spacing:2px;color:rgba(255,255,255,.5);margin-top:2px}
+.hero-motiv{padding:10px 14px;display:flex;align-items:center;gap:7px}
+.hero-motiv span{font-size:14px}
+.hero-motiv p{font-size:12px;color:var(--tc);line-height:1.65;font-style:italic}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.stat-card{background:var(--bc);border:1.5px solid var(--bd);border-radius:var(--cr);padding:13px 8px 11px;text-align:center;box-shadow:var(--sh);cursor:pointer}
+.stat-icon{font-size:22px;margin-bottom:5px}
+.stat-val{font-size:19px;font-weight:700;color:var(--g);font-family:'Playfair Display',serif;line-height:1}
+.stat-sub-val{font-size:9px;color:var(--tm)}
+.stat-lbl{font-size:7px;color:var(--tm);letter-spacing:1.5px;margin-top:3px;font-weight:600;text-transform:uppercase}
+
+/* NEXT POST */
+.next-post-btn{width:100%;margin-bottom:12px;padding:13px;border-radius:var(--cr);border:1.5px solid rgba(74,122,150,.4);background:var(--bc);cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;box-shadow:var(--sh)}
+.next-post-meta{font-size:9px;letter-spacing:1.5px;color:var(--b);font-weight:700}
+.next-post-title{font-size:12px;font-weight:600;color:var(--tc)}
+
+/* QUICK GRID */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.quick-card{padding:16px 14px;border-radius:var(--cr);border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;text-align:left;box-shadow:var(--sh);display:flex;flex-direction:column;gap:6px}
+.quick-card-icon{font-size:22px}
+.quick-card-title{font-size:13px;font-weight:700;color:var(--tc)}
+.quick-card-sub{font-size:11px;color:var(--ts)}
+
+/* SECTION */
+.section-block{margin-bottom:20px}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:9px;padding-bottom:8px}
+.section-bar{width:3px;height:20px;border-radius:2px;flex-shrink:0}
+.section-title{font-size:12px;font-weight:700;letter-spacing:2px}
+.module-list{display:flex;flex-direction:column;gap:7px}
+.module-item{background:var(--bc);border:1.5px solid var(--bd);border-radius:var(--cr);padding:14px 16px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);width:100%}
+.module-item-icon{font-size:20px;flex-shrink:0}
+.module-item-title{font-size:13px;font-weight:600;color:var(--tc);display:block}
+.module-item-sub{font-size:11px;color:var(--ts);margin-top:2px}
+.module-item-arrow{font-size:16px;margin-left:auto;flex-shrink:0}
+
+/* DETAIL SCREEN */
+#detail-header{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;background:rgba(241,228,207,.92);backdrop-filter:blur(12px);flex-shrink:0}
+.back-btn{width:32px;height:32px;background:var(--bc);border:1px solid var(--bd);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--g);flex-shrink:0}
+#detail-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 14px 90px;-webkit-overflow-scrolling:touch}
+
+/* CARDS */
+.card{background:var(--bc);border:1.5px solid var(--bd);border-radius:var(--cr);padding:14px;box-shadow:var(--sh);margin-bottom:10px}
+
+/* BUTTONS */
+.gbtn{width:100%;padding:14px;border-radius:var(--cr);border:none;background:var(--gg);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--sm);margin-bottom:14px}
+.gbtn span{font-size:14px}
+.gbtn b{font-size:13px;font-weight:700;color:#fff}
+.gbtn:disabled{background:rgba(139,100,50,.2);box-shadow:none;cursor:default}
+.gbtn:disabled b{color:var(--tc)}
+
+/* TASK ITEMS */
+.task-item{background:var(--bc);border:1.5px solid var(--bd);border-radius:var(--cr);padding:13px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;box-shadow:var(--sh)}
+.task-item.done{background:var(--gba);border-color:rgba(139,100,50,.3);opacity:.6}
+.task-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--bd);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;padding:0;flex-shrink:0}
+.task-check.checked{background:var(--g);border-color:var(--g)}
+.task-text{font-size:13px;font-weight:600;color:var(--tc);line-height:1.45}
+.task-item.done .task-text{text-decoration:line-through;color:var(--tm)}
+
+/* CAL ITEMS */
+.cal-item{display:flex;align-items:center;gap:7px;padding:9px 12px;margin-bottom:5px;border-radius:var(--cr);border:1.5px solid var(--bd);background:var(--bc);box-shadow:var(--sh)}
+.cal-item.today{border-color:var(--g)}
+.cal-item.past{opacity:.35}
+.cal-check{width:19px;height:19px;border-radius:6px;border:2px solid var(--bd);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;padding:0}
+.cal-check.checked{background:var(--g);border-color:var(--g)}
+.cal-date{width:38px;font-size:10px;color:var(--tc)}
+.cal-title{flex:1;font-size:11px;color:var(--tc)}
+.cal-done .cal-title{text-decoration:line-through;color:var(--tm)}
+
+/* LEADS */
+.lead-item{background:var(--bc);border-radius:var(--cr);margin-bottom:8px;overflow:hidden;box-shadow:var(--sh)}
+.lead-header{padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;width:100%;background:none;border:none;text-align:left}
+.lead-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.lead-name{font-size:13px;font-weight:600;color:var(--tc)}
+.lead-status-lbl{font-size:10px}
+.lead-expand{border-top:1px solid var(--bd);padding:11px 14px}
+.status-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.status-chip{padding:4px 9px;border-radius:6px;border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;font-size:9px;color:var(--ts)}
+.status-chip.active{font-weight:700}
+
+/* CHAT */
+.chat-msgs{flex:1;overflow-y:auto;padding:12px;background:var(--bc)}
+.msg-wrap{display:flex;margin-bottom:10px}
+.msg-wrap.user{justify-content:flex-end}
+.msg-wrap.ai{justify-content:flex-start}
+.msg-avatar{width:24px;height:24px;border-radius:50%;background:var(--gg);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;font-family:'Playfair Display',serif;flex-shrink:0;margin-right:7px;margin-top:2px}
+.msg-bubble{max-width:85%;padding:10px 13px;font-size:13px;line-height:1.75;white-space:pre-wrap;box-shadow:var(--sh)}
+.msg-wrap.user .msg-bubble{background:var(--gg);color:#fff;border-radius:14px 14px 4px 14px}
+.msg-wrap.ai .msg-bubble{background:var(--bi);border:1px solid var(--bd);color:var(--tc);border-radius:14px 14px 14px 4px}
+.msg-actions{display:flex;gap:6px;margin-top:4px;margin-left:36px}
+.msg-btn{background:var(--bc);border:1px solid var(--bd);border-radius:7px;padding:4px 9px;cursor:pointer;font-size:11px;color:var(--ts)}
+.typing{display:flex;gap:4px;padding:8px 0;align-items:center}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:dp 1.4s ease-in-out infinite}
+
+/* CHAT INPUT */
+.chat-input-wrap{padding:10px 14px 20px;border-top:1px solid var(--bd);background:rgba(241,228,207,.95);flex-shrink:0}
+.chat-input-row{display:flex;gap:7px;background:var(--bi);border:1.5px solid var(--bd);border-radius:var(--cr);padding:8px 10px;box-shadow:var(--sm)}
+.chat-input-row textarea{flex:1;background:transparent;border:none;outline:none;color:var(--tc);font-size:13px;font-family:'DM Sans',sans-serif;resize:none;max-height:100px;line-height:1.4}
+.send-btn{width:34px;height:34px;border-radius:10px;border:none;background:var(--gg);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;cursor:pointer;flex-shrink:0}
+.send-btn:disabled{background:rgba(139,100,50,.2);cursor:default}
+
+/* QUICK PROMPTS */
+.qp-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.qp-chip{background:var(--bc);border:1px solid var(--bd);border-radius:20px;padding:7px 13px;font-size:12px;font-weight:500;color:var(--ts);cursor:pointer}
+
+/* USED BADGE */
+.used-bar{padding:9px 16px;border-bottom:1px solid var(--bd);font-size:12px;font-weight:600;flex-shrink:0}
+
+/* COPY */
+.copy-btn{padding:5px 10px;border-radius:7px;border:1px solid var(--bd);background:var(--bc);cursor:pointer;font-size:10.5px;color:var(--ts)}
+
+/* BAN */
+.ban{margin-bottom:14px;padding:14px;border-radius:var(--cr);border:1.5px solid}
+.ban-title{font-size:10px;letter-spacing:2px;font-weight:700;margin-bottom:4px}
+.ban-sub{font-size:12px;color:var(--ts);line-height:1.6}
+
+/* INPUTS */
+.field-label{font-size:10px;color:var(--tm);font-weight:600;letter-spacing:1px;margin-bottom:5px}
+.field-input{width:100%;background:var(--bi);border:1px solid var(--bd);border-radius:11px;padding:10px 12px;color:var(--tc);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:8px}
+
+/* PKG TABS */
+.pkg-tabs{display:flex;gap:7px;margin-bottom:14px}
+.pkg-tab{flex:1;padding:11px 4px;border-radius:var(--cr);border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;text-align:center}
+.pkg-tab.active{border-color:var(--b);background:rgba(74,122,150,.09)}
+.pkg-tab-name{font-size:11px;font-weight:700;color:var(--tc)}
+.pkg-tab.active .pkg-tab-name{color:var(--b)}
+.pkg-tab-price{font-size:9px;color:var(--ts)}
+
+/* LIBRARY */
+.lib-item{background:var(--bc);border:1px solid var(--bd);border-radius:var(--cr);padding:12px;margin-bottom:7px;box-shadow:var(--sh)}
+.lib-item-head{display:flex;justify-content:space-between;margin-bottom:5px}
+.lib-item-name{font-size:12px;font-weight:600;color:var(--tc)}
+.lib-item-date{font-size:10px;color:var(--tm)}
+.lib-item-text{font-size:11px;color:var(--ts);line-height:1.5;white-space:pre-wrap;max-height:100px;overflow-y:auto}
+
+/* BACKUP BAR */
+#backup-bar{padding:10px 14px;background:var(--bc);border-bottom:1px solid var(--bd);animation:fu .3s ease-out;display:none}
+#backup-bar.open{display:block}
+
+/* TOAST */
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(26,21,16,.9);color:#fff;padding:10px 18px;border-radius:20px;font-size:12px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none;white-space:nowrap;max-width:300px}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ONBOARDING MODAL */
+#apikey-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:flex-end;justify-content:center}
+#apikey-modal.open{display:flex}
+.apikey-sheet{background:var(--bc);border-radius:20px 20px 0 0;width:100%;max-width:430px;padding:24px 22px 44px;animation:slideUp .28s ease-out}
+.modal-handle{width:40px;height:4px;border-radius:2px;background:var(--bd);margin:0 auto 22px}
+
+/* SETTINGS MODAL */
+#settings-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:flex-end;justify-content:center}
+#settings-modal.open{display:flex}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <div style="padding:20px 16px 14px;border-bottom:1px solid var(--bd)">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:36px;height:36px;border-radius:10px;background:var(--gg);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff">M</div>
+      <div><div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--tc);letter-spacing:2px">MINDÉA</div><div style="font-size:9px;color:var(--tm);letter-spacing:2px;font-weight:600">WORKSPACE</div></div>
+    </div>
+    <div id="sidebar-countdown" style="background:var(--gg);border-radius:12px;padding:10px 14px">
+      <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.6);font-weight:600;margin-bottom:6px">BIS LAUNCH</div>
+      <div style="display:flex;gap:6px" id="sb-clock">
+        <div style="background:rgba(255,255,255,.15);border-radius:7px;padding:5px 7px;text-align:center;flex:1"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff" id="sb-d">--</div><div style="font-size:7px;color:rgba(255,255,255,.5);letter-spacing:1px">TAGE</div></div>
+        <div style="background:rgba(255,255,255,.15);border-radius:7px;padding:5px 7px;text-align:center;flex:1"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff" id="sb-h">--</div><div style="font-size:7px;color:rgba(255,255,255,.5);letter-spacing:1px">STD</div></div>
+        <div style="background:rgba(255,255,255,.15);border-radius:7px;padding:5px 7px;text-align:center;flex:1"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff" id="sb-m">--</div><div style="font-size:7px;color:rgba(255,255,255,.5);letter-spacing:1px">MIN</div></div>
+        <div style="background:rgba(255,255,255,.15);border-radius:7px;padding:5px 7px;text-align:center;flex:1"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff" id="sb-s">--</div><div style="font-size:7px;color:rgba(255,255,255,.5);letter-spacing:1px">SEK</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:12px">
+    <div style="font-size:9px;color:var(--tm);font-weight:700;letter-spacing:2px;margin-bottom:8px;margin-top:4px">FÜR DICH</div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
+      <button onclick="openMod('luna')" class="sb-item">💬 Luna Coach</button>
+      <button onclick="openMod('heute')" class="sb-item">⚡ Heute</button>
+      <button onclick="openMod('reels')" class="sb-item">📱 Reel Studio</button>
+      <button onclick="openMod('post')" class="sb-item">📸 Posts</button>
+      <button onclick="openMod('story')" class="sb-item">📲 Stories</button>
+      <button onclick="openMod('text')" class="sb-item">✍️ Captions</button>
+      <button onclick="openMod('mail')" class="sb-item">✉️ Akquise Director</button>
+      <button onclick="openMod('scriptdir')" class="sb-item">🎬 Creative Director</button>
+      <button onclick="openMod('kalender')" class="sb-item">🗓️ Kalender</button>
+      <button onclick="openMod('wochenplan')" class="sb-item">📅 Wochenplan</button>
+      <button onclick="openMod('analytics')" class="sb-item">📊 Analytics</button>
+      <button onclick="openMod('launchplan')" class="sb-item">🚀 Launch Planer</button>
+    </div>
+    <div style="font-size:9px;color:#2e7d5e;font-weight:700;letter-spacing:2px;margin-bottom:8px">BUSINESS</div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
+      <button onclick="openMod('sales')" class="sb-item">💰 Meine Kontakte</button>
+      <button onclick="openMod('leadfinder')" class="sb-item">🔍 Lead-Finder</button>
+      <button onclick="openMod('showcase')" class="sb-item">🏆 Showcase</button>
+      <button onclick="openMod('projekte')" class="sb-item">📋 Projekte</button>
+      <button onclick="openMod('preiscoach')" class="sb-item">💎 Preis-Coach</button>
+    </div>
+    <div style="font-size:9px;color:var(--b);font-weight:700;letter-spacing:2px;margin-bottom:8px">FÜR KUNDEN</div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
+      <button onclick="openMod('briefing')" class="sb-item">📋 Briefing</button>
+      <button onclick="openMod('angebot')" class="sb-item">📄 Angebote</button>
+      <button onclick="openMod('bp')" class="sb-item">✨ Brand Presence</button>
+      <button onclick="openMod('bs')" class="sb-item">🎞️ Brand Story</button>
+      <button onclick="openMod('bi')" class="sb-item">🎬 Brand Impact</button>
+      <button onclick="openMod('prompts')" class="sb-item">🎥 KI-Prompts</button>
+    </div>
+    <div style="font-size:9px;color:var(--p);font-weight:700;letter-spacing:2px;margin-bottom:8px">KI WISSEN</div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <button onclick="openMod('news')" class="sb-item">🧠 KI Newsletter</button>
+    </div>
+  </div>
+  <div style="padding:12px;border-top:1px solid var(--bd);display:flex;gap:6px">
+    <button class="hdr-btn" style="flex:1" id="sb-key-btn" onclick="openKeyModal()">🔑</button>
+    <button class="hdr-btn" style="flex:1" onclick="manualSync()">☁️</button>
+    <button class="hdr-btn" style="flex:1" onclick="toggleBackup()">💾</button>
+    <button class="hdr-btn" style="flex:1" onclick="goLib()">📚</button>
+  </div>
+</div>
+
+<div id="main-panel">
+<!-- HEADER -->
+<div id="app-header">
+  <div class="hdr-logo-badge">M</div>
+  <div>
+    <div class="hdr-title" id="hdr-title">MINDÉA</div>
+    <div class="hdr-sub" id="hdr-sub">WORKSPACE</div>
+  </div>
+  <div class="hdr-actions">
+    <button class="hdr-btn" id="key-btn" onclick="openKeyModal()" title="API Key">🔑</button>
+    <button class="hdr-btn" onclick="toggleBackup()">💾</button>
+    <button class="hdr-btn" onclick="goLib()">📚<span id="lib-count" style="font-size:9px;color:var(--g);margin-left:2px"></span></button>
+  </div>
+</div>
+
+<!-- BACKUP BAR -->
+<div id="backup-bar">
+  <button class="gbtn" style="margin-bottom:7px" onclick="doExport()"><span>📥</span><b>Backup exportieren</b></button>
+  <label class="gbtn" style="margin-bottom:0;cursor:pointer"><span>📁</span><b>Backup laden</b><input type="file" accept=".json" style="display:none" onchange="doImport(this)"></label>
+  <div id="imp-msg" style="margin-top:6px;padding:7px;background:var(--gba);border-radius:9px;font-size:11px;color:var(--g);text-align:center;display:none"></div>
+</div>
+
+<!-- ======== HOME SCREEN ======== -->
+<div id="home-screen" class="screen active">
+  <div class="scroll-body">
+
+    <!-- Hero -->
+    <div class="hero-banner">
+      <div class="hero-top">
+        <div class="hero-row">
+          <span class="hero-date" id="hero-date"></span>
+          <span class="hero-label">BIS LAUNCH</span>
+        </div>
+        <div class="hero-clock" id="hero-clock">
+          <div class="clock-unit"><div class="clock-val" id="cd-d">--</div><div class="clock-lbl">TAGE</div></div>
+          <div class="clock-unit"><div class="clock-val" id="cd-h">--</div><div class="clock-lbl">STD</div></div>
+          <div class="clock-unit"><div class="clock-val" id="cd-m">--</div><div class="clock-lbl">MIN</div></div>
+          <div class="clock-unit"><div class="clock-val" id="cd-s">--</div><div class="clock-lbl">SEK</div></div>
+        </div>
+      </div>
+      <div class="hero-motiv" id="hero-briefing" style="min-height:44px">
+        <span>✨</span>
+        <p id="motiv-text" style="flex:1"></p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card" onclick="openMod('heute')">
+        <div class="stat-icon">📅</div>
+        <div class="stat-val" id="stat-heute">0<span class="stat-sub-val">/4</span></div>
+        <div class="stat-lbl">Heute</div>
+      </div>
+      <div class="stat-card" onclick="openMod('sales')">
+        <div class="stat-icon">💰</div>
+        <div class="stat-val" id="stat-leads">0</div>
+        <div class="stat-lbl">Leads</div>
+      </div>
+      <div class="stat-card" onclick="openMod('sales')">
+        <div class="stat-icon">💶</div>
+        <div class="stat-val" id="stat-launch">0<span class="stat-sub-val">€</span></div>
+        <div class="stat-lbl">Umsatz</div>
+      </div>
+    </div>
+
+    <!-- Next Post -->
+    <div id="next-post-wrap"></div>
+
+    <!-- Quick Grid -->
+    <div class="quick-grid">
+      <div class="quick-card" onclick="openMod('heute')"><div class="quick-card-icon">⚡</div><div class="quick-card-title">Heute</div><div class="quick-card-sub">Top 3 Prioritäten</div></div>
+      <div class="quick-card" onclick="openMod('luna')"><div class="quick-card-icon">💬</div><div class="quick-card-title">Luna</div><div class="quick-card-sub">Coach & Fokus</div></div>
+      <div class="quick-card" onclick="openMod('sales')"><div class="quick-card-icon">💰</div><div class="quick-card-title">Sales</div><div class="quick-card-sub" id="quick-leads-sub">0 Leads</div></div>
+      <div class="quick-card" onclick="openMod('launchplan')"><div class="quick-card-icon">🚀</div><div class="quick-card-title">Launch Planer</div><div class="quick-card-sub">Bis Mai 2026</div></div>
+    </div>
+
+    <!-- CONTENT-PAKET DES TAGES -->
+    <div id="daily-content-pack" style="margin-bottom:18px">
+      <div style="font-size:11px;font-weight:700;color:var(--tc);letter-spacing:2px;font-family:'Playfair Display',serif;margin-bottom:10px">📦 CONTENT-PAKET — HEUTE</div>
+      <div id="content-pack-body" style="display:flex;flex-direction:column;gap:7px">
+        <div style="text-align:center;padding:16px;color:var(--ts);font-size:11px">Wird beim Öffnen automatisch generiert…</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--tc);letter-spacing:2px;font-family:'Playfair Display',serif;margin-bottom:10px">ALLE MODULE</div>
+
+    <!-- FÜR DICH -->
+    <div class="section-block">
+      <div class="section-header" style="border-bottom:1.5px solid rgba(139,100,50,.18)">
+        <div class="section-bar" style="background:var(--g)"></div>
+        <div class="section-title" style="color:var(--g)">FÜR DICH</div>
+      </div>
+      <div class="module-list">
+        <button class="module-item" onclick="openMod('luna')"><span class="module-item-icon">💬</span><div><span class="module-item-title">Luna Coach</span><div class="module-item-sub">Sales-Coach & Fokus</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('heute')"><span class="module-item-icon">⚡</span><div><span class="module-item-title">Heute</span><div class="module-item-sub">Top 3 + Strategie</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('reels')"><span class="module-item-icon">📱</span><div><span class="module-item-title">Reel Studio</span><div class="module-item-sub">Reels + virale Ideen</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('post')"><span class="module-item-icon">📸</span><div><span class="module-item-title">Posts</span><div class="module-item-sub">Karussells</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('story')"><span class="module-item-icon">📲</span><div><span class="module-item-title">Stories</span><div class="module-item-sub">5 Frames</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('text')"><span class="module-item-icon">✍️</span><div><span class="module-item-title">Captions</span><div class="module-item-sub">3 Varianten</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('mail')"><span class="module-item-icon">✉️</span><div><span class="module-item-title">Akquise Director</span><div class="module-item-sub">E-Mails + Follow-ups</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('kalender')"><span class="module-item-icon">🗓️</span><div><span class="module-item-title">Kalender</span></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('wochenplan')"><span class="module-item-icon">📅</span><div><span class="module-item-title">Wochenplan</span><div class="module-item-sub">Auto-generiert pro Woche</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+        <button class="module-item" onclick="openMod('analytics')"><span class="module-item-icon">📊</span><div><span class="module-item-title">Analytics</span><div class="module-item-sub">Post-Performance tracken</div></div><span class="module-item-arrow" style="color:var(--g)">›</span></button>
+      </div>
+    </div>
+
+    <!-- BUSINESS -->
+    <div class="section-block">
+      <div class="section-header" style="border-bottom:1.5px solid rgba(46,125,94,.18)">
+        <div class="section-bar" style="background:#2e7d5e"></div>
+        <div class="section-title" style="color:#2e7d5e">BUSINESS</div>
+      </div>
+      <div class="module-list">
+        <button class="module-item" onclick="openMod('sales')"><span class="module-item-icon">💰</span><div><span class="module-item-title">Meine Kontakte</span><div class="module-item-sub">Sales Pipeline</div></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
+        <button class="module-item" onclick="openMod('leadfinder')"><span class="module-item-icon">🔍</span><div><span class="module-item-title">Lead-Finder</span><div class="module-item-sub">Neue Leads finden</div></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
+        <button class="module-item" onclick="openMod('showcase')"><span class="module-item-icon">🏆</span><div><span class="module-item-title">Showcase</span><div class="module-item-sub">Referenzen & Social Proof</div></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
+        <button class="module-item" onclick="openMod('projekte')"><span class="module-item-icon">📋</span><div><span class="module-item-title">Projekte</span></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
+        <button class="module-item" onclick="openMod('preiscoach')"><span class="module-item-icon">💎</span><div><span class="module-item-title">Preis-Coach</span><div class="module-item-sub">Einwände kontern, nie Rabatt</div></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
+      </div>
+    </div>
+
+    <!-- FÜR KUNDEN -->
+    <div class="section-block">
+      <div class="section-header" style="border-bottom:1.5px solid rgba(74,122,150,.18)">
+        <div class="section-bar" style="background:var(--b)"></div>
+        <div class="section-title" style="color:var(--b)">FÜR KUNDEN</div>
+      </div>
+      <div class="module-list">
+        <button class="module-item" onclick="openMod('briefing')"><span class="module-item-icon">📋</span><div><span class="module-item-title">Briefing</span><div class="module-item-sub">Video-Fragen</div></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
+        <button class="module-item" onclick="openMod('angebot')"><span class="module-item-icon">📄</span><div><span class="module-item-title">Angebote</span></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
+        <button class="module-item" onclick="openMod('bp')"><span class="module-item-icon">✨</span><div><span class="module-item-title">Brand Presence</span></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
+        <button class="module-item" onclick="openMod('bs')"><span class="module-item-icon">🎞️</span><div><span class="module-item-title">Brand Story</span></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
+        <button class="module-item" onclick="openMod('bi')"><span class="module-item-icon">🎬</span><div><span class="module-item-title">Brand Impact</span></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
+        <button class="module-item" onclick="openMod('prompts')"><span class="module-item-icon">🎥</span><div><span class="module-item-title">KI-Prompts</span></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
+      </div>
+    </div>
+
+    <!-- KI WISSEN -->
+    <div class="section-block">
+      <div class="section-header" style="border-bottom:1.5px solid rgba(107,90,142,.18)">
+        <div class="section-bar" style="background:var(--p)"></div>
+        <div class="section-title" style="color:var(--p)">KI WISSEN</div>
+      </div>
+      <div class="module-list">
+        <button class="module-item" onclick="openMod('news')"><span class="module-item-icon">🧠</span><div><span class="module-item-title">KI Newsletter</span></div><span class="module-item-arrow" style="color:var(--p)">›</span></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======== DETAIL SCREEN ======== -->
+<div id="detail-screen" class="screen">
+  <div id="detail-header">
+    <div class="back-btn" onclick="goHome()">‹</div>
+    <div style="flex:1">
+      <div class="hdr-title" id="detail-title">Modul</div>
+      <div class="hdr-sub" id="detail-sub">–</div>
+    </div>
+  </div>
+  <div id="detail-body"></div>
+</div>
+
+<!-- ======== LIBRARY SCREEN ======== -->
+<div id="lib-screen" class="screen">
+  <div id="lib-header" style="padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;background:rgba(241,228,207,.92);flex-shrink:0">
+    <div class="back-btn" onclick="goHome()">‹</div>
+    <div class="hdr-title">BIBLIOTHEK</div>
+  </div>
+  <div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
+    <input id="lib-search" placeholder="Suchen..." oninput="goLib()" class="field-input" style="flex:1;margin-bottom:0;min-width:120px;padding:7px 10px;font-size:11px">
+    <select id="lib-filter" onchange="goLib()" style="background:var(--bc);border:1px solid var(--bd);border-radius:9px;padding:6px 8px;font-size:11px;color:var(--tc);font-family:'DM Sans',sans-serif;cursor:pointer">
+      <option value="">Alle Module</option>
+      <option value="reels">📱 Reels</option>
+      <option value="post">📸 Posts</option>
+      <option value="story">📲 Stories</option>
+      <option value="text">✍️ Captions</option>
+      <option value="bp">✨ Brand Presence</option>
+      <option value="bs">🎞️ Brand Story</option>
+      <option value="bi">🎬 Brand Impact</option>
+      <option value="prompts">🎥 KI-Prompts</option>
+      <option value="mail">✉️ Akquise</option>
+      <option value="luna">💬 Luna</option>
+    </select>
+  </div>
+  <div id="lib-body" style="flex:1;overflow-y:auto;padding:12px"></div>
+</div>
+
+<!-- ONBOARDING MODAL -->
+<div id="apikey-modal">
+  <div class="apikey-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--tc);margin-bottom:6px">API Key einrichten</div>
+    <div style="font-size:12px;color:var(--ts);line-height:1.75;margin-bottom:20px">
+      Deinen Key findest du unter<br>
+      <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--g);font-weight:600;text-decoration:none">console.anthropic.com → API Keys</a><br>
+      Er beginnt mit <span style="font-family:monospace;font-size:11px;background:var(--gbg);color:var(--g);padding:2px 6px;border-radius:4px">sk-ant-</span>
+    </div>
+    <div class="field-label">ANTHROPIC API KEY</div>
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bi);border:1.5px solid var(--bd);border-radius:var(--cr);padding:12px 14px;margin-bottom:8px" id="key-box">
+      <input id="api-key-input" type="password" placeholder="sk-ant-api03-…" oninput="validateKey()" style="flex:1;background:transparent;border:none;outline:none;font-family:monospace;font-size:13px;color:var(--tc)">
+      <button onclick="toggleEye()" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--ts)" id="eye-btn">👁️</button>
+    </div>
+    <div id="key-err" style="display:none;font-size:11px;color:#b83232;background:#b8323210;border-radius:8px;padding:8px 11px;margin-bottom:10px">⚠️ Key muss mit <b>sk-ant-</b> beginnen</div>
+    <button id="save-key-btn" onclick="saveApiKey()" disabled style="width:100%;padding:15px;border-radius:var(--cr);border:none;background:#e8e0d0;color:#9a8e78;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:default;margin-bottom:10px;transition:all .2s">Speichern & starten</button>
+    <div style="font-size:11px;color:#9a8e78;text-align:center;line-height:1.6">Wird nur lokal in deinem Browser gespeichert.</div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settings-modal">
+  <div class="apikey-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--tc);margin-bottom:16px">⚙️ Einstellungen</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--bd)">
+      <div><div style="font-size:14px;font-weight:500">API Key ändern</div><div style="font-size:11px;color:var(--ts);margin-top:2px" id="key-preview-lbl"></div></div>
+      <input type="password" id="settings-key" placeholder="sk-ant-..." style="width:150px;background:var(--bc);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--tc);font-family:'DM Sans',sans-serif;outline:none">
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--bd)">
+      <div><div style="font-size:14px;font-weight:500">Launch-Datum</div></div>
+      <input type="date" id="launch-date-input" value="2026-08-01" style="width:150px;background:var(--bc);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--tc);font-family:'DM Sans',sans-serif;outline:none">
+    </div>
+    <button onclick="saveSettings()" style="width:100%;margin-top:20px;background:var(--gg);color:#fff;border:none;border-radius:var(--cr);padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Speichern</button>
+    <button onclick="closeSettings()" style="width:100%;margin-top:9px;padding:11px;border-radius:var(--cr);border:1.5px solid var(--bd);background:transparent;cursor:pointer;font-size:12px;color:var(--ts)">Abbrechen</button>
+  </div>
+</div>
+
+</div><!-- end main-panel -->
+
+<div id="right-panel">
+  <div id="right-panel-inner">
+    ✦<br>Mindéa bist du.<br><span style="font-size:14px;font-family:'DM Sans',sans-serif;font-weight:400">Wähle ein Modul links.</span>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────
+const TD = new Date().toISOString().slice(0,10);
+let apiKey = localStorage.getItem('mindea_api_key') || '';
+let launchDate = localStorage.getItem('mindea_launch') || '2026-08-01';
+let library = JSON.parse(localStorage.getItem('mindea-lib') || '[]');
+let convos = JSON.parse(localStorage.getItem('mindea-convos') || '{}');
+let lunaMsgs = JSON.parse(localStorage.getItem('luna-all-msgs') || '[]');
+let lunaBrain = JSON.parse(localStorage.getItem('luna-brain') || '[]');
+
+const MOTIVS = ["Jeder Tag bringt Mindea naeher.","Du baust ein Leben das nach dir klingt.","Kleine Schritte zaehlen.","Deine Vision ist real.","Nicht perfekt — starten.","Mindea traegt deine Handschrift.","Heute etwas erschaffen.","Premium ist Haltung.","Was du heute tust wird sichtbar.","Mindea bist du."];
+
+const CAL = [["2025-04-14","📸","Gruenderinnen-Geschichte"],["2025-04-17","📱","3 Sek Marke"],["2025-04-24","📱","BTS Mama"],["2025-04-30","📸","Pakete"],["2025-05-05","📱","Fehler Coaches"],["2025-05-14","📱","Prozess 60s"],["2025-05-19","📱","Testimonial"],["2025-05-26","📱","Brands that work"],["2025-06-02","📱","3 Marken"],["2025-06-11","📸","Mein Warum"],["2025-06-30","📱","1.Aug Ankuendigung"],["2025-07-07","📱","Early Bird"],["2025-07-25","📱","7 Tage"],["2025-08-01","🎬","LAUNCH"]];
+
+const LM_TOTAL = 28;
+
+const LEAD_ST = [{id:"neu",l:"Neu",c:"#6b5a8e"},{id:"interessiert",l:"Interessiert",c:"#4a7a96"},{id:"gespraech",l:"Im Gespräch",c:"#8b6432"},{id:"angebot",l:"Angebot geschickt",c:"#b8490a"},{id:"gebucht",l:"Gebucht!",c:"#2e7d5e"},{id:"kein-fit",l:"Passt nicht",c:"#c0392b"}];
+
+const OS = "MINDEA OS AGENT. Premium KI-Studio. Cinematic Video aus Fotos+Stimme. Ton: Ruhig, hochwertig, klar, weiblich. Produkte: Brand Presence 398EUR, Brand Story 598EUR, Brand Impact 898EUR. Jede Antwort: konkret, umsetzbar. KEIN Markdown. Reiner Fliesstext. Deutsch.";
+const LUNA_S = "Du bist Luna, Ivanas Revenue-Coach.\n"+OS+"\nDein EINZIGER Fokus: Ivana jeden Tag naeher an 5000EUR Monatsumsatz bringen. ZIEL: 7 Kunden/Monat (Mix aus BP 398, BS 598, BI 898). Bei JEDEM Gespraech: 1) Frag nach aktuellem Umsatz-Stand des Monats 2) Rechne vor wie viele Abschluesse noch fehlen 3) Priorisiere IMMER Sales ueber Content. Wenn Ivana ueber Content redet statt ueber Leads: Sage direkt dass Content ohne Leads kein Geld bringt. JEDE Antwort muss eine konkrete Sales-Action enthalten. Warm aber DIREKT. KURZ: Max 3-4 Saetze. Deutsch.\nWICHTIG: KEIN Markdown(keine Sternchen, kein fett, keine Listen). KEINE Emojis. Reiner Fliesstext. Du bist eine KI — versprich KEINE Meetings, Telefonate oder Termine. Du kannst nur im Chat helfen.";
+const MINDEA_VISUAL = "\n\nMINDEA VISUAL STYLE GUIDE (ALLE Foto-Prompts und Video-Prompts MUESSEN diesen Stil befolgen):\n"
++"FARBEN: Warmes Beige #e6dbc7, Braun-Taupe #a79277, Dunkel #2c1f0e, Gold #8b6432. KEINE kalten Farben, KEIN Blau, KEIN Grau, KEIN Weiss.\n"
++"LICHT: Immer warmes Seitenlicht oder Golden Hour. KEIN hartes Overhead-Licht, KEIN Blitz, KEIN kuenstliches weisses Licht.\n"
++"STIMMUNG: Ruhig, minimal, cinematic, premium. Wie ein Luxus-Hotel-Lobby. NICHT bunt, NICHT laut, NICHT generisch.\n"
++"KOMPOSITION: Viel Negativraum. Shallow Depth of Field (f/1.4-2.8). Drittel-Regel. Clean, aufgeraeumt.\n"
++"TEXTUREN: Leinen, Holz, warmer Stein, Papier, Keramik. KEINE Plastik-Oberflaechen, KEINE Neon-Farben.\n"
++"MENSCHEN: Natuerlich, nicht ueberposed. Warme Hauttoene. Kein uebertriebenes Retuschieren. Authentisch aber premium.\n"
++"COLOR GRADING: Warm Shadows, leicht entsaettigt, Gold-Highlights, cremige Mittelthoene. Wie ein Wes-Anderson-Film trifft Aesop-Branding.\n"
++"FORMAT: Immer 9:16 Hochformat fuer Instagram angeben.\n"
++"BEISPIEL STIL-REFERENZ fuer Foto-Prompts: 'warm beige tones, soft golden side light, shallow depth of field, minimal composition, negative space, linen texture, premium aesthetic, muted earth tones, 9:16 vertical'\n"
++"BEISPIEL STIL-REFERENZ fuer Video-Prompts: 'cinematic slow movement, warm golden light, shallow DOF, beige and brown color palette, premium commercial look, film grain, 9:16 vertical'\n"
++"WICHTIG: Fuege diese Stil-Woerter an JEDEN Foto-Prompt und Video-Prompt an. Ohne Ausnahme.\n";
+const CD = OS+MINDEA_VISUAL+"Content Director. Ivanas Stimme: persoenlich, tief, klar. Instagram Content. KEIN Markdown. Deutsch.";
+
+const DS = {
+  reels: CD+"\nREEL-SKRIPT (60-90 Sek) fuer MINDEA — ein KI-Video-Studio das aus Kundenfotos+Stimme cinematic Brand Filme macht. THEMEN die funktionieren: Vorher/Nachher(normales Foto→cinematic Video), BTS des KI-Prozesses(Midjourney/Kling AI/CapCut), Kundentransformation, Warum KI-Video besser als Kamerateam, 3-Sekunden-Regel fuer Profile, Fehler die Coaches machen. 1. SKRIPT: Hook(provokant,3Sek)+Hauptteil+CTA(DM oder Link). 2. ALTERNATIVE MIT KI-VIDEO: Szenen die den MINDEA PROZESS zeigen(Foto wird zu Video, Bildschirm mit KI-Tools, fertiges Ergebnis auf Instagram). Foto-Prompt(EN+DE)+Video-Prompt(EN+DE) im Mindea Visual Style. 3. CAPTION mit Hashtags. Reiner Text.",
+  post: CD+"\nKARUSSELL 7 Slides fuer MINDEA. THEMA muss Mindeas Kernbotschaft zeigen: Marken die wirken bevor sie erklaeren, KI-Video-Transformation, Premium-Auftritt durch Bewegtbild. DESIGN: Abwechselnd helle Slides(#e6dbc7)+dunkle Slides(#2c1f0e). Headline: Playfair Display Bold. Pro Slide: Nummer, Headline, Text(2-3 Saetze), Foto-Prompt der den MINDEA-PROZESS zeigt(Foto→KI→Video, nicht generische Stock-Szenen). Am Ende: CTA zu DMs + Caption+Hashtags. Reiner Text.",
+  story: CD+"\n5 Story-Frames fuer MINDEA. Zeige den echten Prozess: Frame1:Kundenfoto kommt rein, Frame2:KI generiert Bilder, Frame3:Video entsteht, Frame4:Fertiges Ergebnis, Frame5:CTA+Umfrage. Pro Frame: Text-Overlay, Sticker/Umfrage, Foto-Prompt im Mindea-Stil. Reiner Text.",
+  text: CD+"\n3 Captions fuer MINDEA Instagram: EMOTIONAL(persoenliche Geschichte warum KI-Videos)+DIREKT(konkretes Angebot mit Preis)+PROVOKANT(Warum 90% der Coaches unsichtbar bleiben). Jede Caption endet mit CTA zu DMs. Hashtags. Reiner Text.",
+  scriptdir: OS+"\nDu bist der Mindea Creative System Director. Drei Rollen in einem: 1)Script Director(Reels+Brand Filme) 2)Offer Strategist(Produkte+Angebote) 3)Content Strategist(verkaufende Inhalte). ERKENNE AUTOMATISCH: Wenn Input ein Skript ist→optimiere als Brand Film. Wenn Input ein Produkt ist→optimiere als Premium-Angebot. Wenn beides→erst Script dann Verkaufslogik. MODUS SKRIPT: Analysiere was schwach/generisch ist. Erstelle: A)90-Sek-Script(Hook/Problem/Loesung/Vergleich/Closing, kurz sprechbar, natuerliche Pausen) B)Was wurde verbessert C)3-5 visuelle Szenen cinematic. MODUS PRODUKT: Analysiere ob klar was verkauft wird, welche Veraenderung entsteht, wo Vertrauen fehlt. Erstelle: A)Angebotsbeschreibung B)Wirkung emotional+praktisch C)Leistung klar D)Positionierung vs Agenturen E)Mini Sales Text ruhig+hochwertig. MODUS HYBRID: Reel Script das subtil verkauft + eingebettete Angebotslogik + Verbindung zum Produkt. REGELN: KEINE Marketing-Floskeln. KEINE unrealistischen Versprechen. KEIN aggressiver Sales-Ton. Sprache ruhig hochwertig klar Voice-Over-tauglich. Ergebnis wirkt wie Premium Brand Film nicht wie Social Media Content. KEIN Markdown. Reiner Fliesstext. Deutsch.",
+  bp: OS+MINDEA_VISUAL+"Brand Presence KOMPLETT. Reiner Fliesstext. Konzept+Skript+Shotlist+Foto-Prompts(EN+DE)+Video-Prompts(EN+DE). Alle Prompts im Mindea Visual Style. VOLLSTAENDIG.",
+  bs: OS+MINDEA_VISUAL+"Brand Story Film KOMPLETT. Reiner Fliesstext. Film+Voiceover+5 Acts+Shotlist+Foto-Prompts(EN+DE)+Video-Prompts(EN+DE). Alle Prompts im Mindea Visual Style. VOLLSTAENDIG.",
+  bi: OS+MINDEA_VISUAL+"Brand Impact Spot KOMPLETT. Reiner Fliesstext. Spot+Dramaturgie+10 Shots+Foto-Prompts(EN+DE)+Video-Prompts(EN+DE). Alle Prompts im Mindea Visual Style. VOLLSTAENDIG.",
+  prompts: OS+MINDEA_VISUAL+"PRODUKTIONS-HUB: Pro Shot: 1.Szenen-Beschreibung(DE) 2.Foto-Prompt(EN+DE) 3.Video-Prompt(EN+DE) 4.Voiceover(DE). ALLE Prompts im Mindea Visual Style (warm beige, golden light, shallow DOF, minimal, cinematic). Reiner Text.",
+  preiscoach: OS+"\nDu bist ein Preis-Verhandlungs-Coach fuer Ivana. Ivanas Pakete: Brand Presence 398EUR, Brand Story 598EUR, Brand Impact 898EUR. Wenn ein Kunde den Preis druecken will: 1)Verstehe den ECHTEN Einwand dahinter 2)Zeige den WERT, nicht den Preis 3)Biete ALTERNATIVEN statt Rabatte (z.B. kleineres Paket, Ratenzahlung, Bonus statt Nachlass) 4)Gib konkrete SAETZE zum Sagen. NIEMALS Rabatte empfehlen. Der Preis ist der Preis. Deutsch. KURZ und direkt."
+};
+
+const MOD_META = {
+  luna:    {title:'Luna',           sub:'Coach & Sales Training', icon:'💬', ac:'#8b6432'},
+  heute:   {title:'Heute',         sub:'Top 3 + Tagesstrategie',icon:'⚡', ac:'#8b6432'},
+  reels:   {title:'Reel Studio',   sub:'Reels + virale Ideen', icon:'📱', ac:'#8b6432', auto:1},
+  post:    {title:'Posts',         sub:'Karussells',            icon:'📸', ac:'#8b6432', auto:1},
+  story:   {title:'Stories',       sub:'5 Frames',              icon:'📲', ac:'#8b6432', auto:1},
+  text:    {title:'Captions',      sub:'3 Varianten',           icon:'✍️', ac:'#8b6432', auto:1},
+  mail:    {title:'Akquise Director',sub:'E-Mails+Follow-ups',  icon:'✉️', ac:'#8b6432'},
+  scriptdir:{title:'Creative Director',sub:'Skript + Angebot + Content',icon:'🎬', ac:'#8b6432', chat:1},
+  kalender:{title:'Kalender',      sub:'Content-Planung',       icon:'🗓️', ac:'#8b6432'},
+  wochenplan:{title:'Wochenplan', sub:'Auto-Wochenplan',        icon:'📅', ac:'#8b6432'},
+  analytics:{title:'Analytics',   sub:'Post-Tracking',          icon:'📊', ac:'#8b6432'},
+  launchplan:{title:'Launch Planer',sub:'Bis Mai 2026',          icon:'🚀', ac:'#8b6432'},
+  sales:   {title:'Meine Kontakte',sub:'Sales Pipeline',       icon:'💰', ac:'#2e7d5e'},
+  leadfinder:{title:'Lead-Finder',sub:'Neue Leads finden',    icon:'🔍', ac:'#2e7d5e'},
+  showcase:{title:'Showcase',     sub:'Referenzen & Proof',    icon:'🏆', ac:'#2e7d5e'},
+  preiscoach:{title:'Preis-Coach',sub:'Einwände kontern',      icon:'💎', ac:'#2e7d5e', chat:1},
+  projekte:{title:'Projekte',      sub:'Aufgaben & Status',     icon:'📋', ac:'#2e7d5e'},
+  briefing:{title:'Briefing',      sub:'Kunden-Aufnahme',       icon:'📋', ac:'#4a7a96'},
+  angebot: {title:'Angebote',      sub:'Individuell',           icon:'📄', ac:'#4a7a96'},
+  bp:      {title:'Brand Presence',sub:'Komplett generieren',   icon:'✨', ac:'#4a7a96', chat:1},
+  bs:      {title:'Brand Story',   sub:'Film generieren',       icon:'🎞️', ac:'#4a7a96', chat:1},
+  bi:      {title:'Brand Impact',  sub:'Spot generieren',       icon:'🎬', ac:'#4a7a96', chat:1},
+  prompts: {title:'KI-Prompts',    sub:'Produktions-Hub',       icon:'🎥', ac:'#4a7a96', chat:1},
+  news:    {title:'KI Newsletter', sub:'Aktuelle Tools',        icon:'🧠', ac:'#6b5a8e'},
+};
+
+// ─── API ──────────────────────────────────────────────────────────────────
+let _lc = 0;
+async function callApi(sys, msg, mt=800, sonnet=false) {
+  if (!apiKey) return '[Kein API Key — tippe auf 🔑]';
+  const now = Date.now(), w = Math.max(0, 1500-(now-_lc));
+  if (w>0) await delay(w);
+  _lc = Date.now();
+  const s = sys.length>3000 ? sys.slice(0,3000) : sys;
+  const model = sonnet ? 'claude-sonnet-4-20250514' : 'claude-haiku-4-5-20251001';
+  for (let i=0; i<2; i++) {
+    try {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model, max_tokens:mt, system:s, messages:[{role:'user',content:msg}]})
+      });
+      if (r.status===429) { await delay(4000); if(i===0) continue; return '[Rate Limit — kurz warten]'; }
+      if (!r.ok) { if(i===0){await delay(2000);continue;} return '[Fehler '+r.status+']'; }
+      const d = await r.json();
+      return (d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n') || '[Leer]';
+    } catch(e) { if(i===0){await delay(2000);continue;} return '[Verbindungsfehler]'; }
+  }
+  return '[Fehler]';
+}
+async function callApiJ(sys, msg, mt=700) {
+  try { const r=await callApi(sys,msg,mt); if(r.startsWith('[')) return null; return JSON.parse(r.replace(/```json|```/g,'').trim()); } catch(e){return null;}
+}
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ─── STORAGE HELPERS ──────────────────────────────────────────────────────
+function lsGet(k,fb) { try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):fb;}catch(e){return fb;} }
+function lsSet(k,v) { try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} sbSet(k,v); }
+
+// ─── SUPABASE SYNC ────────────────────────────────────────────────────────
+const SB_URL = 'https://dsgcxfauwubhtzvzyrct.supabase.co';
+const SB_KEY = 'sb_publishable_Ox0y8BRQzuJoZuwx_Esb8w_sZSmaefY';
+const SB_SYNC_KEYS = ['mindea-leads','mindea-projekte','mindea-lib','luna-all-msgs','luna-brain','mindea-convos','mindea-cal-done','mindea-launch-done','mindea-tage-history'];
+
+async function sbSet(key, value) {
+  if (!SB_SYNC_KEYS.includes(key)) return;
+  try {
+    await fetch(SB_URL+'/rest/v1/mindea_sync', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer '+SB_KEY,
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({key, value: JSON.stringify(value), updated_at: new Date().toISOString()})
+    });
+  } catch(e) {}
+}
+
+async function sbPullAll() {
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/mindea_sync?select=key,value', {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY }
+    });
+    if (!r.ok) return;
+    const rows = await r.json();
+    let synced = 0;
+    rows.forEach(row => {
+      if (row.value) {
+        localStorage.setItem(row.key, row.value);
+        synced++;
+      }
+    });
+    if (synced > 0) {
+      // Reload globals from fresh localStorage
+      library = JSON.parse(localStorage.getItem('mindea-lib') || '[]');
+      convos = JSON.parse(localStorage.getItem('mindea-convos') || '{}');
+      lunaMsgs = JSON.parse(localStorage.getItem('luna-all-msgs') || '[]');
+      lunaBrain = JSON.parse(localStorage.getItem('luna-brain') || '[]');
+      updateStats();
+      updateNextPost();
+      updateLibCount();
+    }
+    return synced;
+  } catch(e) { return 0; }
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+function init() {
+  updateHeroDate();
+  startCountdown();
+  updateMotiv();
+  updateStats();
+  updateNextPost();
+  updateLibCount();
+  if (!apiKey) setTimeout(()=>{ document.getElementById('apikey-modal').classList.add('open'); }, 400);
+  else {
+    document.getElementById('key-btn').textContent = '⚙️';
+    // AUTO-WORKER: Starts after 1.5s to let UI settle
+    setTimeout(()=>{ autoWorker(); }, 1500);
+  }
+  checkAutoBackup();
+  // Check follow-ups on app open
+  setTimeout(() => {
+    const fups = checkFollowUps();
+    if (fups.length) showToast('🔔 '+fups.length+' Follow-up'+(fups.length>1?'s':'')+' fällig → Sales');
+  }, 2000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') doSilentBackup();
+  });
+  // Pull latest data from Supabase on every app open
+  sbPullAll().then(n => {
+    if (n > 0) showToast('☁️ Sync: '+n+' Datensätze geladen');
+  });
+}
+
+// ─── AUTO-WORKER (Mitarbeiter-Modus) ─────────────────────────────────────
+async function autoWorker() {
+  if (!apiKey) return;
+  const lastBriefing = localStorage.getItem('mindea-briefing-date');
+  const isSunday = new Date().getDay() === 0;
+
+  // 0) GET TODAY'S THEME from Wochenplan or auto-generate
+  const todayTheme = await getTodayTheme();
+
+  // 1) MORGEN-BRIEFING + TAGESPLAN (synchron!)
+  if (lastBriefing !== TD) {
+    if (isSunday) {
+      await genWeeklyReview();
+    } else {
+      await genMorningBriefing(todayTheme);
+    }
+    localStorage.setItem('mindea-briefing-date', TD);
+  }
+
+  // 2) AUTO-CONTENT passend zum Tages-Thema
+  const saved = lsGet('mindea-daily-'+TD, {});
+  if (!saved.reels || !saved.post || !saved.text) {
+    autoGenContent(todayTheme);
+  } else {
+    renderContentPack();
+  }
+}
+
+async function getTodayTheme() {
+  // Check if Wochenplan exists — extract today's theme from it
+  const kw = getKW();
+  const plan = lsGet('mindea-wochenplan-'+kw, '');
+  const wday = new Date().getDay(); // 0=So, 1=Mo...
+  const dayNames = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const today = dayNames[wday];
+
+  if (plan) {
+    // Try to extract today's section from the wochenplan
+    const lines = plan.split('\n');
+    let todaySection = '';
+    let capturing = false;
+    for (const line of lines) {
+      if (line.toLowerCase().includes(today.toLowerCase()) || line.toLowerCase().includes(today.slice(0,2).toLowerCase())) {
+        capturing = true;
+        todaySection = line;
+      } else if (capturing && line.match(/^(Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)/i)) {
+        break;
+      } else if (capturing) {
+        todaySection += '\n' + line;
+      }
+    }
+    if (todaySection.trim()) return todaySection.trim();
+  }
+
+  // Fallback: generate a default theme based on day
+  const dayThemes = {
+    1: 'AUTHORITY Reel — Expertise zeigen, DMs ausloesen',
+    2: 'Pause/Engagement — Kommentare beantworten, DMs schreiben',
+    3: 'SOCIAL PROOF — Kundenergebnis oder Transformation zeigen',
+    4: 'Pause/Engagement — Follow-ups und Akquise',
+    5: 'OFFER/CTA — Direktes Angebot, Paket vorstellen, Link',
+    6: 'Pause — Woche reflektieren',
+    0: 'STORY/BTS — Persoenlich, Nahbarkeit, Einblick hinter die Kulissen'
+  };
+  return dayThemes[wday] || 'Content erstellen';
+}
+
+async function genMorningBriefing(todayTheme) {
+  const el = document.getElementById('motiv-text');
+  if (!el) return;
+  el.textContent = '☕ Dein Tagesbriefing wird erstellt…';
+  el.style.fontStyle = 'normal';
+
+  const yesterday = new Date(Date.now()-864e5).toISOString().slice(0,10);
+  const yTasks = lsGet('mindea-heute-'+yesterday, []);
+  const yDone = lsGet('mindea-heute-done-'+yesterday, {});
+  const yDoneCnt = Object.values(yDone).filter(Boolean).length;
+  const leads = lsGet('mindea-leads', []);
+  const offeneLeads = leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).length;
+  const pipeline = leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).reduce((s,l)=>s+(l.wert||398),0);
+  const gebucht = leads.filter(l=>l.status==='gebucht'&&(l.date||'').startsWith(TD.slice(0,7))).reduce((s,l)=>s+(l.wert||398),0);
+  const fehlbetrag = Math.max(0,5000-gebucht);
+  const fups = checkFollowUps();
+  const wday = new Date().toLocaleDateString('de-DE',{weekday:'long'});
+
+  const ctx = 'GESTERN: '+(yTasks.length?yDoneCnt+'/'+yTasks.length+' Tasks erledigt':'Keine Tasks')
+    +'\nHEUTE: '+wday
+    +'\nHEUTIGES CONTENT-THEMA: '+todayTheme
+    +'\nUmsatz gebucht: '+gebucht+'EUR\nFehlt zu 5000EUR: '+fehlbetrag+'EUR'
+    +'\nPipeline: '+pipeline+'EUR ('+offeneLeads+' Leads)'
+    +'\nFollow-ups faellig: '+fups.length;
+
+  try {
+    const r = await callApi('Du bist Luna. MORGEN-BRIEFING in MAX 4 Saetzen: 1)Kurzes Feedback zu gestern 2)Umsatz-Stand und was fehlt 3)TOP 1 Sales-Prioritaet + heutiges Content-Thema(aus dem Wochenplan) 4)Konkreter erster Schritt. KEIN Markdown. KEINE Emojis. KEINE Sternchen. Reiner Fliesstext. Deutsch.', ctx, 300);
+    if (r && !r.startsWith('[')) {
+      el.textContent = r;
+      el.style.fontStyle = 'normal';
+      el.style.fontSize = '11px';
+      el.style.lineHeight = '1.7';
+      lsSet('mindea-briefing-'+TD, r);
+    } else {
+      el.textContent = MOTIVS[Math.floor(Math.random()*MOTIVS.length)];
+    }
+  } catch(e) {
+    el.textContent = MOTIVS[Math.floor(Math.random()*MOTIVS.length)];
+  }
+
+  // Also generate today's tasks synchronized with the theme
+  const existingTasks = lsGet('mindea-heute-'+TD, []);
+  if (!existingTasks.length) {
+    const taskR = await callApiJ(OS+' TAGESPLAN synchron zum Content-Thema. GENAU 4 Aufgaben: 1.SALES(PFLICHT):Konkrete Akquise-Aktion 2.CONTENT:'+todayTheme+' umsetzen 3.PROJEKT:Kundenprojekte 4.SYSTEM:Mindea verbessern. JSON:{"tasks":[{"t":"…","typ":"dringend|wichtig|spaeter","icon":"…"}]}','Thema heute:'+todayTheme+' Leads:'+offeneLeads+' Pipeline:'+pipeline+'EUR Follow-ups:'+fups.length);
+    let tasks;
+    if (taskR&&taskR.tasks) tasks=taskR.tasks;
+    else tasks=[{t:'1 Akquise-DM senden',typ:'dringend',icon:'💰'},{t:todayTheme.slice(0,50),typ:'wichtig',icon:'📱'},{t:'Kundenprojekt vorantreiben',typ:'wichtig',icon:'📋'},{t:'Agent testen',typ:'spaeter',icon:'⚙️'}];
+    lsSet('mindea-heute-'+TD, tasks);
+    lsSet('mindea-heute-done-'+TD, {});
+  }
+}
+
+async function genWeeklyReview() {
+  const el = document.getElementById('motiv-text');
+  if (!el) return;
+  el.textContent = '📊 Dein Wochen-Review wird erstellt…';
+  el.style.fontStyle = 'normal';
+
+  // Gather week data
+  const leads = lsGet('mindea-leads', []);
+  const now = new Date();
+  const weekAgo = new Date(now-7*864e5);
+  const newLeads = leads.filter(l=>{const d=new Date(l.date||TD);return d>=weekAgo;}).length;
+  const gebuchteWoche = leads.filter(l=>l.status==='gebucht'&&new Date(l.date||'2000')>=weekAgo).length;
+  const gebuchterUmsatz = leads.filter(l=>l.status==='gebucht'&&(l.date||'').startsWith(TD.slice(0,7))).reduce((s,l)=>s+(l.wert||398),0);
+  const pipeline = leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).reduce((s,l)=>s+(l.wert||398),0);
+  const hist = lsGet('mindea-tage-history',[]).filter(h=>{const d=new Date(h.date);return d>=weekAgo;});
+  const totalTasks = hist.reduce((s,h)=>s+(h.total||0),0);
+  const doneTasks = hist.reduce((s,h)=>s+(h.doneCnt||0),0);
+  const analytics = lsGet('mindea-analytics',[]).filter(a=>{const d=new Date(a.date);return d>=weekAgo;});
+  const totalDMs = analytics.reduce((s,a)=>s+(a.dms||0),0);
+
+  const ctx = 'WOCHEN-REVIEW:\nNeue Leads: '+newLeads+'\nAbschluesse: '+gebuchteWoche+'\nUmsatz Monat: '+gebuchterUmsatz+'EUR\nPipeline: '+pipeline+'EUR\nTasks erledigt: '+doneTasks+'/'+totalTasks+'\nPosts diese Woche: '+analytics.length+'\nDMs aus Posts: '+totalDMs;
+
+  try {
+    const r = await callApi('Du bist Luna. SONNTAGS-REVIEW in MAX 5 Saetzen: 1)Rueckblick was diese Woche gut lief 2)Groesste Luecke(z.B. zu wenig Leads, keine Abschluesse) 3)Umsatz-Stand vs 5000EUR Ziel 4)TOP 1 Fokus fuer naechste Woche 5)Ehrliche Einschaetzung ob der Kurs stimmt. Direkt und ehrlich. Deutsch.', ctx, 350);
+    if (r && !r.startsWith('[')) {
+      el.textContent = '📊 WOCHEN-REVIEW\n\n' + r;
+      el.style.fontStyle = 'normal';
+      el.style.fontSize = '11px';
+      el.style.lineHeight = '1.7';
+      el.parentElement.style.padding = '14px';
+      lsSet('mindea-review-KW'+getKW(), r);
+    } else {
+      el.textContent = MOTIVS[Math.floor(Math.random()*MOTIVS.length)];
+    }
+  } catch(e) {
+    el.textContent = MOTIVS[Math.floor(Math.random()*MOTIVS.length)];
+  }
+}
+
+async function autoGenContent(todayTheme) {
+  const saved = lsGet('mindea-daily-'+TD, {});
+  const themeCtx = todayTheme ? '\nHEUTIGES THEMA (aus Wochenplan): '+todayTheme+'\nGeneriere Content PASSEND zu diesem Thema.' : '';
+
+  if (!saved.reels) {
+    showToast('📱 Tages-Reel wird vorbereitet…');
+    const hist = lsGet('mindea-hist-reels',[]);
+    const r = await callApi(DS.reels||'','DATUM:'+TD+themeCtx+' R:'+Math.floor(Math.random()*9999)+'\nNEU.'+(hist.length?'\nNICHT:'+hist.slice(-8).join('|'):''),4000);
+    if (r && !r.startsWith('[')) {
+      saved.reels = r;
+      lsSet('mindea-daily-'+TD, saved);
+      lsSet('mindea-hist-reels',[...hist,(todayTheme||'')+':'+r.slice(0,80)].slice(-12));
+    }
+  }
+  if (!saved.post) {
+    const hist = lsGet('mindea-hist-post',[]);
+    const r = await callApi(DS.post||'','DATUM:'+TD+themeCtx+' R:'+Math.floor(Math.random()*9999)+'\nNEU.'+(hist.length?'\nNICHT:'+hist.slice(-8).join('|'):''),4000);
+    if (r && !r.startsWith('[')) {
+      saved.post = r;
+      lsSet('mindea-daily-'+TD, saved);
+      lsSet('mindea-hist-post',[...hist,(todayTheme||'')+':'+r.slice(0,80)].slice(-12));
+    }
+  }
+  if (!saved.text) {
+    const hist = lsGet('mindea-hist-text',[]);
+    const r = await callApi(DS.text||'','DATUM:'+TD+themeCtx+' R:'+Math.floor(Math.random()*9999)+'\nNEU.'+(hist.length?'\nNICHT:'+hist.slice(-8).join('|'):''),4000);
+    if (r && !r.startsWith('[')) {
+      saved.text = r;
+      lsSet('mindea-daily-'+TD, saved);
+      lsSet('mindea-hist-text',[...hist,(todayTheme||'')+':'+r.slice(0,80)].slice(-12));
+    }
+  }
+  showToast('✅ Tages-Content bereit — passend zum Wochenplan');
+  renderContentPack();
+}
+
+function renderContentPack() {
+  const el = document.getElementById('content-pack-body');
+  if (!el) return;
+  const saved = lsGet('mindea-daily-'+TD, {});
+  const posted = lsGet('mindea-benutzt-'+TD, {});
+  
+  const items = [
+    {id:'reels', icon:'📱', label:'Reel-Skript', content:saved.reels},
+    {id:'post',  icon:'📸', label:'Karussell-Post', content:saved.post},
+    {id:'text',  icon:'✍️', label:'Caption', content:saved.text},
+    {id:'story', icon:'📲', label:'Stories', content:saved.story},
+  ];
+  
+  el.innerHTML = '';
+  items.forEach(item => {
+    const isReady = !!item.content;
+    const isPosted = !!posted[item.id];
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--bc);border:1.5px solid '+(isPosted?'rgba(46,125,94,.3)':isReady?'rgba(139,100,50,.2)':'var(--bd)')+';border-radius:var(--cr);padding:12px;box-shadow:var(--sh)';
+    
+    // Status badge
+    const status = isPosted ? '<span style="background:#2e7d5e;color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px">GEPOSTET</span>'
+      : isReady ? '<span style="background:var(--g);color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px">BEREIT</span>'
+      : '<span style="background:var(--bd);color:var(--ts);font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px">WIRD GENERIERT…</span>';
+    
+    let html = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:'+(isReady&&!isPosted?'8':'0')+'px">'
+      +'<span style="font-size:16px">'+item.icon+'</span>'
+      +'<div style="flex:1;font-size:12px;font-weight:600;color:var(--tc)">'+item.label+'</div>'
+      +status
+      +'</div>';
+    
+    if (isReady && !isPosted) {
+      // Preview + action buttons
+      const preview = (item.content||'').slice(0,120).replace(/</g,'&lt;');
+      html += '<div style="font-size:10px;color:var(--ts);line-height:1.6;margin-bottom:8px;max-height:40px;overflow:hidden">'+preview+'…</div>';
+      html += '<div style="display:flex;gap:5px">';
+      
+      // Extract photo prompt if exists
+      const promptMatch = (item.content||'').match(/(?:Foto-Prompt|Photo Prompt|Foto Prompt)[^:]*:\s*([^\n]+)/i);
+      const videoMatch = (item.content||'').match(/(?:Video-Prompt|Video Prompt)[^:]*:\s*([^\n]+)/i);
+      
+      if (promptMatch) {
+        const pIdx = storeClip(promptMatch[1].trim());
+        html += '<button class="copy-btn" style="font-size:9px;padding:4px 8px" onclick="copyStored('+pIdx+');showToast(\'📷 Foto-Prompt kopiert → Midjourney\')">📷 Midjourney</button>';
+      }
+      if (videoMatch) {
+        const vIdx = storeClip(videoMatch[1].trim());
+        html += '<button class="copy-btn" style="font-size:9px;padding:4px 8px" onclick="copyStored('+vIdx+');showToast(\'🎬 Video-Prompt kopiert → Kling AI\')">🎬 Kling</button>';
+      }
+      
+      const cIdx = storeClip(item.content||'');
+      html += '<button class="copy-btn" style="font-size:9px;padding:4px 8px" onclick="copyStored('+cIdx+')">📋 Alles</button>';
+      html += '<button class="copy-btn" style="font-size:9px;padding:4px 8px;border-color:var(--g);color:var(--g)" onclick="openMod(\''+item.id+'\')">Öffnen</button>';
+      html += '</div>';
+    }
+    
+    card.innerHTML = html;
+    el.appendChild(card);
+  });
+  
+  // Workflow reminder
+  const workflow = document.createElement('div');
+  workflow.style.cssText = 'margin-top:8px;padding:10px 12px;background:rgba(139,100,50,.05);border-radius:10px;border:1px dashed var(--bd)';
+  workflow.innerHTML = '<div style="font-size:9px;letter-spacing:1.5px;color:var(--tm);font-weight:700;margin-bottom:4px">WORKFLOW</div>'
+    +'<div style="font-size:10px;color:var(--ts);line-height:1.7">1. 📷 Foto-Prompt kopieren → Midjourney einfügen → Bild speichern<br>2. 🎬 Video-Prompt kopieren → Kling AI → Video generieren<br>3. 📋 Alles kopieren → CapCut/Canva → zusammenbauen<br>4. 📱 Instagram hochladen → Im Modul als "gepostet" markieren</div>';
+  el.appendChild(workflow);
+}
+
+function updateHeroDate() {
+  const d = new Date();
+  const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const months=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  document.getElementById('hero-date').textContent = days[d.getDay()]+', '+d.getDate()+'. '+months[d.getMonth()];
+}
+
+function startCountdown() {
+  function tick() {
+    const diff = new Date(launchDate + "T00:00:00") - new Date();
+    if (diff<=0){['cd-d','cd-h','cd-m','cd-s','sb-d','sb-h','sb-m','sb-s'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='0';});return;}
+    const vals = {d:Math.floor(diff/864e5),h:Math.floor(diff%864e5/36e5),m:Math.floor(diff%36e5/6e4),s:Math.floor(diff%6e4/1e3)};
+    ['d','h','m','s'].forEach(u=>{
+      const v = String(vals[u]).padStart(2,'0');
+      ['cd-','sb-'].forEach(p=>{const el=document.getElementById(p+u);if(el)el.textContent=v;});
+    });
+  }
+  tick(); setInterval(tick,1000);
+}
+
+function updateMotiv() {
+  const idx = Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/864e5) % MOTIVS.length;
+  document.getElementById('motiv-text').textContent = MOTIVS[idx];
+}
+
+function updateStats() {
+  const done = lsGet('mindea-heute-done-'+TD, {});
+  document.getElementById('stat-heute').innerHTML = Object.values(done).filter(Boolean).length+'<span class="stat-sub-val">/4</span>';
+  const leads = lsGet('mindea-leads', []);
+  const oL = leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).length;
+  const gebuchterUmsatz=leads.filter(l=>l.status==='gebucht'&&(l.date||'').startsWith(TD.slice(0,7))).reduce((s,l)=>s+(l.wert||398),0);
+  document.getElementById('stat-leads').textContent = oL;
+  document.getElementById('quick-leads-sub').textContent = oL+' Leads · '+leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).reduce((s,l)=>s+(l.wert||398),0)+'€';
+  const lp = lsGet('mindea-launch-done', {});
+  // Show revenue instead of launch progress
+  document.getElementById('stat-launch').innerHTML = gebuchterUmsatz+'<span class="stat-sub-val">€</span>';
+}
+
+function updateNextPost() {
+  const calDone = lsGet('mindea-cal-done', {});
+  const next = CAL.find(c=>c[0]>=TD && !calDone[c[0]]);
+  const el = document.getElementById('next-post-wrap');
+  if (!next) { el.innerHTML=''; return; }
+  const dt = new Date(next[0]).toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'});
+  el.innerHTML = `<button class="next-post-btn" onclick="openMod('kalender')">
+    <span style="font-size:18px">${next[1]}</span>
+    <div style="flex:1"><div class="next-post-meta">NÄCHSTER POST — ${dt}</div><div class="next-post-title">${next[2]}</div></div>
+    <span style="color:var(--b);font-size:14px">›</span>
+  </button>`;
+}
+
+function updateLibCount() {
+  const c = library.length;
+  document.getElementById('lib-count').textContent = c>0 ? c : '';
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────
+let currentMod = null;
+function openMod(id) {
+  currentMod = id;
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  const activeBtn = Array.from(document.querySelectorAll('.sb-item')).find(b=>b.getAttribute('onclick')===`openMod('${id}')`);
+  if(activeBtn) activeBtn.classList.add('active');
+  const m = MOD_META[id];
+  document.getElementById('detail-title').textContent = m.title;
+  document.getElementById('detail-sub').textContent = m.sub || '';
+  document.getElementById('hdr-sub').textContent = m.ac ? getAreaLabel(id) : 'WORKSPACE';
+  show('detail-screen');
+  renderMod(id);
+}
+function getAreaLabel(id) {
+  if (['luna','heute','reels','post','story','text','mail','scriptdir','kalender','wochenplan','analytics','launchplan'].includes(id)) return 'FÜR DICH';
+  if (['sales','leadfinder','showcase','projekte','preiscoach','leadquellen'].includes(id)) return 'BUSINESS';
+  if (['briefing','angebot','bp','bs','bi','prompts'].includes(id)) return 'FÜR KUNDEN';
+  return 'KI WISSEN';
+}
+function goHome() { show('home-screen'); updateStats(); updateNextPost(); renderContentPack(); document.getElementById('hdr-title').textContent='MINDÉA'; document.getElementById('hdr-sub').textContent='WORKSPACE'; }
+function goLib() {
+  show('lib-screen');
+  const body = document.getElementById('lib-body');
+  const searchEl = document.getElementById('lib-search');
+  const filterEl = document.getElementById('lib-filter');
+  const q = (searchEl?.value || '').toLowerCase().trim();
+  const f = filterEl?.value || '';
+  
+  let items = library;
+  if (f) items = items.filter(it => it.dept === f);
+  if (q) items = items.filter(it => (it.content || '').toLowerCase().includes(q) || (MOD_META[it.dept]?.title || '').toLowerCase().includes(q));
+  
+  if (!items.length) { body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--ts)">${library.length ? 'Keine Treffer.' : 'Leer. Tippe ⭐ zum Speichern.'}</div>`; return; }
+  body.innerHTML = items.map(it=>{
+    const idx = storeClip(it.content.slice(0,2000));
+    const safeContent = it.content.slice(0,250).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const safeName = (MOD_META[it.dept]?.title||it.dept).replace(/</g,'&lt;');
+    return `<div class="lib-item">
+      <div class="lib-item-head"><span class="lib-item-name">${MOD_META[it.dept]?.icon||'📄'} ${safeName}</span><span class="lib-item-date">${it.date}</span></div>
+      <div class="lib-item-text">${safeContent}</div>
+      <button class="copy-btn" style="margin-top:6px" onclick="copyStored(${idx})">📋 Kopieren</button>
+    </div>`;
+  }).join('');
+}
+function show(screenId) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+}
+
+// ─── MODULE RENDERER ──────────────────────────────────────────────────────
+function renderMod(id) {
+  const body = document.getElementById('detail-body');
+  body.innerHTML = '';
+  // Reset inline styles from Luna/Chat modules
+  body.style.padding = '';
+  body.style.overflow = '';
+  body.style.display = '';
+  body.style.flexDirection = '';
+  // Clean up used-bar elements inserted outside detail-body
+  document.querySelectorAll('.used-bar').forEach(el=>el.remove());
+  if (id==='luna') renderLuna(body);
+  else if (id==='heute') renderHeute(body);
+  else if (id==='kalender') renderKalender(body);
+  else if (id==='sales') renderSales(body);
+  else if (id==='leadfinder') renderLeadFinder(body);
+  else if (id==='showcase') renderShowcase(body);
+  else if (id==='preiscoach') renderChatMod(body, id);
+  else if (id==='projekte') renderProjekte(body);
+  else if (id==='briefing') renderBriefing(body);
+  else if (id==='angebot') renderAngebot(body);
+  else if (id==='news') renderNews(body);
+  else if (id==='mail') renderMail(body);
+  else if (id==='wochenplan') renderWochenplan(body);
+  else if (id==='analytics') renderAnalytics(body);
+  else if (id==='launchplan') renderLaunchPlan(body);
+  else if (MOD_META[id]?.auto) renderAutoMod(body, id);
+  else if (MOD_META[id]?.chat) renderChatMod(body, id);
+  else renderChatMod(body, id);
+}
+
+// ─── LUNA ─────────────────────────────────────────────────────────────────
+let lunaTab = 'coach';
+let salesMsgs = JSON.parse(localStorage.getItem('mindea-sales-msgs') || '[]');
+let salesScenario = localStorage.getItem('mindea-sales-scenario') || '';
+let isListening = false;
+let speechSynth = window.speechSynthesis;
+
+const SALES_SCENARIOS = [
+  {id:'kalt', label:'🥶 Kaltakquise DM', desc:'Jemand antwortet auf deine erste DM', prompt:'Du bist ein potenzieller Kunde. Du hast eine DM von Ivana (Mindea) bekommen und antwortest skeptisch aber hoeflich. Du bist Coach/Beraterin, hast eine Marke aber dein visueller Auftritt ist schwach. Antworte KURZ (1-3 Saetze), stelle Rueckfragen, sei realistisch. Zeige typische Einwaende: zu teuer, kein Bedarf, mache ich selbst. Werde langsam offener wenn Ivana gut argumentiert.'},
+  {id:'warm', label:'🔥 Warmer Lead', desc:'Jemand hat sich gemeldet und will mehr wissen', prompt:'Du bist eine interessierte Kundin die sich bei Mindea gemeldet hat. Du bist Yogalehrerin, 34, willst professioneller auftreten. Du hast Fragen: Was genau bekomme ich? Wie laeuft das ab? Was kostet das? Antworte KURZ, sei interessiert aber vorsichtig mit Geld.'},
+  {id:'einwand', label:'💪 Einwand-Training', desc:'Kunde hat Einwände — überzeuge ihn', prompt:'Du bist ein potenzieller Kunde fuer Mindea. Du hast starke Einwaende: "Das ist zu teuer", "Ich kann das selbst mit Canva", "Ich brauche erstmal mehr Follower", "KI-Videos sehen fake aus", "Ich muss darueber nachdenken". Bringe diese Einwaende NACHEINANDER. Wenn Ivana gut kontert, bringe den naechsten. Sei REALISTISCH. Antworte kurz.'},
+  {id:'abschluss', label:'🎯 Abschluss üben', desc:'Kunde ist warm — mach den Deal', prompt:'Du bist eine Kundin die schon fast ueberzeugt ist. Du magst Mindea, findest es ansprechend, aber brauchst den letzten Push. Stelle Abschluss-Fragen: Wann koennte es losgehen? Kann ich in Raten zahlen? Was passiert als naechstes? Sei bereit zu buchen wenn Ivana gut abschliesst.'},
+  {id:'preis', label:'💸 Preisverhandlung', desc:'Kunde will den Preis drücken', prompt:'Du bist eine Kundin die Mindea gut findet aber den Preis zu hoch findet. Sage Dinge wie: Das ist mir zu teuer, Kann man da was am Preis machen, Ich kenne jemanden der das fuer die Haelfte macht, Ich habe nur 200EUR Budget, Kann ich erstmal ein kleineres Paket testen. Sei hartnäckig aber realistisch. Wenn Ivana gut argumentiert und den Wert klar macht, lenke langsam ein.'},
+];
+
+function renderLuna(body) {
+  body.style.padding = '0';
+  body.style.overflow = 'hidden';
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+
+  // Tabs
+  const tabBar = div('');
+  tabBar.style.cssText = 'display:flex;border-bottom:1px solid var(--bd);flex-shrink:0';
+  tabBar.innerHTML = `
+    <button id="luna-tab-coach" onclick="switchLunaTab('coach')" style="flex:1;padding:12px;border:none;background:${lunaTab==='coach'?'var(--gba)':'transparent'};cursor:pointer;font-size:12px;font-weight:${lunaTab==='coach'?'700':'500'};color:${lunaTab==='coach'?'var(--g)':'var(--ts)'};font-family:'DM Sans',sans-serif;border-bottom:2px solid ${lunaTab==='coach'?'var(--g)':'transparent'}">💬 Coach</button>
+    <button id="luna-tab-sales" onclick="switchLunaTab('sales')" style="flex:1;padding:12px;border:none;background:${lunaTab==='sales'?'rgba(74,122,150,.1)':'transparent'};cursor:pointer;font-size:12px;font-weight:${lunaTab==='sales'?'700':'500'};color:${lunaTab==='sales'?'var(--b)':'var(--ts)'};font-family:'DM Sans',sans-serif;border-bottom:2px solid ${lunaTab==='sales'?'var(--b)':'transparent'}">🎙️ Sales Training</button>`;
+  body.appendChild(tabBar);
+
+  const content = div('');
+  content.style.cssText = 'flex:1;display:flex;flex-direction:column;overflow:hidden';
+  content.id = 'luna-content';
+  body.appendChild(content);
+
+  if (lunaTab === 'coach') renderLunaCoach(content);
+  else renderSalesTrainer(content);
+}
+
+function switchLunaTab(tab) {
+  lunaTab = tab;
+  renderMod('luna');
+}
+
+function renderLunaCoach(container) {
+  container.innerHTML = `
+    <div id="luna-msgs" class="chat-msgs"></div>
+    <div id="luna-file-preview" style="display:none;padding:6px 12px;background:var(--gba);border-top:1px solid var(--bd);align-items:center;gap:8px;flex-shrink:0">
+      <img id="luna-file-thumb" style="width:36px;height:36px;border-radius:7px;object-fit:cover;display:none">
+      <span id="luna-file-name" style="flex:1;font-size:11px;color:var(--tc);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      <button onclick="clearLunaFile()" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--ts)">✕</button>
+    </div>
+    <div class="chat-input-wrap">
+      <div class="chat-input-row">
+        <input type="file" id="luna-file-inp" accept="image/*,video/*,.pdf" onchange="handleLunaFile(event)" style="display:none">
+        <button onclick="document.getElementById('luna-file-inp').click()" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;font-size:14px;flex-shrink:0" title="Datei">📎</button>
+        <button id="luna-mic-btn" onclick="toggleLunaMic()" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;font-size:16px;flex-shrink:0;transition:all .2s" title="Sprechen">🎤</button>
+        <textarea id="luna-inp" placeholder="Schreib oder sprich..." rows="1" onkeydown="lunaKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" onclick="lunaSend()">➤</button>
+      </div>
+      <div id="luna-mic-status" style="text-align:center;font-size:10px;color:var(--ts);padding:4px 0;display:none"></div>
+    </div>`;
+  const msgs = document.getElementById('luna-msgs');
+  if (lunaMsgs.length===0) {
+    appendMsg(msgs,'ai','Hallo Ivana! Was steht heute an? Du kannst auch Fotos hochladen oder sprechen.');
+    // Quick action chips for feedback
+    const chips = div(''); chips.style.cssText='display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px';
+    chips.innerHTML = '<button class="qp-chip" onclick="lunaQuick(\'reel-feedback\')">📱 Reel-Feedback</button>'
+      +'<button class="qp-chip" onclick="lunaQuick(\'feed-analyse\')">📸 Feed analysieren</button>'
+      +'<button class="qp-chip" onclick="lunaQuick(\'umsatz-check\')">💶 Umsatz-Check</button>'
+      +'<button class="qp-chip" onclick="lunaQuick(\'was-tun\')">⚡ Was soll ich heute tun?</button>';
+    msgs.appendChild(chips);
+  } else {
+    lunaMsgs.slice(-30).forEach(m=>appendMsg(msgs, m.r, m.t));
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+let _lunaFile = null;
+let _lunaPreview = null;
+
+function handleLunaFile(e) {
+  const f = e.target.files?.[0]; if(!f) return;
+  _lunaFile = f;
+  const preview = document.getElementById('luna-file-preview');
+  const thumb = document.getElementById('luna-file-thumb');
+  const name = document.getElementById('luna-file-name');
+  preview.style.display = 'flex';
+  name.textContent = f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+  if (f.type?.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = ev => { _lunaPreview = ev.target.result; thumb.src = ev.target.result; thumb.style.display = 'block'; };
+    reader.readAsDataURL(f);
+  } else { _lunaPreview = null; thumb.style.display = 'none'; }
+}
+
+function clearLunaFile() {
+  _lunaFile = null; _lunaPreview = null;
+  const preview = document.getElementById('luna-file-preview');
+  if (preview) preview.style.display = 'none';
+  const inp = document.getElementById('luna-file-inp');
+  if (inp) inp.value = '';
+}
+
+function toggleLunaMic() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { showToast('❌ Spracherkennung nicht verfügbar'); return; }
+  if (isListening) { stopListening(); return; }
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'de-DE'; recognition.continuous = false; recognition.interimResults = true;
+  window._recognition = recognition; isListening = true;
+  const micBtn = document.getElementById('luna-mic-btn');
+  const micStatus = document.getElementById('luna-mic-status');
+  if (micBtn) { micBtn.style.background = '#c0392b'; micBtn.style.borderColor = '#c0392b'; micBtn.textContent = '⏹'; }
+  if (micStatus) { micStatus.style.display = 'block'; micStatus.textContent = '🔴 Hört zu...'; }
+  recognition.onresult = (event) => {
+    let transcript = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) transcript += event.results[i][0].transcript;
+    const inp = document.getElementById('luna-inp');
+    if (inp) inp.value = transcript;
+    if (micStatus) micStatus.textContent = '🔴 ' + transcript.slice(0, 60);
+    if (event.results[event.results.length - 1].isFinal) {
+      stopLunaMic();
+      if (transcript.trim()) lunaSend(transcript.trim());
+    }
+  };
+  recognition.onerror = (e) => { stopLunaMic(); if (e.error==='not-allowed') showToast('❌ Mikrofon-Zugriff verweigert'); };
+  recognition.onend = () => { stopLunaMic(); };
+  recognition.start();
+}
+function stopLunaMic() {
+  isListening = false;
+  if (window._recognition) { try { window._recognition.stop(); } catch(e) {} }
+  const micBtn = document.getElementById('luna-mic-btn');
+  const micStatus = document.getElementById('luna-mic-status');
+  if (micBtn) { micBtn.style.background = 'var(--bc)'; micBtn.style.borderColor = 'var(--bd)'; micBtn.textContent = '🎤'; }
+  if (micStatus) { micStatus.style.display = 'none'; }
+}
+
+function renderSalesTrainer(container) {
+  if (!salesScenario) {
+    // Scenario selection
+    container.style.overflow = 'auto';
+    container.style.padding = '14px';
+    container.innerHTML = '';
+    const intro = div('');
+    intro.style.cssText = 'text-align:center;padding:20px 10px 16px';
+    intro.innerHTML = '<div style="font-size:28px;margin-bottom:8px">🎙️</div><div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:600;color:var(--tc);margin-bottom:4px">Sales Training</div><div style="font-size:12px;color:var(--ts);line-height:1.6">Übe Verkaufsgespräche mit einer KI-Kundin.<br>Sprich laut oder tippe — sie antwortet dir.</div>';
+    container.appendChild(intro);
+
+    SALES_SCENARIOS.forEach(sc => {
+      const btn = div('card');
+      btn.style.cssText = 'cursor:pointer;margin-bottom:8px;border-color:rgba(74,122,150,.2);transition:all .2s';
+      btn.innerHTML = '<div style="font-size:15px;font-weight:600;color:var(--tc);margin-bottom:3px">'+sc.label+'</div><div style="font-size:11px;color:var(--ts);line-height:1.5">'+sc.desc+'</div>';
+      btn.onmouseenter = () => { btn.style.borderColor = 'var(--b)'; btn.style.background = 'rgba(74,122,150,.05)'; };
+      btn.onmouseleave = () => { btn.style.borderColor = 'rgba(74,122,150,.2)'; btn.style.background = 'var(--bc)'; };
+      btn.onclick = () => startSalesScenario(sc.id);
+      container.appendChild(btn);
+    });
+
+    if (salesMsgs.length > 0) {
+      const resumeBtn = div('');
+      resumeBtn.style.cssText = 'margin-top:8px;text-align:center';
+      resumeBtn.innerHTML = '<button onclick="resumeSalesChat()" style="padding:11px 24px;border-radius:var(--cr);border:1.5px solid var(--b);background:transparent;cursor:pointer;color:var(--b);font-size:12px;font-weight:600;font-family:\'DM Sans\',sans-serif">↩ Letztes Gespräch fortsetzen</button>';
+      container.appendChild(resumeBtn);
+    }
+  } else {
+    // Active conversation
+    container.style.overflow = 'hidden';
+    container.style.padding = '0';
+    container.innerHTML = '';
+
+    // Scenario header
+    const sc = SALES_SCENARIOS.find(s => s.id === salesScenario);
+    const header = div('');
+    header.style.cssText = 'padding:8px 14px;background:rgba(74,122,150,.06);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;flex-shrink:0';
+    header.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--b)">'+(sc?.label||'Sales')+'</div><div style="flex:1"></div><button onclick="endSalesScenario()" style="background:none;border:1px solid var(--bd);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:10px;color:var(--ts)">Beenden</button><button onclick="resetSalesChat()" style="background:none;border:1px solid var(--bd);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:10px;color:var(--ts)">🗑</button>';
+    container.appendChild(header);
+
+    const msgsEl = div('chat-msgs');
+    msgsEl.id = 'sales-msgs';
+    container.appendChild(msgsEl);
+
+    // Input with mic button
+    const inputWrap = div('chat-input-wrap');
+    inputWrap.innerHTML = `
+      <div class="chat-input-row">
+        <button id="mic-btn" onclick="toggleMic()" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;font-size:16px;flex-shrink:0;transition:all .2s" title="Sprechen">🎤</button>
+        <textarea id="sales-inp" placeholder="Antworte der Kundin..." rows="1" onkeydown="salesKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" onclick="salesSend()">➤</button>
+      </div>
+      <div id="mic-status" style="text-align:center;font-size:10px;color:var(--ts);padding:4px 0;display:none"></div>`;
+    container.appendChild(inputWrap);
+
+    // Render messages
+    if (salesMsgs.length === 0) {
+      appendMsg(msgsEl, 'ai', '(Kundin wartet auf deine Nachricht. Starte das Gespräch — per Text oder Sprache.)');
+    } else {
+      salesMsgs.forEach(m => appendMsg(msgsEl, m.r, m.t));
+    }
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+}
+
+function startSalesScenario(id) {
+  salesScenario = id;
+  salesMsgs = [];
+  localStorage.setItem('mindea-sales-scenario', id);
+  lsSet('mindea-sales-msgs', []);
+  renderMod('luna');
+}
+function resumeSalesChat() {
+  if (!salesScenario) salesScenario = 'kalt';
+  renderMod('luna');
+}
+function endSalesScenario() {
+  salesScenario = '';
+  localStorage.setItem('mindea-sales-scenario', '');
+  renderMod('luna');
+}
+function resetSalesChat() {
+  salesMsgs = [];
+  lsSet('mindea-sales-msgs', []);
+  renderMod('luna');
+}
+function salesKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();salesSend();} }
+
+async function salesSend(voiceText) {
+  const inp = document.getElementById('sales-inp');
+  const t = voiceText || (inp ? inp.value.trim() : '');
+  if (!t) return;
+  if (inp) { inp.value = ''; inp.style.height = 'auto'; }
+
+  const msgsEl = document.getElementById('sales-msgs');
+  appendMsg(msgsEl, 'user', t);
+  salesMsgs.push({r:'user', t, d:TD});
+
+  const typing = appendTyping(msgsEl);
+
+  const sc = SALES_SCENARIOS.find(s => s.id === salesScenario);
+  const sysPrompt = OS + '\n\nROLLENSPIEL-MODUS: ' + (sc?.prompt || 'Du bist ein potenzieller Kunde.') + '\nAntworte IMMER in der Rolle als Kunde/Kundin. KURZ: Max 2-4 Saetze. Deutsch. KEIN Markdown. Reiner Text. Sei realistisch.';
+  const hist = salesMsgs.slice(-12).map(m => (m.r==='user'?'Ivana (Verkaeufer)':'Kundin') + ': ' + m.t).join('\n');
+
+  const reply = await callApi(sysPrompt, hist, 400);
+
+  typing.remove();
+  appendMsg(msgsEl, 'ai', reply);
+  salesMsgs.push({r:'ai', t:reply, d:TD});
+  lsSet('mindea-sales-msgs', salesMsgs.slice(-50));
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+
+  // Speak the reply
+  speakText(reply);
+}
+
+// ─── SPEECH FUNCTIONS ────────────────────────────────────────────────────
+function speakText(text) {
+  if (!speechSynth) return;
+  speechSynth.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'de-DE';
+  utter.rate = 0.95;
+  utter.pitch = 1.1;
+  // Try to find a German female voice
+  const voices = speechSynth.getVoices();
+  const deVoice = voices.find(v => v.lang.startsWith('de') && v.name.toLowerCase().includes('female'))
+    || voices.find(v => v.lang.startsWith('de') && (v.name.includes('Anna') || v.name.includes('Petra') || v.name.includes('Helena')))
+    || voices.find(v => v.lang.startsWith('de'));
+  if (deVoice) utter.voice = deVoice;
+  speechSynth.speak(utter);
+}
+
+function toggleMic() {
+  if (isListening) {
+    stopListening();
+  } else {
+    startListening();
+  }
+}
+
+function startListening() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast('❌ Spracherkennung nicht verfügbar in diesem Browser');
+    return;
+  }
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'de-DE';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  window._recognition = recognition;
+  isListening = true;
+
+  const micBtn = document.getElementById('mic-btn');
+  const micStatus = document.getElementById('mic-status');
+  if (micBtn) { micBtn.style.background = '#c0392b'; micBtn.style.borderColor = '#c0392b'; micBtn.textContent = '⏹'; }
+  if (micStatus) { micStatus.style.display = 'block'; micStatus.textContent = '🔴 Hört zu...'; }
+
+  recognition.onresult = (event) => {
+    let transcript = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    const inp = document.getElementById('sales-inp');
+    if (inp) inp.value = transcript;
+    if (micStatus) micStatus.textContent = '🔴 ' + transcript.slice(0, 60) + (transcript.length > 60 ? '...' : '');
+
+    // If final result, auto-send
+    if (event.results[event.results.length - 1].isFinal) {
+      stopListening();
+      if (transcript.trim()) {
+        salesSend(transcript.trim());
+      }
+    }
+  };
+  recognition.onerror = (e) => {
+    console.error('Speech error:', e.error);
+    stopListening();
+    if (e.error === 'not-allowed') showToast('❌ Mikrofon-Zugriff verweigert');
+    else showToast('❌ Sprachfehler: ' + e.error);
+  };
+  recognition.onend = () => { stopListening(); };
+  recognition.start();
+}
+
+function stopListening() {
+  isListening = false;
+  if (window._recognition) { try { window._recognition.stop(); } catch(e) {} }
+  const micBtn = document.getElementById('mic-btn');
+  const micStatus = document.getElementById('mic-status');
+  if (micBtn) { micBtn.style.background = 'var(--bc)'; micBtn.style.borderColor = 'var(--bd)'; micBtn.textContent = '🎤'; }
+  if (micStatus) { micStatus.style.display = 'none'; }
+}
+function lunaKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();lunaSend();}}
+
+function lunaQuick(type) {
+  const prompts = {
+    'reel-feedback': 'Ich lade gleich ein Reel oder Screenshot hoch. Gib mir ehrliches Feedback: Hook in den ersten 3 Sekunden? Bildqualitaet? Passt es zum Mindea-Look? Was konkret verbessern? Warte auf mein Bild.',
+    'feed-analyse': 'Ich lade gleich einen Screenshot meines Instagram Feeds hoch. Analysiere: Farbkonsistenz? Wirkt es Premium? Was faellt aus der Reihe? Was wuerde ein Besucher in 3 Sekunden denken? Warte auf meinen Screenshot.',
+    'umsatz-check': 'Wie ist mein aktueller Umsatz-Stand? Wie viele Abschluesse fehlen noch zu 5000 Euro? Was ist meine wichtigste Sales-Aktion heute?',
+    'was-tun': 'Was ist die eine Sache die ich JETZT sofort tun sollte um naeher an 5000 Euro zu kommen? Keine Theorie, eine konkrete Aktion.'
+  };
+  const inp = document.getElementById('luna-inp');
+  if (inp) { inp.value = prompts[type] || ''; lunaSend(); }
+}
+function getLunaCtx() {
+  const diff = new Date(launchDate+'T00:00:00') - new Date();
+  const daysLeft = Math.max(0, Math.floor(diff/864e5));
+  const done = lsGet('mindea-heute-done-'+TD, {});
+  const doneCnt = Object.values(done).filter(Boolean).length;
+  const tasks = lsGet('mindea-heute-'+TD, []);
+  const leads = lsGet('mindea-leads',[]);
+  const offeneLeads = leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).length;
+  const pipeline = leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).reduce((s,l)=>s+(l.wert||398),0);
+  const gebucht = leads.filter(l=>l.status==='gebucht'&&(l.date||'').startsWith(TD.slice(0,7))).reduce((s,l)=>s+(l.wert||398),0);
+  const fehlbetrag = Math.max(0, 5000-gebucht);
+  const calDone = lsGet('mindea-cal-done',{});
+  const nextPost = CAL.find(c=>c[0]>=TD&&!calDone[c[0]]);
+  const fups = checkFollowUps();
+  return '\n\nTAGES-KONTEXT:\nHeute: '+TD+' ('+new Date().toLocaleDateString('de-DE',{weekday:'long'})+')'
+    +'\nBis Launch: '+daysLeft+' Tage'
+    +'\nTasks heute: '+doneCnt+'/'+tasks.length+' erledigt'
+    +'\n\nREVENUE-STATUS:'
+    +'\nGebucht diesen Monat: '+gebucht+'EUR'
+    +'\nFehlt zu 5000EUR: '+fehlbetrag+'EUR'
+    +'\nPipeline-Wert: '+pipeline+'EUR ('+offeneLeads+' offene Leads)'
+    +'\nFaellige Follow-ups: '+fups.length
+    +(nextPost ? '\nNächster Post: '+nextPost[2]+' ('+nextPost[0]+')' : '');
+}
+
+async function lunaSend(voiceText){
+  const inp=document.getElementById('luna-inp');
+  const t=voiceText||(inp?inp.value.trim():'');
+  const hasFile = !!_lunaFile;
+  if(!t && !hasFile) return;
+  if(inp){inp.value=''; inp.style.height='auto';}
+  const msgs=document.getElementById('luna-msgs');
+  const userDisplay = hasFile ? '📎 ' + _lunaFile.name + (t ? '\n' + t : '') : t;
+  appendMsg(msgs,'user',userDisplay);
+  if (_lunaPreview) {
+    const imgEl = document.createElement('div');
+    imgEl.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:8px;margin-top:-4px';
+    imgEl.innerHTML = '<img src="'+_lunaPreview+'" style="max-width:180px;max-height:180px;border-radius:10px;border:1px solid var(--bd);object-fit:cover">';
+    msgs.appendChild(imgEl);
+  }
+  lunaMsgs.push({r:'user',t:userDisplay,d:TD});
+  const typing=appendTyping(msgs);
+  const brCtx = lunaBrain.length ? '\nGEDÄCHTNIS:\n'+lunaBrain.slice(-20).map(m=>'- '+m.t).join('\n') : '';
+  const dayCtx = getLunaCtx();
+  
+  let reply;
+  if (hasFile && _lunaPreview) {
+    const b64 = _lunaPreview.split(',')[1];
+    const mt = _lunaPreview.match(/data:(image\/\w+);/);
+    reply = await callApiVision(LUNA_S+brCtx+dayCtx, t || 'Was siehst du auf diesem Bild? Analysiere es im Mindea-Kontext.', b64, mt?mt[1]:'image/jpeg');
+  } else {
+    const hist = lunaMsgs.slice(-10).map(m=>(m.r==='user'?'user':'assistant')+': '+m.t).join('\n');
+    reply = await callApi(LUNA_S+brCtx+dayCtx, hist, 300);
+  }
+  
+  clearLunaFile();
+  typing.remove();
+  appendMsg(msgs,'ai',reply);
+  lunaMsgs.push({r:'ai',t:reply,d:TD});
+  lsSet('luna-all-msgs', lunaMsgs.slice(-150));
+  msgs.scrollTop=msgs.scrollHeight;
+  if(voiceText) speakText(reply);
+  // memory
+  callApiJ('Extrahiere 1-2 Fakten. JSON:{"m":["…"]}','Ivana:'+userDisplay.slice(0,200)+'\nLuna:'+reply.slice(0,150),200).then(mem=>{
+    if(mem&&mem.m){lunaBrain=[...lunaBrain,...mem.m.map(x=>({t:x,d:TD}))].slice(-60);lsSet('luna-brain',lunaBrain);}
+  });
+}
+
+// ─── HEUTE ────────────────────────────────────────────────────────────────
+function renderHeute(body) {
+  const tasks = lsGet('mindea-heute-'+TD, []);
+  const done = lsGet('mindea-heute-done-'+TD, {});
+  const strat = lsGet('mindea-strat-KW'+getKW(), '');
+  const calDone = lsGet('mindea-cal-done', {});
+  const next3 = CAL.filter(c=>c[0]>=TD && !calDone[c[0]]).slice(0,4);
+
+  body.innerHTML = '';
+
+  // Tagesabschluss banner if all done
+  const doneCount = Object.values(done).filter(Boolean).length;
+  const abgeschlossen = lsGet('mindea-abschluss-'+TD, false);
+  if (abgeschlossen) {
+    const banner = div('card');
+    banner.style.cssText = 'background:var(--gba);border-color:rgba(139,100,50,.3);text-align:center;padding:18px';
+    banner.innerHTML = '<div style="font-size:22px;margin-bottom:6px">🎉</div><div style="font-size:14px;font-weight:700;color:var(--g)">Tag abgeschlossen!</div><div style="font-size:11px;color:var(--ts);margin-top:4px">Morgen geht es weiter.</div>';
+    body.appendChild(banner);
+  }
+
+  // Generate button
+  const genBtn = makeGBtn('⚡', tasks.length?'Neu berechnen':'Tagesziele generieren', '#2e7d5e');
+  genBtn.onclick = genHeute;
+  body.appendChild(genBtn);
+
+  // Tasks
+  const tasksWrap = div('tasks-wrap');
+  renderTasks(tasksWrap, tasks, done);
+  body.appendChild(tasksWrap);
+
+  // Next posts
+  if (next3.length) {
+    const sec = div(''); sec.innerHTML = `<div style="font-size:10px;letter-spacing:2px;color:var(--b);font-weight:700;margin-bottom:8px;margin-top:6px">🗓 NÄCHSTE POSTS</div>`;
+    next3.forEach(c=>{
+      sec.innerHTML += `<div class="card" style="display:flex;gap:8px;align-items:center;padding:10px 13px;margin-bottom:5px">
+        <span style="font-size:14px">${c[1]}</span>
+        <div style="flex:1"><div style="font-size:11px;color:var(--tc)">${c[2]}</div><div style="font-size:10px;color:var(--tm)">${c[0].slice(5)}</div></div>
+      </div>`;
+    });
+    body.appendChild(sec);
+  }
+
+  // Strategy
+  const stratSec = div('');
+  stratSec.innerHTML = `<div style="font-size:10px;letter-spacing:2px;color:#2e7d5e;font-weight:700;margin-bottom:8px;margin-top:6px">🧭 STRATEGIE</div>`;
+  if (!strat) {
+    const sBtn = makeGBtn('🧭','Wochenstrategie generieren','#2e7d5e');
+    sBtn.onclick = genStrat;
+    stratSec.appendChild(sBtn);
+  } else {
+    const sc = div('card');
+    sc.style.fontSize='12px'; sc.style.lineHeight='1.85'; sc.style.whiteSpace='pre-wrap'; sc.style.maxHeight='200px'; sc.style.overflowY='auto';
+    sc.textContent = strat;
+    const stratIdx = storeClip(strat);
+    const acts = div(''); acts.style.display='flex'; acts.style.gap='6px'; acts.style.marginTop='8px';
+    acts.innerHTML = `<button class="copy-btn" onclick="copyStored(${stratIdx})">📋</button>
+      <button class="copy-btn" onclick="genStrat()">🔄 Neu</button>`;
+    const wrap = div('card'); wrap.appendChild(sc); wrap.appendChild(acts);
+    stratSec.appendChild(wrap);
+  }
+  body.appendChild(stratSec);
+
+  // Tagesabschluss button
+  if (tasks.length > 0 && !lsGet('mindea-abschluss-'+TD, false)) {
+    const abschlussBtn = makeGBtn('🌙', 'Tag abschließen', '#4a3a8a');
+    abschlussBtn.style.marginTop = '8px';
+    abschlussBtn.onclick = tagesabschluss;
+    body.appendChild(abschlussBtn);
+  }
+}
+
+function renderTasks(wrap, tasks, done) {
+  wrap.innerHTML = '';
+  if (!tasks.length) return;
+  tasks.forEach((t,i)=>{
+    const outer = div('');
+    outer.style.cssText='margin-bottom:8px;border:1.5px solid var(--bd);border-radius:var(--cr);overflow:hidden;box-shadow:var(--sh)';
+    const item = div('task-item'+(done[i]?' done':''));
+    item.style.cssText='background:var(--bc);border:none;border-radius:0;margin-bottom:0;box-shadow:none';
+    const chk = document.createElement('button');
+    chk.className = 'task-check'+(done[i]?' checked':'');
+    chk.innerHTML = done[i]?'<span style="font-size:9px;color:#fff;font-weight:700">✓</span>':'';
+    chk.onclick = ()=>toggleTask(i);
+    const txt = div('task-text'); txt.textContent = (t.icon||'')+(t.icon?' ':'')+t.t;
+    // Fragen-Button
+    const askBtn = document.createElement('button');
+    askBtn.textContent = '?';
+    askBtn.style.cssText = 'margin-left:auto;flex-shrink:0;width:26px;height:26px;border-radius:8px;border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;font-size:12px;font-weight:700;color:var(--g);padding:0';
+    const askPanel = div('');
+    askPanel.style.cssText = 'display:none;padding:10px 12px 12px;border-top:1px solid var(--bd);background:var(--gbg)';
+    askBtn.onclick = ()=>{
+      const open = askPanel.style.display === 'none';
+      askPanel.style.display = open ? 'block' : 'none';
+      if (open) askPanel.querySelector('input')?.focus();
+    };
+    const msgsEl = div(''); msgsEl.style.marginBottom='6px';
+    const row = div(''); row.style.cssText='display:flex;gap:6px';
+    const inp = document.createElement('input');
+    inp.placeholder = 'Luna fragen…';
+    inp.style.cssText = 'flex:1;background:var(--bi);border:1px solid var(--bd);border-radius:9px;padding:8px 10px;color:var(--tc);font-size:12px;font-family:\'DM Sans\',sans-serif;outline:none';
+    const sendBtn = document.createElement('button');
+    sendBtn.textContent = '→';
+    sendBtn.style.cssText = 'padding:8px 13px;border-radius:9px;border:none;background:var(--gg);cursor:pointer;color:#fff;font-size:12px;font-weight:700';
+    const taskText = (t.icon||'')+(t.icon?' ':'')+t.t;
+    async function askTask() {
+      const q = inp.value.trim(); if(!q) return; inp.value='';
+      const um = div(''); um.style.cssText='display:flex;justify-content:flex-end;margin-bottom:5px';
+      const ub = div(''); ub.style.cssText='max-width:90%;padding:7px 10px;border-radius:10px 10px 3px 10px;background:var(--gg);color:#fff;font-size:12px;line-height:1.65'; ub.textContent=q; um.appendChild(ub); msgsEl.appendChild(um);
+      const am = div(''); am.style.marginBottom='5px';
+      const ab = div(''); ab.style.cssText='max-width:90%;padding:7px 10px;border-radius:10px 10px 10px 3px;background:var(--bc);border:1px solid var(--bd);font-size:12px;line-height:1.65;color:var(--tc)'; ab.textContent='⏳…'; am.appendChild(ab); msgsEl.appendChild(am);
+      const r = await callApi(LUNA_S+' Beziehe dich auf die Aufgabe. Kurz und direkt.', 'Aufgabe: '+taskText+'\nFrage: '+q, 400);
+      ab.textContent=r;
+      const cp=document.createElement('button'); cp.className='copy-btn'; cp.textContent='📋'; cp.style.marginTop='3px'; cp.onclick=()=>copyText(r); am.appendChild(cp);
+    }
+    inp.onkeydown=e=>{if(e.key==='Enter')askTask();};
+    sendBtn.onclick=askTask;
+    row.appendChild(inp); row.appendChild(sendBtn);
+    askPanel.appendChild(msgsEl); askPanel.appendChild(row);
+    item.appendChild(chk); item.appendChild(txt); item.appendChild(askBtn);
+    outer.appendChild(item); outer.appendChild(askPanel);
+    wrap.appendChild(outer);
+  });
+}
+
+function toggleTask(i) {
+  const done = lsGet('mindea-heute-done-'+TD, {});
+  done[i] = !done[i];
+  lsSet('mindea-heute-done-'+TD, done);
+  updateStats();
+  // re-render tasks only
+  const tasks = lsGet('mindea-heute-'+TD, []);
+  const wrap = document.querySelector('.tasks-wrap');
+  if (wrap) renderTasks(wrap, tasks, done);
+}
+
+async function genHeute() {
+  const btn = document.querySelector('#detail-body .gbtn');
+  setBtnLoading(btn, true);
+  const leads = lsGet('mindea-leads',[]).filter(l=>!['gebucht','kein-fit'].includes(l.status)).length;
+  const calDone = lsGet('mindea-cal-done',{});
+  const nextPost = CAL.find(c=>c[0]>=TD&&!calDone[c[0]])?.[2]||'–';
+  const r = await callApiJ(OS+' TAGESPLAN mit SALES-FOKUS. GENAU 4 Aufgaben in dieser Reihenfolge: 1.SALES(PFLICHT,IMMER ERSTE AUFGABE):Konkrete Akquise-Aktion(DM senden,Follow-up,Angebot nachfassen,Call vereinbaren) 2.CONTENT:Ein Post/Reel der auf Verkauf einzahlt 3.PROJEKT:Aktive Kundenprojekte vorantreiben 4.SYSTEM:Mindea weiterentwickeln. JSON:{"tasks":[{"t":"…","typ":"dringend|wichtig|spaeter","icon":"…"}]}','Leads:'+leads+' Post:'+nextPost+' Ziel:5000EUR/Monat. Pipeline priorisieren.');
+  let tasks;
+  if (r&&r.tasks) tasks=r.tasks;
+  else tasks=[{t:'1 Akquise-DM senden',typ:'dringend',icon:'📧'},{t:'Reel generieren',typ:'wichtig',icon:'📱'},{t:'Luna Check-in',typ:'spaeter',icon:'💬'}];
+  lsSet('mindea-heute-'+TD, tasks);
+  lsSet('mindea-heute-done-'+TD, {});
+  renderMod('heute');
+}
+
+function tagesabschluss() {
+  const tasks = lsGet('mindea-heute-'+TD, []);
+  const done = lsGet('mindea-heute-done-'+TD, {});
+  const doneCnt = Object.values(done).filter(Boolean).length;
+  // Archive to history
+  const hist = lsGet('mindea-tage-history', []);
+  hist.unshift({date:TD, tasks, done, doneCnt, total:tasks.length});
+  lsSet('mindea-tage-history', hist.slice(-30));
+  // Mark as abgeschlossen
+  lsSet('mindea-abschluss-'+TD, true);
+  // Auto-backup
+  doSilentBackup();
+  showToast('🌙 Tag abgeschlossen & Backup gespeichert!');
+  renderMod('heute');
+}
+
+async function genStrat() {
+  showToast('🧭 Strategie wird generiert…');
+  const leads = lsGet('mindea-leads',[]).filter(l=>!['gebucht','kein-fit'].includes(l.status)).length;
+  const r = await callApi(OS+' Wochenstrategie KW'+getKW()+'. Pro Tag Mo-Fr: Was tun, wie umsetzen, welches Tool. Reiner Text. Deutsch.','Leads:'+leads,2000);
+  lsSet('mindea-strat-KW'+getKW(), r);
+  renderMod('heute');
+}
+
+// ─── AUTO MOD (Reels/Posts/Stories/Captions) ──────────────────────────────
+let _autoFile = null;
+let _autoPreview = null;
+
+function renderAutoMod(body, id) {
+  const saved = lsGet('mindea-daily-'+TD, {});
+  const used = lsGet('mindea-benutzt-'+TD, {});
+  const content = saved[id] || '';
+  const isUsed = !!used[id];
+
+  // Used bar
+  const usedBar = div('used-bar');
+  usedBar.style.color = isUsed ? 'var(--g)' : 'var(--ts)';
+  usedBar.style.background = isUsed ? 'var(--gba)' : 'var(--bc)';
+  usedBar.style.fontWeight = isUsed ? '700' : '400';
+  usedBar.textContent = isUsed ? '✓ '+used[id] : 'Noch nicht benutzt';
+  document.querySelectorAll('.used-bar').forEach(el=>el.remove());
+  body.parentElement.insertBefore(usedBar, body);
+
+  // Reference image upload
+  const uploadArea = div('');
+  uploadArea.style.cssText = 'margin-bottom:12px';
+  uploadArea.innerHTML = `
+    <input type="file" id="auto-file-inp" accept="image/*" onchange="handleAutoFile(event)" style="display:none">
+    <div id="auto-file-preview" style="display:none;padding:8px 12px;background:var(--gba);border-radius:var(--cr);margin-bottom:8px;align-items:center;gap:8px">
+      <img id="auto-file-thumb" style="width:40px;height:40px;border-radius:8px;object-fit:cover">
+      <span id="auto-file-name" style="flex:1;font-size:11px;color:var(--tc)"></span>
+      <button onclick="clearAutoFile()" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--ts)">✕</button>
+    </div>
+    <button onclick="document.getElementById('auto-file-inp').click()" style="width:100%;padding:10px;border-radius:var(--cr);border:1.5px dashed var(--bd);background:transparent;cursor:pointer;font-size:11px;color:var(--ts);font-family:'DM Sans',sans-serif">📎 Referenz-Bild hochladen (optional)</button>`;
+  body.appendChild(uploadArea);
+
+  if (!content) {
+    const genBtn = makeGBtn('✨','Jetzt generieren');
+    genBtn.onclick = ()=>genAutoMod(id);
+    body.appendChild(genBtn);
+  } else {
+    const contentCard = div('card'); contentCard.style.fontSize='13px'; contentCard.style.lineHeight='2'; contentCard.style.whiteSpace='pre-wrap'; contentCard.textContent=content;
+    body.appendChild(contentCard);
+    // Ask
+    renderAsk(body, content, 'var(--g)');
+  }
+
+  // Bottom bar
+  const bottomBar = div('');
+  bottomBar.style.cssText = 'position:sticky;bottom:0;padding:10px 14px 20px;border-top:1px solid var(--bd);background:var(--bg);margin:0 -14px -90px -14px;margin-top:14px';
+  const usedBtn = document.createElement('button');
+  usedBtn.style.cssText = 'width:100%;padding:14px;border-radius:var(--cr);border:2px solid '+(isUsed?'transparent':'var(--g)')+';background:'+(isUsed?'var(--gba)':'var(--gg)')+';cursor:pointer;margin-bottom:8px;font-size:13px;font-weight:700;color:'+(isUsed?'var(--g)':'#fff');
+  usedBtn.textContent = isUsed?'Benutzt ✓':'☑ Als benutzt markieren';
+  usedBtn.onclick = ()=>toggleUsed(id);
+  bottomBar.appendChild(usedBtn);
+  const btns = div(''); btns.style.display='flex'; btns.style.gap='7px';
+  const cidx = storeClip(content);
+  btns.innerHTML = `<button class="copy-btn" style="flex:1;padding:11px;border-radius:11px" onclick="copyStored(${cidx})">📋 Kopieren</button>
+    <button class="copy-btn" style="flex:2;padding:11px;border-radius:11px;border-color:var(--g);color:var(--g)" onclick="genAutoMod('${id}')">🔄 Neu generieren</button>`;
+  bottomBar.appendChild(btns);
+  body.appendChild(bottomBar);
+}
+
+function handleAutoFile(e) {
+  const f = e.target.files?.[0]; if(!f) return;
+  _autoFile = f;
+  const preview = document.getElementById('auto-file-preview');
+  const thumb = document.getElementById('auto-file-thumb');
+  const name = document.getElementById('auto-file-name');
+  if (preview) preview.style.display = 'flex';
+  if (name) name.textContent = f.name;
+  if (f.type?.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = ev => { _autoPreview = ev.target.result; if(thumb){thumb.src=ev.target.result; thumb.style.display='block';} };
+    reader.readAsDataURL(f);
+  } else { _autoPreview = null; }
+}
+function clearAutoFile() {
+  _autoFile = null; _autoPreview = null;
+  const preview = document.getElementById('auto-file-preview');
+  if (preview) preview.style.display = 'none';
+  const inp = document.getElementById('auto-file-inp');
+  if (inp) inp.value = '';
+}
+
+async function genAutoMod(id) {
+  showToast('✨ Generiert…');
+  const hasImage = !!_autoPreview;
+  const imageData = _autoPreview;
+  clearAutoFile();
+  renderMod(id);
+  const themes=['Persoenlich','Kundenergebnis','BTS','Mindset','Prozess','Einwand','Vorher/Nachher','Community','Tutorial','Story'];
+  const hist = lsGet('mindea-hist-'+id,[]);
+  const theme = themes[(new Date().getDay()+getKW())%themes.length];
+  const prompt = 'DATUM:'+TD+' THEMA:'+theme+' R:'+Math.floor(Math.random()*9999)+'\nNEU.'+(hist.length?'\nNICHT:'+hist.slice(-8).join('|'):'')+(hasImage?'\n\nEin Referenz-Bild wurde hochgeladen. Nutze die Stimmung, Farben und Komposition des Bildes als Inspiration fuer den Content. Beschreibe im Foto-Prompt einen aehnlichen Stil.':'');
+  
+  let r;
+  if (hasImage) {
+    const b64 = imageData.split(',')[1];
+    const mt = imageData.match(/data:(image\/\w+);/);
+    r = await callApiVision(DS[id]||'', prompt, b64, mt?mt[1]:'image/jpeg');
+  } else {
+    r = await callApi(DS[id]||'', prompt, 4000);
+  }
+  
+  const saved = lsGet('mindea-daily-'+TD,{});
+  saved[id]=r;
+  lsSet('mindea-daily-'+TD,saved);
+  lsSet('mindea-hist-'+id,[...hist,theme+':'+r.slice(0,80)].slice(-12));
+  renderMod(id);
+}
+
+function toggleUsed(id) {
+  const used = lsGet('mindea-benutzt-'+TD,{});
+  if (used[id]) delete used[id];
+  else { const t=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}); used[id]=t; }
+  lsSet('mindea-benutzt-'+TD,used);
+  renderMod(id);
+}
+
+// ─── CHAT MOD ─────────────────────────────────────────────────────────────
+let _chatFile = null;
+let _chatPreview = null;
+
+function renderChatMod(body, id) {
+  body.style.padding = '0';
+  body.style.overflow = 'hidden';
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+  const ms = convos[id]||[];
+  body.innerHTML = `
+    <div id="chat-area" class="chat-msgs"></div>
+    <div id="chat-file-preview" style="display:none;padding:6px 12px;background:var(--gba);border-top:1px solid var(--bd);display:none;align-items:center;gap:8px;flex-shrink:0">
+      <img id="chat-file-thumb" style="width:36px;height:36px;border-radius:7px;object-fit:cover;display:none">
+      <span id="chat-file-name" style="flex:1;font-size:11px;color:var(--tc);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      <button onclick="clearChatFile()" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--ts)">✕</button>
+    </div>
+    <div class="chat-input-wrap">
+      <div class="chat-input-row">
+        <input type="file" id="chat-file-inp" accept="image/*,video/*,.pdf" onchange="handleChatFile(event)" style="display:none">
+        <button onclick="document.getElementById('chat-file-inp').click()" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;font-size:14px;flex-shrink:0" title="Datei hochladen">📎</button>
+        <button id="chat-mic-btn" onclick="toggleChatMic('${id}')" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bc);cursor:pointer;font-size:16px;flex-shrink:0;transition:all .2s" title="Sprechen">🎤</button>
+        <textarea id="chat-inp" placeholder="Schreib oder sprich..." rows="1" onkeydown="chatKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" onclick="chatSend('${id}')">➤</button>
+      </div>
+      <div id="chat-mic-status" style="text-align:center;font-size:10px;color:var(--ts);padding:4px 0;display:none"></div>
+    </div>`;
+  const ca = document.getElementById('chat-area');
+  if (!ms.length) { const m=MOD_META[id]; appendMsg(ca,'ai',m.icon+' '+m.title+' aktiv. Schreib, sprich oder lade ein Foto/Video hoch.'); }
+  else ms.forEach(m=>{ appendMsg(ca,m.role==='user'?'user':'ai',m.content); if(m.role==='assistant') addMsgActions(ca,m.content,id); });
+  ca.scrollTop=ca.scrollHeight;
+}
+
+function handleChatFile(e) {
+  const f = e.target.files?.[0]; if(!f) return;
+  _chatFile = f;
+  const preview = document.getElementById('chat-file-preview');
+  const thumb = document.getElementById('chat-file-thumb');
+  const name = document.getElementById('chat-file-name');
+  preview.style.display = 'flex';
+  name.textContent = f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+  if (f.type?.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = ev => { _chatPreview = ev.target.result; thumb.src = ev.target.result; thumb.style.display = 'block'; };
+    reader.readAsDataURL(f);
+  } else {
+    _chatPreview = null;
+    thumb.style.display = 'none';
+  }
+}
+
+function clearChatFile() {
+  _chatFile = null; _chatPreview = null;
+  const preview = document.getElementById('chat-file-preview');
+  if (preview) preview.style.display = 'none';
+  const inp = document.getElementById('chat-file-inp');
+  if (inp) inp.value = '';
+}
+
+function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend(currentMod);}}
+
+async function chatSend(id, voiceText) {
+  const inp=document.getElementById('chat-inp');
+  const t=voiceText||(inp?inp.value.trim():'');
+  const hasFile = !!_chatFile;
+  if(!t && !hasFile) return;
+  if(inp){inp.value=''; inp.style.height='auto';}
+  const ca=document.getElementById('chat-area');
+
+  // Show user message
+  const userDisplay = hasFile ? '📎 ' + _chatFile.name + (t ? '\n' + t : '') : t;
+  appendMsg(ca,'user', userDisplay);
+  if (_chatPreview) {
+    const imgEl = document.createElement('div');
+    imgEl.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:8px;margin-top:-4px';
+    imgEl.innerHTML = '<img src="'+_chatPreview+'" style="max-width:180px;max-height:180px;border-radius:10px;border:1px solid var(--bd);object-fit:cover">';
+    ca.appendChild(imgEl);
+  }
+
+  if(!convos[id]) convos[id]=[];
+  convos[id].push({role:'user',content:userDisplay});
+  const typing=appendTyping(ca);
+
+  let r;
+  if (hasFile && _chatPreview) {
+    // Vision API call with image
+    const b64 = _chatPreview.split(',')[1];
+    const mt = _chatPreview.match(/data:(image\/\w+);/);
+    const mediaType = mt ? mt[1] : 'image/jpeg';
+    r = await callApiVision(DS[id]||OS+' Analysiere das Bild im Mindea-Kontext. Deutsch.', t || 'Analysiere dieses Bild.', b64, mediaType);
+  } else if (hasFile) {
+    // Non-image file
+    const hist = convos[id].slice(-10).map(m=>m.role+': '+m.content).join('\n');
+    r = await callApi(DS[id]||OS+' Deutsch.', hist + '\n\n[Datei hochgeladen: ' + _chatFile.name + ', ' + (_chatFile.size/1024).toFixed(0) + ' KB, Typ: ' + (_chatFile.type||'unbekannt') + ']', 4000, true);
+  } else {
+    const hist=convos[id].slice(-10).map(m=>m.role+': '+m.content).join('\n');
+    r=await callApi(DS[id]||OS+' Deutsch.',hist,8000,true);
+  }
+
+  clearChatFile();
+  typing.remove();
+  appendMsg(ca,'ai',r);
+  addMsgActions(ca,r,id);
+  convos[id].push({role:'assistant',content:r});
+  lsSet('mindea-convos',convos);
+  ca.scrollTop=ca.scrollHeight;
+  if(voiceText) speakText(r);
+}
+
+async function callApiVision(sys, msg, base64Data, mediaType) {
+  if (!apiKey) return '[Kein API Key — tippe auf 🔑]';
+  const now = Date.now(), w = Math.max(0, 1500-(now-_lc));
+  if (w>0) await delay(w);
+  _lc = Date.now();
+  const s = sys.length>3000 ? sys.slice(0,3000) : sys;
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: s,
+        messages:[{role:'user', content:[
+          {type:'image', source:{type:'base64', media_type:mediaType, data:base64Data}},
+          {type:'text', text:msg}
+        ]}]
+      })
+    });
+    if (!r.ok) return '[Fehler '+r.status+']';
+    const d = await r.json();
+    return (d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n') || '[Leer]';
+  } catch(e) { return '[Verbindungsfehler]'; }
+}
+
+// ─── CHAT MIC ────────────────────────────────────────────────────────────
+function toggleChatMic(id) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { showToast('❌ Spracherkennung nicht verfügbar'); return; }
+  if (isListening) { stopChatMic(); return; }
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'de-DE'; recognition.continuous = false; recognition.interimResults = true;
+  window._recognition = recognition; isListening = true;
+  const micBtn = document.getElementById('chat-mic-btn');
+  const micStatus = document.getElementById('chat-mic-status');
+  if (micBtn) { micBtn.style.background = '#c0392b'; micBtn.style.borderColor = '#c0392b'; micBtn.textContent = '⏹'; }
+  if (micStatus) { micStatus.style.display = 'block'; micStatus.textContent = '🔴 Hört zu...'; }
+  recognition.onresult = (event) => {
+    let transcript = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) transcript += event.results[i][0].transcript;
+    const inp = document.getElementById('chat-inp');
+    if (inp) inp.value = transcript;
+    if (micStatus) micStatus.textContent = '🔴 ' + transcript.slice(0, 60);
+    if (event.results[event.results.length - 1].isFinal) {
+      stopChatMic();
+      if (transcript.trim()) chatSend(id, transcript.trim());
+    }
+  };
+  recognition.onerror = (e) => { stopChatMic(); if (e.error==='not-allowed') showToast('❌ Mikrofon-Zugriff verweigert'); };
+  recognition.onend = () => { stopChatMic(); };
+  recognition.start();
+}
+function stopChatMic() {
+  isListening = false;
+  if (window._recognition) { try { window._recognition.stop(); } catch(e) {} }
+  const micBtn = document.getElementById('chat-mic-btn');
+  const micStatus = document.getElementById('chat-mic-status');
+  if (micBtn) { micBtn.style.background = 'var(--bc)'; micBtn.style.borderColor = 'var(--bd)'; micBtn.textContent = '🎤'; }
+  if (micStatus) { micStatus.style.display = 'none'; }
+}
+
+// ─── LUNA STANDALONE ──────────────────────────────────────────────────────
+
+// ─── KALENDER ─────────────────────────────────────────────────────────────
+function renderKalender(body) {
+  const calDone = lsGet('mindea-cal-done',{});
+  const done = CAL.filter(c=>calDone[c[0]]).length;
+  body.innerHTML = `<div style="padding:13px;background:var(--gg);border-radius:var(--cr);margin-bottom:12px;box-shadow:var(--sm)">
+    <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff">Content-Kalender</div>
+    <div style="font-size:10px;color:rgba(255,255,255,.7)">${done}/${CAL.length}</div>
+  </div>`;
+  CAL.forEach(c=>{
+    const[dt,fmt,titel]=c;
+    const d=!!calDone[dt];
+    const isPast=dt<TD&&!d;
+    const isToday=dt===TD;
+    const item=div('cal-item'+(isToday?' today':'')+(isPast?' past':'')+(d?' cal-done':''));
+    item.innerHTML=`<button class="cal-check${d?' checked':''}" onclick="toggleCal('${dt}')">
+      ${d?'<span style="font-size:9px;color:#fff;font-weight:700">✓</span>':''}
+    </button>
+    <div class="cal-date">${dt.slice(8)}.${dt.slice(5,7)}</div>
+    <span style="font-size:13px">${fmt}</span>
+    <div class="cal-title">${titel}</div>`;
+    body.appendChild(item);
+  });
+}
+function toggleCal(dt) {
+  const d=lsGet('mindea-cal-done',{});
+  d[dt]=!d[dt]; lsSet('mindea-cal-done',d);
+  updateNextPost(); renderMod('kalender');
+}
+
+// ─── SALES ────────────────────────────────────────────────────────────────
+function renderSales(body) {
+  let leads = lsGet('mindea-leads',[]);
+  const oL=leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).length;
+  const pipelineWert=leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).reduce((s,l)=>s+(l.wert||398),0);
+  const gebuchterUmsatz=leads.filter(l=>l.status==='gebucht'&&(l.date||'').startsWith(TD.slice(0,7))).reduce((s,l)=>s+(l.wert||398),0);
+  const totalGebucht=leads.filter(l=>l.status==='gebucht').reduce((s,l)=>s+(l.wert||398),0);
+  const fehlbetrag=Math.max(0,5000-gebuchterUmsatz);
+  const quote=leads.length>0?Math.round(leads.filter(l=>l.status==='gebucht').length/leads.length*100):0;
+
+  // Revenue Dashboard
+  const revEl=div(''); revEl.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px';
+  revEl.innerHTML=`<div class="stat-card" style="border-color:rgba(46,125,94,.3)"><div class="stat-val" style="color:#2e7d5e">${gebuchterUmsatz}€</div><div class="stat-lbl">GEBUCHT (Monat)</div></div>`
+    +`<div class="stat-card" style="border-color:rgba(184,73,10,.3)"><div class="stat-val" style="color:#b8490a">${fehlbetrag}€</div><div class="stat-lbl">FEHLT ZU 5.000€</div></div>`
+    +`<div class="stat-card"><div class="stat-val" style="color:var(--b)">${pipelineWert}€</div><div class="stat-lbl">PIPELINE</div></div>`
+    +`<div class="stat-card"><div class="stat-val">${quote}%</div><div class="stat-lbl">ABSCHLUSSQUOTE</div></div>`;
+  body.appendChild(revEl);
+
+  const banEl=div('ban'); banEl.style.borderColor='rgba(46,125,94,.25)'; banEl.style.background='rgba(46,125,94,.06)';
+  banEl.innerHTML=`<div class="ban-title" style="color:#2e7d5e">SALES PIPELINE</div><div class="ban-sub">${oL} offene Leads · ${pipelineWert}€ Potenzial</div>`;
+  body.appendChild(banEl);
+  // Follow-up reminders
+  renderFollowUpBanner(body);
+  // Add input with package selector
+  const addRow=div(''); addRow.style.display='flex'; addRow.style.gap='7px'; addRow.style.marginBottom='7px';
+  addRow.innerHTML=`<input id="lead-inp" placeholder="Neuer Lead..." class="field-input" style="flex:1;margin-bottom:0" onkeydown="if(event.key==='Enter')addLead()">
+    <button onclick="addLead()" style="background:var(--gg);border:none;border-radius:11px;padding:10px 16px;cursor:pointer;color:#fff;font-weight:700;font-size:14px">+</button>`;
+  body.appendChild(addRow);
+  const pkgRow=div(''); pkgRow.style.cssText='display:flex;gap:5px;margin-bottom:14px';
+  pkgRow.innerHTML=`<button id="lead-pkg-bp" onclick="setLeadPkg('bp')" class="status-chip active" style="flex:1;text-align:center;border-color:var(--g);color:var(--g);background:rgba(139,100,50,.1)">BP 398€</button>`
+    +`<button id="lead-pkg-bs" onclick="setLeadPkg('bs')" class="status-chip" style="flex:1;text-align:center">BS 598€</button>`
+    +`<button id="lead-pkg-bi" onclick="setLeadPkg('bi')" class="status-chip" style="flex:1;text-align:center">BI 898€</button>`;
+  body.appendChild(pkgRow);
+  const list=div('leads-list');
+  // Sort: highest value first, then by status priority
+  const statusOrder={angebot:0,gespraech:1,interessiert:2,neu:3,gebucht:4,'kein-fit':5};
+  const sorted=[...leads].sort((a,b)=>(statusOrder[a.status]||3)-(statusOrder[b.status]||3)||(b.wert||398)-(a.wert||398));
+  sorted.forEach(l=>list.appendChild(renderLeadItem(l)));
+  body.appendChild(list);
+  // Einwand-Cheatsheet at bottom
+  renderEinwandSheet(body);
+}
+function renderLeadItem(l) {
+  const st=LEAD_ST.find(s=>s.id===l.status)||LEAD_ST[0];
+  const item=div('lead-item'); item.style.border='1.5px solid '+st.c+'30';
+  let fuBadge = '';
+  if (l.contactDate && !['gebucht','kein-fit'].includes(l.status)) {
+    const daysSince = Math.floor((new Date() - new Date(l.contactDate)) / 864e5);
+    if (daysSince >= 7 && !l.fu2Done) fuBadge = '<span style="background:#b8490a;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;margin-left:6px">FU2</span>';
+    else if (daysSince >= 2 && !l.fu1Done) fuBadge = '<span style="background:#d4641a;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;margin-left:6px">FU1</span>';
+  }
+  const safeName = l.name.replace(/</g,'&lt;');
+  const curPkg = l.paket||'bp';
+  const curWert = l.wert||PKG_WERT[curPkg]||398;
+  const pkLabel = curPkg==='bi'?'Impact 898€':curPkg==='bs'?'Story 598€':'Presence 398€';
+  item.innerHTML=`<button class="lead-header" onclick="toggleLead(${l.id})">
+    <div class="lead-dot" style="background:${st.c}"></div>
+    <div style="flex:1"><div class="lead-name">${safeName}${fuBadge}</div><div class="lead-status-lbl" style="color:${st.c}">${st.l} · ${pkLabel}${l.contactDate?' · '+l.contactDate.slice(5):''}</div></div>
+    <span style="color:var(--tm)">▾</span>
+  </button>
+  <div class="lead-expand" id="lead-exp-${l.id}" style="display:none">
+    <div class="status-chips">${LEAD_ST.map(s=>`<button class="status-chip${l.status===s.id?' active':''}" style="${l.status===s.id?'border-color:'+s.c+';color:'+s.c+';background:'+s.c+'15':''}" onclick="updateLead(${l.id},'${s.id}')">${s.l}</button>`).join('')}</div>
+    <div style="display:flex;gap:5px;margin:8px 0 6px">
+      <button onclick="updateLeadPkg(${l.id},'bp')" class="status-chip${curPkg==='bp'?' active':''}" style="flex:1;text-align:center;${curPkg==='bp'?'border-color:var(--g);color:var(--g);background:rgba(139,100,50,.1)':''}">BP 398€</button>
+      <button onclick="updateLeadPkg(${l.id},'bs')" class="status-chip${curPkg==='bs'?' active':''}" style="flex:1;text-align:center;${curPkg==='bs'?'border-color:var(--g);color:var(--g);background:rgba(139,100,50,.1)':''}">BS 598€</button>
+      <button onclick="updateLeadPkg(${l.id},'bi')" class="status-chip${curPkg==='bi'?' active':''}" style="flex:1;text-align:center;${curPkg==='bi'?'border-color:var(--g);color:var(--g);background:rgba(139,100,50,.1)':''}">BI 898€</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <button onclick="genDM(${l.id},'${safeName}','${l.status}')" class="copy-btn" style="flex:1;color:var(--g);border-color:var(--g)">✉️ Erste DM</button>
+      <button onclick="genFollowUp(${l.id},'fu1','${safeName}')" class="copy-btn" style="flex:1;color:#d4641a;border-color:#d4641a">📩 FU1</button>
+      <button onclick="genFollowUp(${l.id},'fu2','${safeName}')" class="copy-btn" style="flex:1;color:#b8490a;border-color:#b8490a">📩 FU2</button>
+    </div>
+    <div id="dm-${l.id}" style="margin-top:8px"></div>
+  </div>`;
+  return item;
+}
+function updateLeadPkg(id, pkg) {
+  const leads=lsGet('mindea-leads',[]).map(l=>l.id===id?{...l,paket:pkg,wert:PKG_WERT[pkg]||398}:l);
+  lsSet('mindea-leads',leads);
+  renderMod('sales');
+}
+function toggleLead(id){const el=document.getElementById('lead-exp-'+id);el.style.display=el.style.display==='none'?'block':'none';}
+let _leadPkg='bp';
+const PKG_WERT={bp:398,bs:598,bi:898};
+function setLeadPkg(pkg){
+  _leadPkg=pkg;
+  ['bp','bs','bi'].forEach(p=>{const el=document.getElementById('lead-pkg-'+p);if(el){el.classList.toggle('active',p===pkg);el.style.borderColor=p===pkg?'var(--g)':'var(--bd)';el.style.color=p===pkg?'var(--g)':'var(--ts)';el.style.background=p===pkg?'rgba(139,100,50,.1)':'var(--bc)';}});
+}
+function addLead(){const inp=document.getElementById('lead-inp');const n=inp.value.trim();if(!n)return;const leads=lsGet('mindea-leads',[]);leads.unshift({id:Date.now(),name:n,status:'neu',date:TD,contactDate:TD,fu1Done:false,fu2Done:false,paket:_leadPkg,wert:PKG_WERT[_leadPkg]||398});lsSet('mindea-leads',leads);inp.value='';renderMod('sales');}
+function updateLead(id,status){const leads=lsGet('mindea-leads',[]).map(l=>l.id===id?{...l,status}:l);lsSet('mindea-leads',leads);renderMod('sales');}
+async function genDM(id,name,status){
+  const el=document.getElementById('dm-'+id); el.innerHTML='<div style="font-size:12px;color:var(--ts)">⏳ Generiert…</div>';
+  const lead=lsGet('mindea-leads',[]).find(l=>l.id===id);
+  const paket=lead?.paket||'bp';
+  const wert=lead?.wert||398;
+  const paketName=paket==='bi'?'Brand Impact':paket==='bs'?'Brand Story':'Brand Presence';
+  const r=await callApi(OS+' Schreibe eine DM fuer Mindea (KI-Video-Studio). ZIEL: Termin vereinbaren (15min Zoom). STIL: Persoenlich, nicht aufdringlich, klarer CTA. IMMER enden mit konkreter Frage die Antwort erfordert. NICHT: Allgemeine Komplimente. SONDERN: Konkretes Problem ansprechen das Mindea loest. Max 4 Saetze. Deutsch.','Lead:'+name+'\nStatus:'+status+'\nPaket-Interesse:'+paketName+' ('+wert+'EUR)\nKontext: Premium KI-Werbespots und Brand Videos.',300);
+  const idx=storeClip(r);
+  const wrapper=div(''); wrapper.style.cssText='padding:10px;background:var(--gbg);border-radius:9px;font-size:12px;color:var(--tc);line-height:1.7;white-space:pre-wrap';
+  const textEl=document.createElement('span'); textEl.textContent=r; wrapper.appendChild(textEl);
+  const btnWrap=div(''); btnWrap.style.marginTop='6px'; btnWrap.innerHTML=`<button class="copy-btn" onclick="copyStored(${idx})">📋</button>`;
+  wrapper.appendChild(btnWrap);
+  el.innerHTML=''; el.appendChild(wrapper);
+}
+
+// ─── PROJEKTE ─────────────────────────────────────────────────────────────
+function renderProjekte(body) {
+  let projs = lsGet('mindea-projekte',[]);
+  const PST=[{id:'offen',l:'Offen',c:'#4a7a96'},{id:'arbeit',l:'In Arbeit',c:'#8b6432'},{id:'feedback',l:'Feedback',c:'#b8490a'},{id:'final',l:'Final',c:'#2e7d5e'}];
+  const banEl=div('ban'); banEl.style.borderColor='rgba(46,125,94,.25)'; banEl.style.background='rgba(46,125,94,.06)';
+  banEl.innerHTML=`<div class="ban-title" style="color:#2e7d5e">PROJEKTE</div><div class="ban-sub">${projs.filter(p=>p.status!=='final').length} aktiv</div>`;
+  body.appendChild(banEl);
+  const addRow=div(''); addRow.style.display='flex'; addRow.style.gap='7px'; addRow.style.marginBottom='14px';
+  addRow.innerHTML=`<input id="proj-inp" placeholder="Kundenname..." class="field-input" style="flex:1;margin-bottom:0" onkeydown="if(event.key==='Enter')addProj()">
+    <button onclick="addProj()" style="background:linear-gradient(135deg,#4a7a96,#5a90b0);border:none;border-radius:11px;padding:10px 16px;cursor:pointer;color:#fff;font-weight:700;font-size:14px">+</button>`;
+  body.appendChild(addRow);
+  projs.forEach(p=>{
+    const st=PST.find(s=>s.id===p.status)||PST[0];
+    const item=div('card'); item.style.borderColor=st.c+'30';
+    item.innerHTML=`<div style="font-size:13px;font-weight:600;margin-bottom:9px;color:var(--tc)">${p.name}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">${PST.map(s=>`<button class="status-chip${p.status===s.id?' active':''}" style="${p.status===s.id?'border-color:'+s.c+';color:'+s.c+';background:'+s.c+'15':''}" onclick="updateProj(${p.id},'${s.id}')">${s.l}</button>`).join('')}</div>`;
+    body.appendChild(item);
+  });
+}
+function addProj(){const inp=document.getElementById('proj-inp');const n=inp.value.trim();if(!n)return;const projs=lsGet('mindea-projekte',[]);projs.unshift({id:Date.now(),name:n,status:'offen',date:TD});lsSet('mindea-projekte',projs);inp.value='';renderMod('projekte');}
+function updateProj(id,status){const projs=lsGet('mindea-projekte',[]).map(p=>p.id===id?{...p,status}:p);lsSet('mindea-projekte',projs);renderMod('projekte');}
+
+// ─── BRIEFING ─────────────────────────────────────────────────────────────
+function renderBriefing(body) {
+  const PKGS=[{id:'presence',n:'Brand Presence',p:'398'},{id:'story',n:'Brand Story',p:'598'},{id:'impact',n:'Brand Impact',p:'898'}];
+  const Qs={presence:['Kundenname','Beruf','Ziel','Zielgruppe','Kernaussage','Gefühl','Stil','Material','Besonderheit'],story:['Kundenname','Beruf','Geschichte/Wendepunkt','Ziel','Zielgruppe','Emotion','Wichtige Momente','Stil','Herausforderung','Besonderheit'],impact:['Kundenname','Beruf','Ziel','Zielgruppe','Positionierung','Gefühl','Wichtige Szenen','Stil','Angst/Blockade','Besonderheit','Produkte']};
+  let curPkg='presence';
+  const banEl=div('ban'); banEl.style.borderColor='rgba(74,122,150,.25)'; banEl.style.background='rgba(74,122,150,.06)';
+  banEl.innerHTML='<div class="ban-title" style="color:var(--b)">KUNDEN-BRIEFING</div>';
+  body.appendChild(banEl);
+  // Tabs
+  const tabs=div('pkg-tabs');
+  PKGS.forEach(p=>{const t=document.createElement('button');t.className='pkg-tab'+(p.id==='presence'?' active':'');t.innerHTML=`<div class="pkg-tab-name">${p.n}</div><div class="pkg-tab-price">${p.p}€</div>`;t.onclick=()=>{curPkg=p.id;document.querySelectorAll('.pkg-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderFields();};tabs.appendChild(t);});
+  body.appendChild(tabs);
+  const fieldsWrap=div('fields-wrap');
+  body.appendChild(fieldsWrap);
+  function renderFields(){fieldsWrap.innerHTML='';const qs=Qs[curPkg]||Qs.presence;qs.forEach((q,i)=>{const lbl=div('field-label');lbl.textContent=q.toUpperCase();const inp=document.createElement('input');inp.className='field-input';inp.placeholder=q;inp.id='bf-'+curPkg+'-'+i;fieldsWrap.appendChild(lbl);fieldsWrap.appendChild(inp);});}
+  renderFields();
+  const genBtn=makeGBtn('🎬','Briefing generieren','#4a7a96');
+  genBtn.onclick=async()=>{
+    setBtnLoading(genBtn,true);
+    const qs=Qs[curPkg]||Qs.presence;
+    const ctx=qs.map((q,i)=>q+': '+(document.getElementById('bf-'+curPkg+'-'+i)?.value||'—')).join('\n');
+    const pk=PKGS.find(p=>p.id===curPkg);
+    const r=await callApi(OS+' KOMPLETTES '+pk.n+' Video-Briefing als REINER FLIESSTEXT. Kreative Richtung, Kernbotschaft, alle Szenen, Voiceover, Shotlist, Foto-Prompts(EN+DE), Video-Prompts(EN+DE). VOLLSTAENDIG.',ctx+'\nPaket:'+pk.n,8000,true);
+    setBtnLoading(genBtn,false);
+    const bIdx=storeClip(r);
+    const res=div('card'); res.style.fontSize='13px'; res.style.lineHeight='2'; res.style.whiteSpace='pre-wrap'; res.textContent=r;
+    const acts=div(''); acts.innerHTML=`<button class="copy-btn" style="margin-top:8px" onclick="copyStored(${bIdx})">📋</button>
+      <button class="copy-btn" style="margin-top:8px;margin-left:6px" onclick="saveLibStored('briefing',${bIdx})">⭐</button>`;
+    res.appendChild(acts); body.appendChild(res);
+    renderAsk(body,r,'#4a7a96');
+  };
+  body.appendChild(genBtn);
+}
+
+// ─── ANGEBOT ──────────────────────────────────────────────────────────────
+function renderAngebot(body) {
+  const banEl=div('ban'); banEl.style.borderColor='rgba(74,122,150,.25)'; banEl.style.background='rgba(74,122,150,.06)';
+  banEl.innerHTML='<div class="ban-title" style="color:var(--b)">ANGEBOT ERSTELLEN</div>';
+  body.appendChild(banEl);
+  ['Name','Beruf','Problem'].forEach(k=>{
+    const lbl=div('field-label'); lbl.textContent=k.toUpperCase(); body.appendChild(lbl);
+    const inp=document.createElement('input'); inp.className='field-input'; inp.placeholder=k; inp.id='ang-'+k; body.appendChild(inp);
+  });
+  // Package selector
+  const pkgLbl=div('field-label'); pkgLbl.textContent='PAKET'; body.appendChild(pkgLbl);
+  const pkgSel=document.createElement('select'); pkgSel.className='field-input'; pkgSel.id='ang-Paket';
+  pkgSel.innerHTML='<option value="bp">Brand Presence — 398€</option><option value="bs">Brand Story — 598€</option><option value="bi" selected>Brand Impact — 898€</option>';
+  body.appendChild(pkgSel);
+  const genBtn=makeGBtn('📄','Angebot erstellen','#4a7a96');
+  genBtn.onclick=async()=>{
+    setBtnLoading(genBtn,true);
+    const pkg=document.getElementById('ang-Paket')?.value||'bi';
+    const pkgInfo=pkg==='bp'?'Brand Presence 398EUR: 1 Brand-Intro-Reel(2-3 Min), 10 Markenbilder, 1 Feedbackrunde, Co-Creation-Prozess'
+      :pkg==='bs'?'Brand Story 598EUR: 1 visueller Brand Film(3-4 Min), 20 Markenbilder, einheitliche Bildsprache, Co-Creation, 1 Feedbackrunde'
+      :'Brand Impact 898EUR: 1 professioneller Werbespot(2-3 Min), mehrere visuell abgestimmte Sequenzen, strategisches Briefing, Konzeption+Umsetzung';
+    const angebotS=OS+'\nSchreibe ein professionelles Angebot. STRUKTUR: 1)Persoenlicher Einstieg(Problem des Kunden ansprechen) 2)Was enthalten ist(KONKRET aus Paketinfo) 3)Zeitplan(Tag 1:Briefing, Tag 3:Erste Version, Tag 5:Final) 4)Preis(klar,ohne verstecken) 5)Naechster Schritt(konkreter CTA: Wenn du starten willst schick mir...). Ton: Premium aber direkt. KEIN Markdown. Reiner Fliesstext.';
+    const r=await callApi(angebotS,'Kunde: '+(document.getElementById('ang-Name')?.value||'')+'\nBeruf: '+(document.getElementById('ang-Beruf')?.value||'')+'\nProblem: '+(document.getElementById('ang-Problem')?.value||'')+'\nPaket: '+pkgInfo,4000,true);
+    setBtnLoading(genBtn,false);
+    const aIdx=storeClip(r);
+    const res=div('card'); res.style.fontSize='13px'; res.style.lineHeight='2'; res.style.whiteSpace='pre-wrap'; res.textContent=r;
+    const abtn=div(''); abtn.style.marginTop='8px'; abtn.innerHTML=`<button class="copy-btn" onclick="copyStored(${aIdx})">📋</button><button class="copy-btn" style="margin-left:6px" onclick="saveLibStored('angebot',${aIdx})">⭐</button>`;
+    res.appendChild(abtn);
+    body.appendChild(res);
+  };
+  body.appendChild(genBtn);
+}
+
+// ─── MAIL ─────────────────────────────────────────────────────────────────
+function renderMail(body) {
+  const MAIL_S='Du bist der Mindea Akquise Director. Hochwirksame E-Mails — keine Werbung, sondern durchdachte Einladungen. KEIN Markdown. Kurze Saetze. Keine Emojis. Max 150 Woerter. Betreff + E-Mail + optional Follow-up 1+2. Deutsch.';
+  const banEl=div('ban'); banEl.style.borderColor='rgba(139,100,50,.25)'; banEl.style.background='var(--gbg)';
+  banEl.innerHTML='<div class="ban-title" style="color:var(--g)">AKQUISE DIRECTOR</div><div class="ban-sub">Hochwirksame E-Mails</div>';
+  body.appendChild(banEl);
+  ['Name','Branche','Instagram oder Website','Was fällt dir auf?'].forEach(k=>{
+    const lbl=div('field-label'); lbl.textContent=k.toUpperCase(); body.appendChild(lbl);
+    const inp=document.createElement('input'); inp.className='field-input'; inp.placeholder=k; inp.id='mail-'+k; body.appendChild(inp);
+  });
+  const genBtn=makeGBtn('✉️','E-Mails erstellen');
+  genBtn.onclick=async()=>{
+    const n=document.getElementById('mail-Name')?.value;
+    if(!n){showToast('Name eingeben');return;}
+    setBtnLoading(genBtn,true);
+    const ctx=['Name','Branche','Instagram oder Website','Was fällt dir auf?'].map(k=>k+': '+(document.getElementById('mail-'+k)?.value||'—')).join('\n');
+    const r=await callApi(MAIL_S,ctx+'\nErstelle: 1) Erste E-Mail 2) Follow-up 1 3) Follow-up 2. Reiner Text.',4000);
+    setBtnLoading(genBtn,false);
+    const mIdx=storeClip(r);
+    const res=div('card'); res.style.fontSize='13px'; res.style.lineHeight='2'; res.style.whiteSpace='pre-wrap'; res.textContent=r;
+    const mbtn=div(''); mbtn.style.marginTop='8px'; mbtn.innerHTML=`<button class="copy-btn" onclick="copyStored(${mIdx})">📋</button>`;
+    res.appendChild(mbtn);
+    body.appendChild(res);
+  };
+  body.appendChild(genBtn);
+}
+
+// ─── NEWS ─────────────────────────────────────────────────────────────────
+function renderNews(body) {
+  const banEl=div('ban'); banEl.style.borderColor='rgba(107,90,142,.25)'; banEl.style.background='rgba(107,90,142,.06)';
+  banEl.innerHTML='<div class="ban-title" style="color:var(--p)">KI NEWSLETTER</div>';
+  body.appendChild(banEl);
+  const genBtn=makeGBtn('🧠','Newsletter generieren','#6b5a8e');
+  genBtn.onclick=async()=>{
+    setBtnLoading(genBtn,true);
+    const r=await callApi(OS+' MOD-18 KI-NEWS: ELI5. Pro Tool: Name, Was ist das, Fuer Mindea?(Ja/Nein+warum), Kosten. 5 Tools. Deutsch.','5 aktuelle KI-Tools 2025.',1400);
+    setBtnLoading(genBtn,false);
+    const nIdx=storeClip(r);
+    const res=div('card'); res.style.fontSize='13px'; res.style.lineHeight='2'; res.style.whiteSpace='pre-wrap'; res.textContent=r;
+    const nbtn=div(''); nbtn.style.marginTop='8px'; nbtn.innerHTML=`<button class="copy-btn" onclick="copyStored(${nIdx})">📋</button>`;
+    res.appendChild(nbtn);
+    body.appendChild(res);
+  };
+  body.appendChild(genBtn);
+}
+
+// ─── ASK (inline Q&A) ─────────────────────────────────────────────────────
+function renderAsk(body, ctx, ac) {
+  const wrap=div(''); wrap.style.marginTop='12px';
+  const msgsEl=div(''); wrap.appendChild(msgsEl);
+  const row=div(''); row.style.display='flex'; row.style.gap='6px'; row.style.marginTop='8px';
+  const inp=document.createElement('input'); inp.placeholder='Rückfrage…'; inp.style.cssText='flex:1;background:var(--bi);border:1px solid var(--bd);border-radius:9px;padding:9px 11px;color:var(--tc);font-size:12px;font-family:\'DM Sans\',sans-serif;outline:none';
+  const btn=document.createElement('button'); btn.textContent='→'; btn.style.cssText='padding:9px 14px;border-radius:9px;border:none;background:'+(ac||'var(--g)')+';cursor:pointer;color:#fff;font-size:12px;font-weight:700';
+  async function ask(){
+    const q=inp.value.trim();if(!q)return; inp.value='';
+    const um=div(''); um.style.cssText='display:flex;justify-content:flex-end;margin-bottom:6px';
+    const ub=div(''); ub.style.cssText='max-width:88%;padding:8px 11px;border-radius:12px 12px 4px 12px;background:var(--gg);color:#fff;font-size:12px;line-height:1.7'; ub.textContent=q; um.appendChild(ub); msgsEl.appendChild(um);
+    const am=div(''); am.style.cssText='margin-bottom:6px';
+    const ab=div(''); ab.style.cssText='max-width:88%;padding:8px 11px;border-radius:12px 12px 12px 4px;background:var(--bc);border:1px solid var(--bd);font-size:12px;line-height:1.7;color:var(--tc)'; ab.textContent='⏳…'; am.appendChild(ab); msgsEl.appendChild(am);
+    const r=await callApi(OS+' Direkt, komplett, kopierbar. Deutsch.',ctx.slice(0,1200)+'\nFRAGE: '+q,800);
+    ab.textContent=r;
+    const cpBtn=document.createElement('button'); cpBtn.className='copy-btn'; cpBtn.textContent='📋'; cpBtn.style.marginTop='4px'; cpBtn.onclick=()=>copyText(r); am.appendChild(cpBtn);
+  }
+  inp.onkeydown=e=>{if(e.key==='Enter')ask();};
+  btn.onclick=ask;
+  row.appendChild(inp); row.appendChild(btn); wrap.appendChild(row); body.appendChild(wrap);
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────
+function appendMsg(container, role, text) {
+  const wrap=div('msg-wrap '+role);
+  if(role==='ai'){const av=div('msg-avatar');av.textContent='L';wrap.appendChild(av);}
+  const bub=div('msg-bubble'); bub.textContent=text; wrap.appendChild(bub);
+  container.appendChild(wrap); return wrap;
+}
+function addMsgActions(container, text, id) {
+  const idx = storeClip(text.slice(0,2000));
+  const acts=div('msg-actions');
+  acts.innerHTML=`<button class="msg-btn" onclick="saveLibStored('${id}',${idx})">⭐</button>
+    <button class="msg-btn" onclick="copyStored(${idx})">📋</button>`;
+  container.appendChild(acts);
+}
+function appendTyping(container) {
+  const wrap=div('msg-wrap ai');
+  const av=div('msg-avatar');av.textContent='L';wrap.appendChild(av);
+  const t=div('typing'); [0,1,2].forEach(i=>{const d=div('typing-dot');d.style.animationDelay=i*.2+'s';t.appendChild(d);});
+  wrap.appendChild(t); container.appendChild(wrap); container.scrollTop=container.scrollHeight; return wrap;
+}
+function div(cls){const el=document.createElement('div');if(cls)el.className=cls;return el;}
+function makeGBtn(icon,label,color) {
+  const btn=document.createElement('button');
+  btn.className='gbtn';
+  btn.innerHTML=`<span>${icon}</span><b>${label}</b>`;
+  if(color) btn.style.background=`linear-gradient(135deg,${color},${color}cc)`;
+  return btn;
+}
+function setBtnLoading(btn,loading) {
+  btn.disabled=loading;
+  const b=btn.querySelector('b');
+  if(b) {
+    if(loading) { btn.dataset.label=btn.dataset.label||b.textContent; b.textContent='Generiert…'; }
+    else b.textContent=btn.dataset.label||b.textContent;
+  }
+}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+const _clipStore = [];
+function storeClip(text) { _clipStore.push(text); return _clipStore.length - 1; }
+function copyStored(idx) { copyText(_clipStore[idx]); }
+function saveLibStored(modId, idx) { saveLib(modId, _clipStore[idx]); }
+function copyText(t){if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>showToast('📋 Kopiert!'));}else showToast('📋 Kopiert!');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function getKW(){const n=new Date(),s=new Date(n.getFullYear(),0,1);return Math.ceil(((n-s)/864e5+s.getDay()+1)/7);}
+
+function saveLib(modId, content) {
+  const it={id:Date.now(),dept:modId,content,date:new Date().toLocaleDateString('de-DE')};
+  library.unshift(it); lsSet('mindea-lib',library); updateLibCount(); showToast('⭐ Gespeichert');
+}
+
+// ─── API KEY ──────────────────────────────────────────────────────────────
+function validateKey(){
+  const v=document.getElementById('api-key-input').value.trim();
+  const valid=v.startsWith('sk-ant-');
+  const btn=document.getElementById('save-key-btn');
+  const err=document.getElementById('key-err');
+  const box=document.getElementById('key-box');
+  err.style.display=v.length>6&&!valid?'block':'none';
+  box.style.borderColor=valid?'var(--g)':'var(--bd)';
+  btn.disabled=!valid;
+  btn.style.background=valid?'var(--gg)':'#e8e0d0';
+  btn.style.color=valid?'#fff':'#9a8e78';
+  btn.style.cursor=valid?'pointer':'default';
+}
+function toggleEye(){
+  const inp=document.getElementById('api-key-input'),btn=document.getElementById('eye-btn');
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='text'?'🙈':'👁️';
+}
+function saveApiKey(){
+  const key=document.getElementById('api-key-input').value.trim();
+  if(!key.startsWith('sk-ant-'))return;
+  apiKey=key; localStorage.setItem('mindea_api_key',key);
+  document.getElementById('apikey-modal').classList.remove('open');
+  document.getElementById('key-btn').textContent='⚙️';
+  showToast('✅ API Key gespeichert – bereit!');
+}
+function openKeyModal(){
+  if(apiKey){
+    document.getElementById('key-preview-lbl').textContent=apiKey.slice(0,14)+'…';
+    document.getElementById('settings-key').value='';
+    document.getElementById('launch-date-input').value=launchDate;
+    document.getElementById('settings-modal').classList.add('open');
+  } else {
+    document.getElementById('apikey-modal').classList.add('open');
+  }
+}
+function closeSettings(){document.getElementById('settings-modal').classList.remove('open');}
+function saveSettings(){
+  const key=document.getElementById('settings-key').value.trim();
+  const ld=document.getElementById('launch-date-input').value;
+  if(key&&key.startsWith('sk-ant-')){apiKey=key;localStorage.setItem('mindea_api_key',key);}
+  if(ld){launchDate=ld;localStorage.setItem('mindea_launch',ld);}
+  closeSettings(); showToast('✅ Gespeichert');
+}
+
+// ─── BACKUP ───────────────────────────────────────────────────────────────
+function toggleBackup(){const b=document.getElementById('backup-bar');b.classList.toggle('open');}
+
+function getBackupData() {
+  const keys=['mindea-leads','mindea-projekte','mindea-lib','luna-all-msgs','luna-brain','mindea-convos','mindea-cal-done','mindea-launch-done','mindea-launch-tasks','mindea-tage-history','mindea-analytics','mindea-briefings','mindea-sales-msgs','mindea-showcase','mindea-lead-sources','mindea-wochenplan-'+getKW()];
+  const data={};
+  keys.forEach(k=>{const v=localStorage.getItem(k);if(v)data[k]=v;});
+  data['*v']='m4'; data['*date']=TD;
+  return data;
+}
+
+function doExport(){
+  const data = getBackupData();
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='mindea-'+TD+'.json';a.click();
+  try{navigator.clipboard.writeText(JSON.stringify(data));}catch(e){}
+  localStorage.setItem('mindea-last-backup', TD);
+  showToast('📥 Backup exportiert');
+}
+
+function doSilentBackup() {
+  // Save to localStorage as emergency fallback (clipboard may be blocked)
+  try {
+    const data = getBackupData();
+    const json = JSON.stringify(data);
+    localStorage.setItem('mindea-auto-backup', json);
+    localStorage.setItem('mindea-last-backup', TD);
+    navigator.clipboard.writeText(json).catch(()=>{});
+  } catch(e) {}
+}
+
+function checkAutoBackup() {
+  const last = localStorage.getItem('mindea-last-backup');
+  if (last !== TD) {
+    // New day — show backup reminder after 3 min of use
+    setTimeout(() => {
+      showToast('💾 Tipp: Heute noch kein Backup — tippe 💾');
+    }, 180000);
+  }
+}
+function doImport(inp){
+  const f=inp.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      Object.entries(data).forEach(([k,v])=>{if(k[0]!=='*')localStorage.setItem(k,v);});
+      const msg=document.getElementById('imp-msg');
+      msg.style.display='block'; msg.textContent='✅ Geladen! Seite wird neu geladen…';
+      setTimeout(()=>location.reload(),1200);
+    }catch(err){showToast('❌ Ungültige Datei');}
+  };
+  reader.readAsText(f);
+}
+
+// ─── MANUAL SYNC ──────────────────────────────────────────────────────────
+async function manualSync() {
+  showToast('☁️ Synchronisiert…');
+  const n = await sbPullAll();
+  showToast(n > 0 ? '✅ Sync: '+n+' Datensätze' : '☁️ Alles aktuell');
+}
+
+// ─── WOCHENPLAN ──────────────────────────────────────────────────────────
+function renderWochenplan(body) {
+  const kw = getKW();
+  const saved = lsGet('mindea-wochenplan-'+kw, '');
+  const banEl = div('ban');
+  banEl.innerHTML = '<div class="ban-title">WOCHENPLAN KW'+kw+'</div><div class="ban-sub">Automatisch generierter Content-Plan</div>';
+  body.appendChild(banEl);
+
+  if (!saved) {
+    const genBtn = makeGBtn('📅','Wochenplan generieren');
+    genBtn.onclick = () => genWochenplan(kw);
+    body.appendChild(genBtn);
+  } else {
+    const card = div('card'); card.style.fontSize='13px'; card.style.lineHeight='2'; card.style.whiteSpace='pre-wrap'; card.textContent = saved;
+    body.appendChild(card);
+    const cidx = storeClip(saved);
+    const btns = div(''); btns.style.cssText='display:flex;gap:7px;margin-top:12px';
+    btns.innerHTML = '<button class="copy-btn" style="flex:1;padding:11px;border-radius:11px" onclick="copyStored('+cidx+')">📋 Kopieren</button><button class="copy-btn" style="flex:2;padding:11px;border-radius:11px;border-color:var(--g);color:var(--g)" onclick="genWochenplan('+kw+')">🔄 Neu generieren</button>';
+    body.appendChild(btns);
+  }
+}
+async function genWochenplan(kw) {
+  showToast('📅 Wochenplan wird generiert…');
+  const leads = lsGet('mindea-leads',[]);
+  const offeneLeads=leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).length;
+  const pipeline=leads.filter(l=>!['gebucht','kein-fit'].includes(l.status)).reduce((s,l)=>s+(l.wert||398),0);
+  const gebucht=leads.filter(l=>l.status==='gebucht'&&(l.date||'').startsWith(TD.slice(0,7))).reduce((s,l)=>s+(l.wert||398),0);
+  const r = await callApi(CD+' WOCHENPLAN KW'+kw+' mit SALES-FOKUS. JEDER Post hat ein SALES-ZIEL. Mo:AUTHORITY Reel(Ziel:DMs ausloesen) Di:Pause/Engagement Mi:SOCIAL PROOF(Ziel:Vertrauen,Paket erwaehnen) Do:Pause/Engagement Fr:OFFER/CTA(Ziel:Direkte Anfragen) Sa:Pause So:STORY/BTS(Ziel:Nahbarkeit,DM-Einladung). Pro Post: Format, Thema, Hook, SALES-ZIEL, CTA-Text. Reiner Text.','KW:'+kw+' Offene Leads:'+offeneLeads+' Pipeline:'+pipeline+'EUR Gebucht:'+gebucht+'EUR Ziel:5000EUR Pakete:BP398+BS598+BI898',4000,true);
+  lsSet('mindea-wochenplan-'+kw, r);
+  renderMod('wochenplan');
+}
+
+// ─── ANALYTICS ───────────────────────────────────────────────────────────
+function renderAnalytics(body) {
+  let data = lsGet('mindea-analytics', []);
+  const banEl = div('ban');
+  banEl.innerHTML = '<div class="ban-title">ANALYTICS</div><div class="ban-sub">'+data.length+' Posts getrackt</div>';
+  body.appendChild(banEl);
+
+  // Add form
+  const form = div('card'); form.style.marginBottom='14px';
+  form.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--tc);margin-bottom:10px">Neuen Post tracken</div>'
+    +'<input id="an-date" type="date" value="'+TD+'" class="field-input" style="margin-bottom:6px">'
+    +'<select id="an-type" class="field-input" style="margin-bottom:6px"><option value="reel">📱 Reel</option><option value="post">📸 Post</option><option value="karussell">🔄 Karussell</option><option value="story">📲 Story</option></select>'
+    +'<input id="an-title" placeholder="Titel/Thema" class="field-input" style="margin-bottom:6px">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">'
+    +'<input id="an-reach" type="number" placeholder="Reichweite" class="field-input" style="margin-bottom:0">'
+    +'<input id="an-likes" type="number" placeholder="Likes" class="field-input" style="margin-bottom:0">'
+    +'<input id="an-saves" type="number" placeholder="Saves" class="field-input" style="margin-bottom:0">'
+    +'<input id="an-dms" type="number" placeholder="DMs" class="field-input" style="margin-bottom:0">'
+    +'</div>';
+  const addBtn = document.createElement('button');
+  addBtn.textContent = '+ Hinzufügen';
+  addBtn.style.cssText = 'width:100%;padding:11px;border-radius:var(--cr);border:none;background:var(--gg);color:#fff;font-weight:700;cursor:pointer;font-size:13px';
+  addBtn.onclick = addAnalytics;
+  form.appendChild(addBtn);
+  body.appendChild(form);
+
+  // Stats summary
+  if (data.length > 0) {
+    const avgReach = Math.round(data.reduce((s,d)=>s+(d.reach||0),0)/data.length);
+    const avgLikes = Math.round(data.reduce((s,d)=>s+(d.likes||0),0)/data.length);
+    const avgSaves = Math.round(data.reduce((s,d)=>s+(d.saves||0),0)/data.length);
+    const totalDms = data.reduce((s,d)=>s+(d.dms||0),0);
+    const summary = div(''); summary.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px;margin-bottom:14px';
+    summary.innerHTML = '<div class="stat-card"><div class="stat-val">'+avgReach+'</div><div class="stat-lbl">⌀ Reichweite</div></div>'
+      +'<div class="stat-card"><div class="stat-val">'+avgLikes+'</div><div class="stat-lbl">⌀ Likes</div></div>'
+      +'<div class="stat-card"><div class="stat-val">'+avgSaves+'</div><div class="stat-lbl">⌀ Saves</div></div>'
+      +'<div class="stat-card"><div class="stat-val">'+totalDms+'</div><div class="stat-lbl">DMs Total</div></div>';
+    body.appendChild(summary);
+
+    // Best performing by DMs (most revenue-relevant)
+    const best = [...data].sort((a,b)=>(b.dms||0)-(a.dms||0))[0];
+    if (best && (best.dms||0) > 0) {
+      const bestCard = div('card'); bestCard.style.borderColor='rgba(46,125,94,.3)';
+      bestCard.innerHTML = '<div style="font-size:10px;color:#2e7d5e;font-weight:700;letter-spacing:1px;margin-bottom:4px">🏆 BESTER POST (meiste DMs)</div><div style="font-size:13px;font-weight:600;color:var(--tc)">'+((best.title||'Ohne Titel').replace(/</g,'&lt;'))+'</div><div style="font-size:11px;color:var(--ts);margin-top:2px">'+best.type+' · DMs: '+(best.dms||0)+' · Reichweite: '+(best.reach||0)+' · Saves: '+(best.saves||0)+'</div>';
+      body.appendChild(bestCard);
+    }
+  }
+
+  // List
+  data.slice(0,20).forEach(d => {
+    const item = div('card'); item.style.marginBottom='8px'; item.style.padding='10px 12px';
+    const safeTitle = (d.title||'–').replace(/</g,'&lt;');
+    item.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><div><span style="font-size:13px;font-weight:600;color:var(--tc)">'+safeTitle+'</span><div style="font-size:10px;color:var(--ts);margin-top:2px">'+d.type+' · '+d.date+'</div></div><button onclick="delAnalytics('+d.id+')" style="background:none;border:none;cursor:pointer;color:var(--tm);font-size:14px">✕</button></div>'
+      +'<div style="display:flex;gap:12px;margin-top:6px;font-size:11px;color:var(--ts)"><span>📈 '+(d.reach||0)+'</span><span>❤️ '+(d.likes||0)+'</span><span>🔖 '+(d.saves||0)+'</span><span>✉️ '+(d.dms||0)+'</span></div>';
+    body.appendChild(item);
+  });
+}
+function addAnalytics() {
+  const data = lsGet('mindea-analytics', []);
+  const entry = {
+    id: Date.now(),
+    date: document.getElementById('an-date').value || TD,
+    type: document.getElementById('an-type').value || 'reel',
+    title: document.getElementById('an-title').value.trim() || '',
+    reach: parseInt(document.getElementById('an-reach').value) || 0,
+    likes: parseInt(document.getElementById('an-likes').value) || 0,
+    saves: parseInt(document.getElementById('an-saves').value) || 0,
+    dms: parseInt(document.getElementById('an-dms').value) || 0,
+  };
+  data.unshift(entry);
+  lsSet('mindea-analytics', data);
+  showToast('📊 Post getrackt!');
+  renderMod('analytics');
+}
+function delAnalytics(id) {
+  const data = lsGet('mindea-analytics', []).filter(d => d.id !== id);
+  lsSet('mindea-analytics', data);
+  renderMod('analytics');
+}
+
+// ─── FOLLOW-UP SYSTEM (enhances Sales) ───────────────────────────────────
+function checkFollowUps() {
+  const leads = lsGet('mindea-leads', []);
+  const today = new Date();
+  let reminders = [];
+  leads.forEach(l => {
+    if (['gebucht','kein-fit'].includes(l.status)) return;
+    if (!l.contactDate) return;
+    const contact = new Date(l.contactDate);
+    const daysSince = Math.floor((today - contact) / 864e5);
+    if (daysSince >= 2 && daysSince <= 3 && !l.fu1Done) {
+      reminders.push({lead:l, type:'fu1', label:'1. Nachfassen (Tag 2-3)', days:daysSince});
+    }
+    if (daysSince >= 7 && !l.fu2Done) {
+      reminders.push({lead:l, type:'fu2', label:'2. Nachfassen (Tag 7)', days:daysSince});
+    }
+  });
+  return reminders;
+}
+
+function renderFollowUpBanner(body) {
+  const fups = checkFollowUps();
+  if (!fups.length) return;
+  const banner = div('card');
+  banner.style.cssText = 'border-color:rgba(184,73,10,.3);background:rgba(184,73,10,.06);margin-bottom:14px';
+  let html = '<div style="font-size:11px;font-weight:700;color:#b8490a;letter-spacing:1px;margin-bottom:8px">🔔 FOLLOW-UPS FÄLLIG ('+fups.length+')</div>';
+  fups.forEach(f => {
+    const safeName = f.lead.name.replace(/</g,'&lt;');
+    html += '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(184,73,10,.1)">'
+      +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--tc)">'+safeName+'</div><div style="font-size:10px;color:#b8490a">'+f.label+' · vor '+f.days+' Tagen kontaktiert</div></div>'
+      +'<button onclick="genFollowUp('+f.lead.id+',\''+f.type+'\',\''+safeName+'\')" style="background:linear-gradient(135deg,#b8490a,#d4641a);border:none;border-radius:9px;padding:6px 12px;cursor:pointer;color:#fff;font-size:10px;font-weight:700">DM</button>'
+      +'<button onclick="markFuDone('+f.lead.id+',\''+f.type+'\')" style="background:var(--bc);border:1px solid var(--bd);border-radius:9px;padding:6px 10px;cursor:pointer;font-size:10px;color:var(--ts)">✓</button>'
+      +'</div>';
+  });
+  banner.innerHTML = html;
+  body.appendChild(banner);
+}
+
+function markFuDone(leadId, fuType) {
+  const leads = lsGet('mindea-leads', []).map(l => {
+    if (l.id === leadId) {
+      if (fuType === 'fu1') l.fu1Done = true;
+      if (fuType === 'fu2') l.fu2Done = true;
+    }
+    return l;
+  });
+  lsSet('mindea-leads', leads);
+  showToast('✓ Follow-up erledigt');
+  renderMod('sales');
+}
+
+async function genFollowUp(leadId, fuType, name) {
+  const prompts = {
+    fu1: 'Schreibe eine Follow-up DM (Tag 2-3 nach Erstkontakt). NICHT: Hast du meine Nachricht gesehen? SONDERN: Konkreten MEHRWERT liefern. Z.B. Ich hab mir dein Profil nochmal angeschaut und mir ist aufgefallen... + konkretes Feedback + offene Frage. Max 3 Saetze. Deutsch.',
+    fu2: 'Schreibe die LETZTE Follow-up DM (Tag 7). Strategie: NEUEN WERT bieten oder VERKNAPPUNG. Z.B. Ich habe gerade einen Slot frei naechste Woche oder Ich teste ein neues Format und suche eine Testkundin. NICHT betteln. Neuen Grund zum Antworten geben. Max 4 Saetze. Deutsch.'
+  };
+  showToast('✉️ Follow-up wird generiert…');
+  const r = await callApi(OS+' '+prompts[fuType], 'Lead: '+name, 300);
+  const leads = lsGet('mindea-leads', []);
+  const lead = leads.find(l => l.id === leadId);
+  if (lead) {
+    // Show in a toast-like popup
+    const idx = storeClip(r);
+    showToast('📋 Kopiert!');
+    try { await navigator.clipboard.writeText(r); } catch(e) {}
+    // Also open the lead
+    setTimeout(() => {
+      const el = document.getElementById('lead-exp-'+leadId);
+      if (el) {
+        el.style.display = 'block';
+        const dmEl = document.getElementById('dm-'+leadId);
+        if (dmEl) {
+          const wrapper = div(''); wrapper.style.cssText = 'padding:10px;background:rgba(184,73,10,.08);border-radius:9px;font-size:12px;color:var(--tc);line-height:1.7;white-space:pre-wrap';
+          const label = div(''); label.style.cssText = 'font-size:9px;font-weight:700;color:#b8490a;letter-spacing:1px;margin-bottom:4px';
+          label.textContent = fuType === 'fu1' ? '1. FOLLOW-UP (TAG 2-3)' : '2. FOLLOW-UP (TAG 7)';
+          wrapper.appendChild(label);
+          const textEl = document.createElement('span'); textEl.textContent = r; wrapper.appendChild(textEl);
+          const cpBtn = document.createElement('button'); cpBtn.className = 'copy-btn'; cpBtn.style.marginTop = '6px';
+          cpBtn.textContent = '📋 Kopieren'; cpBtn.onclick = () => copyStored(idx); wrapper.appendChild(cpBtn);
+          dmEl.innerHTML = ''; dmEl.appendChild(wrapper);
+        }
+      }
+    }, 300);
+  }
+}
+
+// ─── BRIEFING → PAKET FLOW ──────────────────────────────────────────────
+// Enhanced briefing that auto-generates everything for the selected package
+function renderBriefingFlow(body) {
+  const saved = lsGet('mindea-briefings', []);
+  const banEl = div('ban'); banEl.style.borderColor='rgba(74,122,150,.25)'; banEl.style.background='rgba(74,122,150,.06)';
+  banEl.innerHTML = '<div class="ban-title" style="color:var(--b)">BRIEFING → PAKET</div><div class="ban-sub">Ausfüllen → Alles wird generiert</div>';
+  body.appendChild(banEl);
+
+  const form = div('card');
+  form.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--tc);margin-bottom:10px">Neues Kunden-Briefing</div>'
+    +'<input id="br-name" placeholder="Kundenname" class="field-input">'
+    +'<input id="br-branche" placeholder="Branche (z.B. Yoga, Café, Coaching)" class="field-input">'
+    +'<input id="br-zielgruppe" placeholder="Zielgruppe" class="field-input">'
+    +'<textarea id="br-beschreibung" placeholder="Was macht der Kunde? Was ist sein USP?" class="field-input" rows="3" style="resize:vertical"></textarea>'
+    +'<input id="br-gefuehl" placeholder="Welches Gefühl soll das Video auslösen?" class="field-input">'
+    +'<div class="pkg-tabs" style="margin-top:4px">'
+    +'<button class="pkg-tab" onclick="selectBriefPkg(this,\'bp\')" id="br-pkg-bp">✨ Presence<br><span style="font-size:10px;color:var(--ts)">398€</span></button>'
+    +'<button class="pkg-tab" onclick="selectBriefPkg(this,\'bs\')" id="br-pkg-bs">🎞️ Story<br><span style="font-size:10px;color:var(--ts)">598€</span></button>'
+    +'<button class="pkg-tab" onclick="selectBriefPkg(this,\'bi\')" id="br-pkg-bi">🎬 Impact<br><span style="font-size:10px;color:var(--ts)">898€</span></button>'
+    +'</div>'
+    +'<input type="hidden" id="br-pkg" value="bp">';
+  const genBtn = document.createElement('button');
+  genBtn.textContent = '🚀 Komplett generieren';
+  genBtn.style.cssText = 'width:100%;padding:13px;border-radius:var(--cr);border:none;background:linear-gradient(135deg,#4a7a96,#5a90b0);color:#fff;font-weight:700;cursor:pointer;font-size:13px;margin-top:4px';
+  genBtn.onclick = genFromBriefing;
+  form.appendChild(genBtn);
+  body.appendChild(form);
+
+  // Saved briefings
+  if (saved.length) {
+    const histTitle = div(''); histTitle.style.cssText = 'font-size:10px;font-weight:700;color:var(--tm);letter-spacing:1.5px;margin:14px 0 8px';
+    histTitle.textContent = 'LETZTE BRIEFINGS';
+    body.appendChild(histTitle);
+    saved.slice(0,5).forEach(b => {
+      const item = div('card'); item.style.marginBottom='8px'; item.style.padding='10px 12px'; item.style.cursor='pointer';
+      const safeName = (b.name||'–').replace(/</g,'&lt;');
+      const safeBranche = (b.branche||'–').replace(/</g,'&lt;');
+      item.innerHTML = '<div style="font-size:13px;font-weight:600;color:var(--tc)">'+safeName+'</div><div style="font-size:10px;color:var(--ts)">'+safeBranche+' · '+(b.pkg||'').toUpperCase()+' · '+b.date+'</div>';
+      item.onclick = () => { openMod(b.pkg); setTimeout(()=>{
+        const inp = document.getElementById('chat-inp');
+        if(inp) { inp.value = 'Kunde: '+b.name+'\nBranche: '+b.branche+'\nZielgruppe: '+b.zielgruppe+'\nBeschreibung: '+b.beschreibung+'\nGefühl: '+b.gefuehl; }
+      },200); };
+      body.appendChild(item);
+    });
+  }
+}
+let _briefPkg = 'bp';
+function selectBriefPkg(el, pkg) {
+  _briefPkg = pkg;
+  document.getElementById('br-pkg').value = pkg;
+  document.querySelectorAll('.pkg-tab').forEach(t => { t.style.borderColor='var(--bd)'; t.style.background='var(--bc)'; });
+  el.style.borderColor = 'var(--b)'; el.style.background = 'rgba(74,122,150,.1)';
+}
+async function genFromBriefing() {
+  const name = document.getElementById('br-name').value.trim();
+  const branche = document.getElementById('br-branche').value.trim();
+  const zielgruppe = document.getElementById('br-zielgruppe').value.trim();
+  const beschreibung = document.getElementById('br-beschreibung').value.trim();
+  const gefuehl = document.getElementById('br-gefuehl').value.trim();
+  const pkg = _briefPkg;
+  if (!name) { showToast('Bitte Kundennamen eingeben'); return; }
+
+  // Save briefing
+  const briefings = lsGet('mindea-briefings', []);
+  briefings.unshift({name, branche, zielgruppe, beschreibung, gefuehl, pkg, date:TD});
+  lsSet('mindea-briefings', briefings.slice(0,20));
+
+  // Also create a project
+  const projs = lsGet('mindea-projekte', []);
+  if (!projs.find(p => p.name === name)) {
+    projs.unshift({id:Date.now(), name, status:'offen', date:TD, pkg});
+    lsSet('mindea-projekte', projs);
+  }
+
+  showToast('🚀 Wird generiert… Kann 30s dauern.');
+
+  // Navigate to the correct chat module and auto-send
+  openMod(pkg);
+  await delay(300);
+  const brief = 'KUNDEN-BRIEFING:\nName: '+name+'\nBranche: '+branche+'\nZielgruppe: '+zielgruppe+'\nBeschreibung: '+beschreibung+'\nGewünschtes Gefühl: '+gefuehl+'\n\nGeneriere das KOMPLETTE Paket basierend auf diesem Briefing.';
+  const inp = document.getElementById('chat-inp');
+  if (inp) { inp.value = brief; chatSend(pkg); }
+}
+
+// ─── LAUNCH PLANER (bis Mai 2026) ────────────────────────────────────────
+const LAUNCH_WEEKS = [
+  {kw:13,date:'24.-30. Maerz',title:'Routine etablieren — 30 Min taeglich',phase:'Neustart',tasks:['Feste Content-Zeit einplanen','1 Reel diese Woche aufnehmen','Agent: Viral Reel Generator testen','Instagram Bio ueberarbeiten']},
+  {kw:14,date:'31. Maerz-6. April',title:'Erste Sichtbarkeit — 3 Posts diese Woche',phase:'Neustart',tasks:['3 Posts veroeffentlichen(Reel+Karussell+Story)','5 Kommentare unter relevanten Accounts','Lead-Finder: 5 potenzielle Kunden finden','Profil-Bild updaten']},
+  {kw:15,date:'7.-13. April',title:'Erste DMs — Akquise starten',phase:'Akquise',tasks:['5 DMs an potenzielle Kunden senden','1 Showcase-Eintrag erstellen(auch Beispielprojekt)','Wochenplan generieren und befolgen','Sales Training: Kaltakquise ueben']},
+  {kw:16,date:'14.-20. April',title:'Content-Rhythmus — 4 Posts/Woche',phase:'Akquise',tasks:['4 Posts veroeffentlichen','10 DMs senden','Follow-ups fuer letzte Woche machen','Einwand-Training: Zu teuer ueben']},
+  {kw:17,date:'21.-27. April',title:'Pipeline fuellen — 10 aktive Leads',phase:'Akquise',tasks:['10 neue Leads im Agent anlegen','Jedem Lead ein Paket zuordnen','3 Follow-up DMs senden','1 Angebot erstellen']},
+  {kw:18,date:'28. April-4. Mai',title:'Erster Abschluss — Vollgas Sales',phase:'Abschluss',tasks:['Alle offenen Leads nachfassen','Mindestens 1 Gespraech/Call fuehren','Preis-Coach nutzen: Verhandlung ueben','Content: Social Proof Post erstellen']},
+  {kw:19,date:'5.-11. Mai',title:'System laeuft — Agent ist Alltag',phase:'Abschluss',tasks:['Morgen-Briefing jeden Tag nutzen','Auto-Content posten ohne nachzudenken','Pipeline-Wert ueber 2000EUR bringen','Erstes Kundenprojekt starten oder planen']},
+  {kw:20,date:'12.-18. Mai',title:'Agent einsatzbereit — du bist ready',phase:'Launch',tasks:['Alle Module einmal durchgetestet','Backup-Routine etabliert','5000EUR Monatsziel realistisch planbar','Mindea ist live und verkauft']},
+];
+
+function renderLaunchPlan(body) {
+  const done = lsGet('mindea-launch-tasks', {});
+  const totalTasks = LAUNCH_WEEKS.reduce((s,w)=>s+w.tasks.length,0);
+  const doneCnt = Object.values(done).filter(Boolean).length;
+  const pct = Math.round(doneCnt/totalTasks*100);
+  const currentKW = getKW();
+
+  // Header
+  const header = div('');
+  header.style.cssText = 'padding:16px;background:var(--gg);border-radius:var(--cr);margin-bottom:14px;box-shadow:var(--sm)';
+  header.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.6);font-weight:600">MINDEA LAUNCH PLANER</div><div style="font-family:\'Playfair Display\',serif;font-size:20px;font-weight:700;color:#fff;margin-top:4px">Ziel: Mai 2026</div></div><div style="text-align:right"><div style="font-family:\'Playfair Display\',serif;font-size:28px;font-weight:700;color:#fff">'+(LAUNCH_WEEKS[LAUNCH_WEEKS.length-1].kw-currentKW)+'</div><div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.5)">WOCHEN NOCH</div></div></div>'
+    +'<div style="margin-top:10px;height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden"><div style="height:100%;background:rgba(255,255,255,.7);border-radius:3px;width:'+pct+'%;transition:width .3s"></div></div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:4px">'+doneCnt+' von '+totalTasks+' Aufgaben erledigt — '+pct+'%</div>';
+  body.appendChild(header);
+
+  // Weeks
+  LAUNCH_WEEKS.forEach(w => {
+    const isCurrent = w.kw === currentKW;
+    const isPast = w.kw < currentKW;
+    const weekDone = w.tasks.every((_,i) => done[w.kw+'-'+i]);
+    const card = div('card');
+    card.style.cssText = 'margin-bottom:8px;'+(isCurrent?'border-color:var(--g);border-width:2px;':'')+(isPast&&!weekDone?'opacity:.5;':'');
+
+    let html = '<button onclick="toggleLaunchWeek('+w.kw+')" style="width:100%;background:none;border:none;cursor:pointer;text-align:left;padding:0;display:flex;align-items:center;gap:8px">'
+      +'<div><div style="font-size:11px;font-weight:700;color:var(--g)">KW '+w.kw+'</div><div style="font-size:9px;color:var(--ts)">'+w.date+'</div></div>'
+      +(isCurrent?'<span style="background:var(--g);color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px">JETZT</span>':'')
+      +'<div style="flex:1"></div><span style="color:var(--tm);font-size:12px" id="lw-arrow-'+w.kw+'">'+(isCurrent?'▴':'▾')+'</span></button>'
+      +'<div style="font-size:13px;font-weight:600;color:var(--tc);margin-top:6px">'+w.title+'</div>'
+      +'<div style="font-size:10px;color:var(--ts);margin-top:2px">'+w.phase+' · '+w.tasks.filter((_,i)=>done[w.kw+'-'+i]).length+'/'+w.tasks.length+' erledigt</div>';
+
+    html += '<div id="lw-tasks-'+w.kw+'" style="display:'+(isCurrent?'block':'none')+';margin-top:10px">';
+    w.tasks.forEach((t,i) => {
+      const key = w.kw+'-'+i;
+      const isDone = !!done[key];
+      html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-top:1px solid var(--bd)">'
+        +'<button onclick="toggleLaunchTask(\''+key+'\')" style="width:20px;height:20px;border-radius:6px;border:2px solid '+(isDone?'var(--g)':'var(--bd)')+';background:'+(isDone?'var(--g)':'transparent')+';display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0">'+(isDone?'<span style="font-size:9px;color:#fff;font-weight:700">✓</span>':'')+'</button>'
+        +'<span style="font-size:12px;color:var(--tc);line-height:1.5;'+(isDone?'text-decoration:line-through;opacity:.5':'')+'">'+t+'</span></div>';
+    });
+    html += '</div>';
+    card.innerHTML = html;
+    body.appendChild(card);
+  });
+}
+
+function toggleLaunchWeek(kw) {
+  const el = document.getElementById('lw-tasks-'+kw);
+  const arrow = document.getElementById('lw-arrow-'+kw);
+  if (el) { const open = el.style.display==='none'; el.style.display=open?'block':'none'; if(arrow) arrow.textContent=open?'▴':'▾'; }
+}
+
+function toggleLaunchTask(key) {
+  const done = lsGet('mindea-launch-tasks', {});
+  done[key] = !done[key];
+  lsSet('mindea-launch-tasks', done);
+  renderMod('launchplan');
+}
+
+// ─── VIDEO/REEL FEEDBACK ─────────────────────────────────────────────────
+// Uses existing chat modules with vision - adding as a dedicated sub-feature in Luna
+// When user uploads video screenshot in Luna, the prompt already handles analysis
+
+// ─── LEAD-FINDER ─────────────────────────────────────────────────────────
+function renderLeadFinder(body) {
+  const banEl=div('ban'); banEl.style.borderColor='rgba(46,125,94,.25)'; banEl.style.background='rgba(46,125,94,.06)';
+  banEl.innerHTML='<div class="ban-title" style="color:#2e7d5e">LEAD-FINDER</div><div class="ban-sub">Finde neue Kunden — jeden Tag</div>';
+  body.appendChild(banEl);
+
+  // Quick actions
+  const qGrid=div(''); qGrid.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px';
+  const actions=[
+    {icon:'📱',label:'Instagram Leads',desc:'Hashtag-Suche + DM',action:'ig'},
+    {icon:'🔎',label:'Google Maps Leads',desc:'Lokale Businesses finden',action:'maps'},
+    {icon:'💬',label:'Kommentar-Akquise',desc:'Unter relevanten Posts',action:'kommentar'},
+    {icon:'🤝',label:'Kooperationen',desc:'Partner-Ideen',action:'koops'},
+  ];
+  actions.forEach(a=>{
+    const card=div('quick-card'); card.style.cursor='pointer';
+    card.innerHTML='<div class="quick-card-icon">'+a.icon+'</div><div class="quick-card-title">'+a.label+'</div><div class="quick-card-sub">'+a.desc+'</div>';
+    card.onclick=()=>genLeadIdeas(a.action);
+    qGrid.appendChild(card);
+  });
+  body.appendChild(qGrid);
+
+  // Custom search
+  const customRow=div(''); customRow.style.cssText='display:flex;gap:7px;margin-bottom:14px';
+  customRow.innerHTML='<input id="lead-finder-inp" placeholder="Branche oder Zielgruppe..." class="field-input" style="flex:1;margin-bottom:0"><button onclick="genLeadIdeas(\'custom\')" style="background:var(--gg);border:none;border-radius:11px;padding:10px 16px;cursor:pointer;color:#fff;font-weight:700;font-size:12px">🔍</button>';
+  body.appendChild(customRow);
+
+  // Results area
+  const results=div(''); results.id='lead-finder-results';
+  const saved=lsGet('mindea-lead-ideas-'+TD,'');
+  if(saved){results.innerHTML='<div class="card" style="font-size:13px;line-height:2;white-space:pre-wrap">'+saved.replace(/</g,'&lt;')+'</div>';}
+  body.appendChild(results);
+
+  // Lead source tracker
+  const srcTitle=div(''); srcTitle.style.cssText='font-size:10px;font-weight:700;color:var(--tm);letter-spacing:1.5px;margin:14px 0 8px';
+  srcTitle.textContent='LEAD-QUELLEN TRACKER';
+  body.appendChild(srcTitle);
+  const sources=lsGet('mindea-lead-sources',{});
+  const srcNames=['Instagram DM','Google Maps','Kommentar','Empfehlung','Website','Sonstiges'];
+  srcNames.forEach(s=>{
+    const row=div(''); row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:6px';
+    const cnt=sources[s]||0;
+    row.innerHTML='<div style="flex:1;font-size:12px;color:var(--tc)">'+s+'</div><div style="font-size:14px;font-weight:700;color:var(--g)">'+cnt+'</div><button onclick="addLeadSource(\''+s+'\')" style="background:var(--bc);border:1px solid var(--bd);border-radius:7px;padding:4px 10px;cursor:pointer;font-size:10px;color:var(--ts)">+1</button>';
+    body.appendChild(row);
+  });
+}
+
+async function genLeadIdeas(type) {
+  showToast('🔍 Suche Leads…');
+  const custom=document.getElementById('lead-finder-inp')?.value||'';
+  const leads=lsGet('mindea-leads',[]);
+  const existingNames=leads.slice(0,10).map(l=>l.name).join(', ');
+  const prompts={
+    ig:'Gib mir 5 konkrete Instagram-Akquise Aktionen fuer HEUTE. Pro Aktion: 1)Welche Hashtags durchsuchen 2)Welche Profile ansprechen(Branche+Merkmale) 3)Fertige DM-Vorlage. Fokus: Coaches, Berater, lokale Businesses die visuell schwach auftreten.',
+    maps:'Gib mir 5 konkrete Google Maps Suchbegriffe um lokale Businesses zu finden die Mindea brauchen. Pro Ergebnis: 1)Suchbegriff 2)Was anschauen(Website/Insta) 3)Typisches Problem 4)Ansprache-Idee.',
+    kommentar:'Gib mir 5 Instagram-Accounts unter deren Posts ich wertvolle Kommentare hinterlassen sollte um sichtbar zu werden. Pro Account: 1)Account-Typ beschreiben 2)Welche Beitraege kommentieren 3)Beispiel-Kommentar der Wert liefert, nicht verkauft.',
+    koops:'Gib mir 5 Kooperations-Ideen fuer Mindea. Welche Anbieter haben die gleiche Zielgruppe aber sind kein Wettbewerb? Pro Idee: 1)Partner-Typ 2)Win-Win Konzept 3)Erste Nachricht.',
+    custom:'Finde Lead-Quellen fuer: '+custom+'. 5 konkrete Aktionen mit DM-Vorlagen.'
+  };
+  const r=await callApi(OS+' LEAD-FINDER. Deutsch. Reiner Text. KONKRET und UMSETZBAR. Keine Theorie.',prompts[type]+'\nBereits kontaktiert: '+existingNames,4000,true);
+  lsSet('mindea-lead-ideas-'+TD,r);
+  const el=document.getElementById('lead-finder-results');
+  if(el){const idx=storeClip(r);el.innerHTML='<div class="card" style="font-size:13px;line-height:2;white-space:pre-wrap">'+r.replace(/</g,'&lt;')+'</div><button class="copy-btn" style="margin-top:6px" onclick="copyStored('+idx+')">📋 Kopieren</button>';}
+}
+
+function addLeadSource(source) {
+  const sources=lsGet('mindea-lead-sources',{});
+  sources[source]=(sources[source]||0)+1;
+  lsSet('mindea-lead-sources',sources);
+  showToast('✓ '+source+' +1');
+  renderMod('leadfinder');
+}
+
+// ─── SHOWCASE ────────────────────────────────────────────────────────────
+function renderShowcase(body) {
+  let items=lsGet('mindea-showcase',[]);
+  const banEl=div('ban'); banEl.style.borderColor='rgba(46,125,94,.25)'; banEl.style.background='rgba(46,125,94,.06)';
+  banEl.innerHTML='<div class="ban-title" style="color:#2e7d5e">SHOWCASE</div><div class="ban-sub">'+items.length+' Referenzen gespeichert</div>';
+  body.appendChild(banEl);
+
+  // Add new
+  const form=div('card'); form.style.marginBottom='14px';
+  form.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--tc);margin-bottom:10px">Neue Referenz hinzufügen</div>'
+    +'<input id="sc-name" placeholder="Kundenname" class="field-input">'
+    +'<input id="sc-branche" placeholder="Branche" class="field-input">'
+    +'<select id="sc-paket" class="field-input"><option value="bp">Brand Presence 398€</option><option value="bs">Brand Story 598€</option><option value="bi">Brand Impact 898€</option></select>'
+    +'<textarea id="sc-ergebnis" placeholder="Was war das Ergebnis? (z.B. +40% Anfragen, professionelleres Auftreten...)" class="field-input" rows="2" style="resize:vertical"></textarea>'
+    +'<textarea id="sc-zitat" placeholder="Kundenzitat (optional)" class="field-input" rows="2" style="resize:vertical"></textarea>';
+  const addBtn=document.createElement('button');
+  addBtn.textContent='+ Referenz speichern';
+  addBtn.style.cssText='width:100%;padding:11px;border-radius:var(--cr);border:none;background:var(--gg);color:#fff;font-weight:700;cursor:pointer;font-size:13px';
+  addBtn.onclick=addShowcase;
+  form.appendChild(addBtn);
+  body.appendChild(form);
+
+  // Generate Case Study button
+  if(items.length>0){
+    const genBtn=makeGBtn('✨','Case Study generieren','#2e7d5e');
+    genBtn.onclick=genCaseStudy;
+    body.appendChild(genBtn);
+  }
+
+  // List
+  items.forEach(item=>{
+    const card=div('card'); card.style.marginBottom='8px';
+    const safeName=(item.name||'').replace(/</g,'&lt;');
+    const safeErgebnis=(item.ergebnis||'').replace(/</g,'&lt;');
+    const safeZitat=(item.zitat||'').replace(/</g,'&lt;');
+    const pkName=item.paket==='bi'?'Brand Impact':item.paket==='bs'?'Brand Story':'Brand Presence';
+    card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:600;color:var(--tc)">'+safeName+'</div><button onclick="delShowcase('+item.id+')" style="background:none;border:none;cursor:pointer;color:var(--tm)">✕</button></div>'
+      +'<div style="font-size:10px;color:var(--ts);margin:4px 0">'+item.branche+' · '+pkName+' · '+item.date+'</div>'
+      +(safeErgebnis?'<div style="font-size:12px;color:var(--tc);line-height:1.6;margin-top:6px">📈 '+safeErgebnis+'</div>':'')
+      +(safeZitat?'<div style="font-size:12px;color:var(--g);font-style:italic;line-height:1.6;margin-top:6px">"'+safeZitat+'"</div>':'');
+    // Quick copy for DMs
+    const cpBtn=document.createElement('button');
+    cpBtn.className='copy-btn'; cpBtn.style.marginTop='8px';
+    cpBtn.textContent='📋 Als Social Proof kopieren';
+    cpBtn.onclick=()=>{
+      const proof='Beispiel: '+safeName+' ('+item.branche+') — '+pkName+(safeErgebnis?' → '+safeErgebnis:'')+(safeZitat?'\nO-Ton: "'+safeZitat+'"':'');
+      copyText(proof);
+    };
+    card.appendChild(cpBtn);
+    body.appendChild(card);
+  });
+}
+
+function addShowcase(){
+  const items=lsGet('mindea-showcase',[]);
+  const name=document.getElementById('sc-name')?.value.trim();
+  if(!name){showToast('Name eingeben');return;}
+  items.unshift({
+    id:Date.now(),
+    name,
+    branche:document.getElementById('sc-branche')?.value.trim()||'',
+    paket:document.getElementById('sc-paket')?.value||'bp',
+    ergebnis:document.getElementById('sc-ergebnis')?.value.trim()||'',
+    zitat:document.getElementById('sc-zitat')?.value.trim()||'',
+    date:TD
+  });
+  lsSet('mindea-showcase',items);
+  showToast('🏆 Referenz gespeichert');
+  renderMod('showcase');
+}
+
+function delShowcase(id){
+  const items=lsGet('mindea-showcase',[]).filter(i=>i.id!==id);
+  lsSet('mindea-showcase',items);
+  renderMod('showcase');
+}
+
+async function genCaseStudy(){
+  showToast('✨ Case Study wird generiert…');
+  const items=lsGet('mindea-showcase',[]);
+  const ctx=items.slice(0,5).map(i=>i.name+' ('+i.branche+', '+(i.paket==='bi'?'Impact':i.paket==='bs'?'Story':'Presence')+'): '+i.ergebnis+(i.zitat?' Zitat: '+i.zitat:'')).join('\n');
+  const r=await callApi(OS+' Schreibe eine KURZE Case Study fuer Instagram oder DMs. Max 200 Woerter. Zeige Transformation: Vorher(Problem) → Mindea(Loesung) → Nachher(Ergebnis). Persoenlich, nicht werblich. Deutsch.',ctx,2000,true);
+  const idx=storeClip(r);
+  showToast('📋 Kopiert!');
+  try{await navigator.clipboard.writeText(r);}catch(e){}
+  const el=document.getElementById('detail-body');
+  const res=div('card'); res.style.cssText='font-size:13px;line-height:2;white-space:pre-wrap;margin-top:14px'; res.textContent=r;
+  const btn=div(''); btn.style.marginTop='8px'; btn.innerHTML='<button class="copy-btn" onclick="copyStored('+idx+')">📋 Kopieren</button>';
+  res.appendChild(btn);
+  el.appendChild(res);
+}
+
+// ─── EINWAND-CHEATSHEET (in Sales) ──────────────────────────────────────
+function renderEinwandSheet(body) {
+  const einwaende=[
+    {e:'"Das ist mir zu teuer"', k:'Ich verstehe. Darf ich fragen: Was waere es wert wenn dein Profil ab naechster Woche so aussieht dass Kunden von alleine anfragen? Ein einziger Neukunde durch dein Video deckt die Investition.'},
+    {e:'"Ich mach das selbst mit Canva"', k:'Canva ist super fuer Posts. Aber fuer Video-Werbespots die Vertrauen aufbauen brauchst du Cinematic Quality. Das ist der Unterschied zwischen DIY und Premium-Positionierung.'},
+    {e:'"Ich brauche erstmal Follower"', k:'Follower kommen durch starke Inhalte. Ein professionelles Brand-Video auf deinem Profil ist das Erste was neue Besucher sehen. Es entscheidet ob sie folgen oder scrollen.'},
+    {e:'"KI-Videos sehen fake aus"', k:'Guter Punkt — deswegen nutze ich KI als Werkzeug, nicht als Ersatz. Deine echte Stimme, deine echte Geschichte. Die KI sorgt nur dafuer dass es cinematic aussieht.'},
+    {e:'"Ich muss darueber nachdenken"', k:'Klar. Was genau moechtest du noch abwaegen? Ich schicke dir gerne ein Beispiel-Video damit du siehst wie das bei anderen aussah.'},
+    {e:'"Kann man am Preis was machen?"', k:'Der Preis ist fair kalkuliert fuer das was du bekommst. Was ich machen kann: Dir ein kleineres Paket anbieten als Einstieg. Brand Presence fuer 398EUR ist perfekt um zu starten.'},
+  ];
+  const sheet=div('card'); sheet.style.cssText='margin-bottom:14px;border-color:rgba(184,73,10,.2);background:rgba(184,73,10,.03)';
+  let html='<div style="font-size:10px;font-weight:700;color:#b8490a;letter-spacing:1.5px;margin-bottom:10px">💪 EINWAND-CHEATSHEET</div>';
+  einwaende.forEach(ei=>{
+    html+='<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(184,73,10,.08)">'
+      +'<div style="font-size:12px;font-weight:600;color:var(--tc);margin-bottom:4px">'+ei.e+'</div>'
+      +'<div style="font-size:11px;color:var(--ts);line-height:1.6">→ '+ei.k+'</div>'
+      +'</div>';
+  });
+  sheet.innerHTML=html;
+  body.appendChild(sheet);
+}
+
+// ─── START ────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
