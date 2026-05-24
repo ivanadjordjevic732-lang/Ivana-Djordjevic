@@ -11,722 +11,1062 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 
-<!-- Tailwind Play CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          mindea: {
-            ink:   '#000000',
-            deep:  '#0B0B0B',
-            cream: '#F6F1E8',
-            gold:  '#C8A96A',
-            taupe: '#A68F72',
-          },
-        },
-        fontFamily: {
-          serif: ['"Cormorant Garamond"', 'Times New Roman', 'serif'],
-          sans:  ['Inter', 'ui-sans-serif', 'system-ui'],
-        },
-      },
-    },
-  };
-</script>
-
 <style>
-  html, body { background: #000; }
-  body { font-family: 'Inter', system-ui, sans-serif; }
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #000; }
-  ::-webkit-scrollbar-thumb { background: rgba(200,169,106,0.4); border-radius: 4px; }
-  @keyframes mindeaGrain {
-    0%   { transform: translate(0, 0); }
-    20%  { transform: translate(-5%, 3%); }
-    40%  { transform: translate(4%, -2%); }
-    60%  { transform: translate(-3%, 4%); }
-    80%  { transform: translate(2%, -3%); }
-    100% { transform: translate(0, 0); }
+/* ============================================================
+   MINDÉA — DARK LUXURY · Pure HTML/CSS/JS
+   ============================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --ink:      #000000;
+  --deep:     #0B0B0B;
+  --cream:    #F6F1E8;
+  --gold:     #C8A96A;
+  --gold-dim: rgba(200,169,106,0.55);
+  --taupe:    #A68F72;
+  --line:     rgba(200,169,106,0.15);
+  --line-soft: rgba(200,169,106,0.08);
+  --serif:    'Cormorant Garamond','Times New Roman',serif;
+  --sans:     'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ease:     cubic-bezier(0.16,1,0.3,1);
+}
+
+html { -webkit-text-size-adjust:100%; background:var(--ink); scroll-behavior:smooth; }
+
+body {
+  font-family:var(--sans);
+  font-weight:300;
+  background:var(--ink);
+  color:var(--cream);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.65;
+}
+
+a { color:inherit; text-decoration:none; }
+button { font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+::selection { background:var(--gold); color:var(--ink); }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:var(--ink); }
+::-webkit-scrollbar-thumb { background:var(--gold-dim); border-radius:4px; }
+
+/* ============================================================
+   FIXED OVERLAYS
+   ============================================================ */
+.grain {
+  position:fixed; inset:-50%;
+  width:200%; height:200%;
+  pointer-events:none; z-index:60;
+  opacity:0.08; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  animation:grain 1.6s steps(6) infinite;
+}
+@keyframes grain {
+  0%,100%{transform:translate(0,0)} 20%{transform:translate(-5%,3%)}
+  40%{transform:translate(4%,-2%)} 60%{transform:translate(-3%,4%)}
+  80%{transform:translate(2%,-3%)}
+}
+
+.glow {
+  position:fixed; inset:0;
+  pointer-events:none; z-index:1;
+  background:radial-gradient(560px circle at var(--mx,50%) var(--my,38%),
+    rgba(200,169,106,0.12), transparent 70%);
+  transition:background 0.35s ease-out;
+}
+
+.gridbg {
+  position:fixed; inset:0;
+  pointer-events:none; z-index:0;
+  opacity:0.06;
+  background-image:
+    linear-gradient(rgba(246,241,232,0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(246,241,232,0.22) 1px, transparent 1px);
+  background-size:88px 88px;
+  -webkit-mask-image:radial-gradient(ellipse at center, black 25%, transparent 80%);
+          mask-image:radial-gradient(ellipse at center, black 25%, transparent 80%);
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav {
+  position:fixed; top:0; left:0; right:0;
+  z-index:50;
+  padding:24px clamp(20px, 4vw, 48px);
+  display:flex; align-items:center; justify-content:space-between;
+  transition:padding 0.7s var(--ease), background 0.7s var(--ease), border-color 0.7s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.nav.scrolled {
+  padding:12px clamp(20px, 4vw, 48px);
+  background:rgba(0,0,0,0.65);
+  backdrop-filter:blur(20px) saturate(1.1);
+  -webkit-backdrop-filter:blur(20px) saturate(1.1);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner { max-width:1280px; width:100%; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
+.nav-logo { font-family:var(--serif); font-size:26px; letter-spacing:0.08em; color:var(--cream); font-weight:500; }
+.nav-menu { list-style:none; display:flex; gap:40px; }
+.nav-menu a {
+  position:relative;
+  font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
+  color:rgba(246,241,232,0.7); font-weight:400;
+  transition:color 0.5s var(--ease);
+}
+.nav-menu a::after {
+  content:''; position:absolute; left:0; bottom:-6px;
+  width:0; height:1px; background:var(--gold);
+  transition:width 0.5s var(--ease);
+}
+.nav-menu a:hover { color:var(--gold); }
+.nav-menu a:hover::after { width:100%; }
+
+.nav-cta {
+  position:relative;
+  padding:12px 24px;
+  font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
+  color:var(--cream);
+  border:1px solid rgba(200,169,106,0.4);
+  border-radius:999px;
+  transition:border-color 0.5s var(--ease);
+}
+.nav-cta:hover { border-color:var(--gold); }
+.nav-cta::before {
+  content:''; position:absolute; inset:0;
+  border-radius:999px; opacity:0;
+  box-shadow:0 0 50px rgba(200,169,106,0.4), inset 0 0 16px rgba(200,169,106,0.16);
+  transition:opacity 0.5s var(--ease);
+  pointer-events:none;
+}
+.nav-cta:hover::before { opacity:1; }
+
+.nav-toggle { display:none; flex-direction:column; align-items:flex-end; gap:6px; padding:6px; }
+.nav-toggle span { display:block; height:1px; background:var(--cream); transition:width 0.4s var(--ease); }
+.nav-toggle span:nth-child(1){ width:28px; }
+.nav-toggle span:nth-child(2){ width:20px; }
+
+@media (max-width:880px){
+  .nav-menu, .nav-cta { display:none; }
+  .nav-toggle { display:flex; }
+}
+
+.mobile-menu {
+  position:fixed; inset:0; z-index:80;
+  background:var(--ink);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:24px;
+  transform:translateY(-100%);
+  transition:transform 0.8s var(--ease);
+  visibility:hidden;
+}
+.mobile-menu.open { transform:translateY(0); visibility:visible; }
+.mobile-menu .close {
+  position:absolute; top:28px; right:28px;
+  font-size:10px; letter-spacing:0.34em; text-transform:uppercase;
+  color:rgba(246,241,232,0.7);
+}
+.mobile-menu a {
+  font-family:var(--serif);
+  font-size:36px; font-weight:400;
+  color:var(--cream);
+  transition:color 0.5s var(--ease);
+}
+.mobile-menu a:hover { color:var(--gold); }
+.mobile-menu .mob-cta {
+  margin-top:16px;
+  font-family:var(--sans); font-size:11px;
+  letter-spacing:0.32em; text-transform:uppercase;
+  padding:14px 26px;
+  border:1px solid var(--gold);
+  border-radius:999px;
+}
+
+/* ============================================================
+   COMMON
+   ============================================================ */
+.container { max-width:1280px; margin:0 auto; padding:0 clamp(20px, 4vw, 48px); position:relative; z-index:2; }
+.section { padding:clamp(96px, 14vh, 160px) 0; position:relative; z-index:2; }
+
+.eyebrow {
+  display:inline-flex; align-items:center; gap:16px;
+  font-size:10px; letter-spacing:0.4em; text-transform:uppercase;
+  color:var(--gold); font-weight:500;
+}
+.eyebrow::before {
+  content:''; width:36px; height:1px; background:var(--gold);
+}
+
+/* Buttons */
+.btn {
+  display:inline-flex; align-items:center; gap:14px;
+  padding:18px 32px;
+  font-size:11px; letter-spacing:0.32em; text-transform:uppercase; font-weight:500;
+  border-radius:999px;
+  transition:transform 0.5s var(--ease), background 0.5s var(--ease), color 0.5s var(--ease), border-color 0.5s var(--ease);
+  position:relative;
+}
+.btn-primary {
+  color:var(--cream);
+  border:1px solid rgba(200,169,106,0.6);
+}
+.btn-primary:hover { border-color:var(--gold); transform:translateY(-2px); }
+.btn-primary::before {
+  content:''; position:absolute; inset:0; border-radius:999px;
+  opacity:0;
+  box-shadow:0 0 50px rgba(200,169,106,0.45), inset 0 0 18px rgba(200,169,106,0.18);
+  transition:opacity 0.5s var(--ease);
+  pointer-events:none;
+}
+.btn-primary:hover::before { opacity:1; }
+
+.btn-filled {
+  background:var(--gold);
+  color:var(--ink);
+  border:1px solid var(--gold);
+}
+.btn-filled:hover { background:var(--cream); border-color:var(--cream); transform:translateY(-2px); }
+
+.btn .arrow {
+  width:16px; height:1px; background:currentColor;
+  position:relative; transition:width 0.5s var(--ease);
+}
+.btn .arrow::after {
+  content:''; position:absolute; right:0; top:-3px;
+  width:6px; height:6px;
+  border-top:1px solid currentColor; border-right:1px solid currentColor;
+  transform:rotate(45deg);
+}
+.btn:hover .arrow { width:24px; }
+
+.text-link {
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:11px; letter-spacing:0.32em; text-transform:uppercase;
+  color:rgba(246,241,232,0.7);
+  transition:color 0.5s var(--ease);
+}
+.text-link span.ar { transition:transform 0.5s var(--ease); display:inline-block; }
+.text-link:hover { color:var(--gold); }
+.text-link:hover span.ar { transform:translateX(6px); }
+
+/* ============================================================
+   REVEAL
+   ============================================================ */
+.reveal {
+  opacity:0; transform:translateY(36px);
+  transition:opacity 1.3s var(--ease), transform 1.3s var(--ease);
+}
+.reveal.in { opacity:1; transform:translateY(0); }
+.r-d1{ transition-delay:0.10s; } .r-d2{ transition-delay:0.22s; }
+.r-d3{ transition-delay:0.34s; } .r-d4{ transition-delay:0.46s; }
+.r-d5{ transition-delay:0.58s; }
+
+/* Line mask reveal (per-line) */
+.line-mask { display:block; overflow:hidden; }
+.line-mask > span {
+  display:block;
+  transform:translateY(108%);
+  transition:transform 1.2s var(--ease);
+}
+.reveal.in .line-mask > span,
+.line-mask.in > span { transform:translateY(0); }
+.line-mask.l-d1 > span { transition-delay:0.10s; }
+.line-mask.l-d2 > span { transition-delay:0.22s; }
+.line-mask.l-d3 > span { transition-delay:0.34s; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  position:relative;
+  min-height:100vh;
+  display:flex; align-items:center;
+  padding:160px clamp(20px, 4vw, 48px) 120px;
+  overflow:hidden;
+}
+.hero-visual {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none;
+}
+.hero-visual svg {
+  width:140%; max-width:1100px;
+  aspect-ratio:1/1;
+  opacity:0.78;
+  animation:heroBreath 22s ease-in-out infinite;
+  will-change:transform;
+}
+@media (min-width:768px){
+  .hero-visual svg { width:78%; }
+}
+@keyframes heroBreath {
+  0%,100% { transform:scale(1) rotate(0deg); }
+  50%     { transform:scale(1.05) rotate(4deg); }
+}
+
+.hero-grid {
+  position:relative; z-index:2;
+  max-width:1280px; margin:0 auto;
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:48px;
+  align-items:end;
+}
+@media (min-width:880px){
+  .hero-grid { grid-template-columns:1.4fr 1fr; gap:64px; }
+}
+
+.hero-eyebrow {
+  margin-bottom:32px;
+  opacity:0; transform:translateY(16px);
+  animation:fadeUp 1.2s var(--ease) forwards 0.4s;
+}
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+.hero h1 {
+  font-family:var(--serif);
+  font-weight:200;
+  font-size:clamp(46px, 8.6vw, 148px);
+  line-height:0.95;
+  letter-spacing:-0.02em;
+  color:var(--cream);
+}
+.hero h1 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.hero h1 .line-mask > span { transition:transform 1.4s var(--ease); }
+.hero h1 .line-mask.l-1 > span { transition-delay:0.45s; }
+.hero h1 .line-mask.l-2 > span { transition-delay:0.6s; }
+.hero h1 .line-mask.l-3 > span { transition-delay:0.75s; }
+
+.hero-sub {
+  font-size:clamp(15px, 1.2vw, 17px);
+  line-height:1.78;
+  color:rgba(246,241,232,0.7);
+  max-width:440px;
+  opacity:0; transform:translateY(16px);
+  animation:fadeUp 1.2s var(--ease) forwards 1.0s;
+}
+
+.hero-actions {
+  margin-top:36px;
+  display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+  opacity:0; transform:translateY(16px);
+  animation:fadeUp 1.2s var(--ease) forwards 1.15s;
+}
+
+.hero-right { padding-bottom:8px; }
+@media (min-width:880px){ .hero-right { padding-left:32px; } }
+
+.scroll-cue {
+  position:absolute;
+  bottom:36px; left:50%;
+  transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  font-size:10px; letter-spacing:0.34em; text-transform:uppercase;
+  color:rgba(246,241,232,0.45);
+  opacity:0;
+  animation:fadeUp 1.4s var(--ease) forwards 1.6s;
+  z-index:3;
+}
+.scroll-cue .line {
+  position:relative;
+  width:1px; height:56px;
+  background:linear-gradient(to bottom, transparent, var(--gold-dim));
+  overflow:hidden;
+}
+.scroll-cue .line::after {
+  content:''; position:absolute;
+  top:-56px; left:0; right:0; height:56px;
+  background:linear-gradient(to bottom, transparent, var(--cream));
+  animation:scrollDrop 2.4s ease-in-out infinite;
+}
+@keyframes scrollDrop {
+  0%   { transform:translateY(0); }
+  100% { transform:translateY(112px); }
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.stats {
+  padding:90px clamp(20px, 4vw, 48px);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  position:relative; z-index:2;
+}
+.stats-grid {
+  max-width:1280px; margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:48px 0;
+}
+@media (min-width:768px){
+  .stats-grid { grid-template-columns:repeat(4,1fr); gap:0; }
+  .stats-grid > div + div { border-left:1px solid var(--line); padding-left:40px; }
+  .stats-grid > div { padding-right:40px; }
+  .stats-grid > div:first-child { padding-left:0; }
+}
+.stat-val {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(40px, 5vw, 64px);
+  line-height:1;
+  letter-spacing:-0.015em;
+  color:var(--cream);
+  margin-bottom:14px;
+}
+.stat-lbl {
+  font-size:10px; letter-spacing:0.3em; text-transform:uppercase;
+  color:rgba(246,241,232,0.55);
+}
+
+/* ============================================================
+   FEATURES — BENTO
+   ============================================================ */
+.features-head {
+  display:flex; flex-direction:column;
+  gap:32px;
+  margin-bottom:64px;
+}
+@media (min-width:880px){
+  .features-head { flex-direction:row; align-items:flex-end; gap:48px; margin-bottom:80px; }
+}
+.features-head h2 {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(36px, 5.6vw, 82px);
+  line-height:1;
+  letter-spacing:-0.012em;
+  max-width:760px;
+  flex:1;
+}
+.features-head h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.features-head p {
+  font-size:15px; line-height:1.75;
+  color:rgba(246,241,232,0.55);
+  max-width:340px;
+}
+@media (min-width:880px){
+  .features-head p { margin-left:auto; text-align:right; }
+}
+
+.bento {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+@media (min-width:768px){
+  .bento { grid-template-columns:repeat(3,1fr); gap:20px; }
+}
+
+.bento-card {
+  position:relative; overflow:hidden;
+  background:var(--deep);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:36px;
+  min-height:280px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  transition:transform 0.7s var(--ease), border-color 0.7s var(--ease);
+}
+@media (min-width:768px){
+  .bento-card { padding:40px; }
+  .bento-card.large { grid-column:span 2; }
+}
+.bento-card:hover { transform:translateY(-6px); border-color:rgba(200,169,106,0.4); }
+.bento-card::before {
+  content:''; position:absolute; inset:0;
+  border-radius:18px; opacity:0;
+  box-shadow:inset 0 0 0 1px rgba(200,169,106,0.45), 0 0 80px -20px rgba(200,169,106,0.45);
+  transition:opacity 0.7s var(--ease);
+  pointer-events:none;
+}
+.bento-card:hover::before { opacity:1; }
+.bento-card::after {
+  content:''; position:absolute; top:0; left:0; right:0;
+  height:1px; opacity:0;
+  background:linear-gradient(90deg, transparent, rgba(200,169,106,0.85), transparent);
+  transition:opacity 0.7s var(--ease);
+  pointer-events:none;
+}
+.bento-card:hover::after { opacity:1; }
+.bento-num {
+  font-family:var(--serif); font-style:italic;
+  font-size:14px; color:rgba(200,169,106,0.9);
+  margin-bottom:24px;
+  letter-spacing:0.04em;
+}
+.bento-card h3 {
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(24px, 2.6vw, 30px);
+  line-height:1.08;
+  letter-spacing:-0.005em;
+  color:var(--cream);
+}
+.bento-card.large h3 { font-size:clamp(30px, 3.6vw, 44px); }
+.bento-card p {
+  margin-top:32px;
+  font-size:14px; line-height:1.72;
+  color:rgba(246,241,232,0.55);
+  max-width:420px;
+}
+
+/* ============================================================
+   PACKAGES
+   ============================================================ */
+.packages-head {
+  display:grid; grid-template-columns:1fr;
+  gap:24px;
+  margin-bottom:48px;
+  align-items:end;
+}
+@media (min-width:880px){
+  .packages-head { grid-template-columns:1.4fr 1fr; gap:40px; }
+}
+.packages-head h2 {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(36px, 5.4vw, 80px);
+  line-height:1.02;
+  letter-spacing:-0.01em;
+}
+.packages-head h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.packages-head p {
+  font-size:15px; line-height:1.78;
+  color:rgba(246,241,232,0.6);
+  max-width:420px;
+}
+@media (min-width:880px){ .packages-head p { margin-left:auto; } }
+
+.pkg-grid {
+  display:grid; grid-template-columns:1fr;
+  gap:20px;
+}
+@media (min-width:880px){ .pkg-grid { grid-template-columns:repeat(3,1fr); } }
+
+.pkg {
+  position:relative; overflow:hidden;
+  background:var(--deep);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:40px 36px 36px;
+  display:flex; flex-direction:column;
+  transition:transform 0.7s var(--ease), border-color 0.7s var(--ease);
+}
+.pkg:hover { transform:translateY(-6px); border-color:rgba(200,169,106,0.45); }
+@media (min-width:880px){ .pkg { padding:48px 40px 40px; } }
+
+.pkg-featured {
+  background:linear-gradient(180deg, #1a1612 0%, #0B0B0B 100%);
+  border:1px solid rgba(200,169,106,0.4);
+}
+.pkg-featured::before {
+  content:''; position:absolute; inset:0;
+  border-radius:18px;
+  box-shadow:0 0 80px -30px rgba(200,169,106,0.55), inset 0 0 0 1px rgba(200,169,106,0.18);
+  pointer-events:none;
+}
+
+.pkg-num {
+  font-family:var(--serif); font-style:italic;
+  font-size:14px; color:var(--gold);
+  margin-bottom:28px; letter-spacing:0.04em;
+}
+.pkg h3 {
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(28px, 3vw, 40px);
+  line-height:1.08;
+  letter-spacing:-0.005em;
+  margin-bottom:20px;
+  color:var(--cream);
+}
+.pkg h3 .it { font-style:italic; color:var(--gold); }
+.pkg-lede {
+  font-size:14.5px; line-height:1.72;
+  color:rgba(246,241,232,0.55);
+  margin-bottom:32px;
+  padding-bottom:28px;
+  border-bottom:1px solid var(--line);
+}
+.pkg-list {
+  list-style:none; flex:1;
+  margin-bottom:36px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.pkg-list li {
+  position:relative;
+  padding-left:24px;
+  font-size:14px; line-height:1.6;
+  color:rgba(246,241,232,0.7);
+}
+.pkg-list li::before {
+  content:''; position:absolute;
+  left:0; top:13px;
+  width:12px; height:1px;
+  background:var(--gold);
+}
+.pkg-cta {
+  display:inline-flex; align-items:center; gap:12px;
+  font-size:11px; letter-spacing:0.32em; text-transform:uppercase;
+  color:var(--cream);
+  transition:color 0.5s var(--ease), gap 0.5s var(--ease);
+}
+.pkg-cta .ar { transition:transform 0.5s var(--ease); display:inline-block; }
+.pkg:hover .pkg-cta { color:var(--gold); gap:18px; }
+.pkg:hover .pkg-cta .ar { transform:translateX(4px); }
+
+/* ============================================================
+   FINAL CTA
+   ============================================================ */
+.final {
+  position:relative; overflow:hidden;
+  padding:clamp(140px, 22vh, 220px) clamp(20px, 4vw, 48px);
+  text-align:center;
+}
+.final::before {
+  content:''; position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width:80vw; max-width:1100px;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(200,169,106,0.18), transparent 65%);
+  pointer-events:none;
+}
+.final-inner { position:relative; z-index:2; max-width:900px; margin:0 auto; }
+.final .eyebrow { margin-bottom:32px; justify-content:center; }
+.final h2 {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(42px, 7.5vw, 128px);
+  line-height:1.02;
+  letter-spacing:-0.02em;
+  margin-bottom:32px;
+}
+.final h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.final p {
+  font-size:16px; line-height:1.78;
+  color:rgba(246,241,232,0.65);
+  max-width:560px;
+  margin:0 auto 44px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  position:relative; z-index:2;
+  border-top:1px solid var(--line);
+  padding:48px clamp(20px, 4vw, 48px);
+}
+.footer-inner {
+  max-width:1280px; margin:0 auto;
+  display:flex; flex-direction:column; gap:20px;
+  align-items:flex-start;
+  font-size:11px; letter-spacing:0.22em; text-transform:uppercase;
+  color:rgba(246,241,232,0.4);
+}
+@media (min-width:768px){
+  .footer-inner { flex-direction:row; align-items:center; justify-content:space-between; }
+}
+.footer-mark {
+  font-family:var(--serif);
+  font-size:24px;
+  letter-spacing:0.08em;
+  color:var(--cream);
+  text-transform:none;
+}
+.footer-links { display:flex; gap:28px; }
+.footer-links a { transition:color 0.5s var(--ease); }
+.footer-links a:hover { color:var(--gold); }
+
+/* Reduced motion */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after {
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
   }
-  /* Pre-paint splash while React boots */
-  #root:empty::before {
-    content: 'Mindéa';
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(40px, 7vw, 88px);
-    letter-spacing: 0.04em;
-    color: #F6F1E8;
-    background: #000;
-    z-index: 10000;
-  }
+}
 </style>
-
-<!-- React + Framer Motion via importmap -->
-<script type="importmap">
-{
-  "imports": {
-    "react":            "https://esm.sh/react@18.3.1",
-    "react/":           "https://esm.sh/react@18.3.1/",
-    "react-dom":        "https://esm.sh/react-dom@18.3.1?deps=react@18.3.1",
-    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1",
-    "framer-motion":    "https://esm.sh/framer-motion@11.11.17?deps=react@18.3.1,react-dom@18.3.1&external=react"
-  }
-}
-</script>
-
-<!-- Babel for in-browser JSX (preview only — production uses Vite/Next.js) -->
-<script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
 </head>
-<body class="bg-black text-[#F6F1E8]">
+<body>
 
-<div id="root"></div>
+<!-- OVERLAYS -->
+<div class="grain" aria-hidden="true"></div>
+<div class="glow" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
 
-<script type="text/babel" data-type="module" data-presets="react">
-import React, { useEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useTransform,
-} from 'framer-motion';
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Mindéa</a>
+    <ul class="nav-menu">
+      <li><a href="#studio">Studio</a></li>
+      <li><a href="#leistungen">Leistungen</a></li>
+      <li><a href="#wirkung">Wirkung</a></li>
+      <li><a href="#pakete">Pakete</a></li>
+      <li><a href="#anfrage">Anfrage</a></li>
+    </ul>
+    <a href="#anfrage" class="nav-cta">Projekt anfragen</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen">
+      <span></span><span></span>
+    </button>
+  </div>
+</nav>
 
-/* ==================================================================
-   MINDÉA — Cinematic Brand Studio (live preview)
-   ================================================================== */
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close" id="navClose">Schließen ✕</button>
+  <a href="#studio">Studio</a>
+  <a href="#leistungen">Leistungen</a>
+  <a href="#wirkung">Wirkung</a>
+  <a href="#pakete">Pakete</a>
+  <a href="#anfrage">Anfrage</a>
+  <a href="#anfrage" class="mob-cta">Projekt anfragen</a>
+</div>
 
-const NAV = [
-  { href: '#studio',     label: 'Studio' },
-  { href: '#leistungen', label: 'Leistungen' },
-  { href: '#wirkung',    label: 'Wirkung' },
-  { href: '#pakete',     label: 'Pakete' },
-  { href: '#anfrage',    label: 'Anfrage' },
-];
+<!-- HERO -->
+<section class="hero" id="studio">
+  <div class="hero-visual" aria-hidden="true">
+    <svg viewBox="0 0 800 800">
+      <defs>
+        <radialGradient id="core" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#C8A96A" stop-opacity="0.55"/>
+          <stop offset="45%"  stop-color="#A68F72" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"   stop-color="#C8A96A" stop-opacity="0"/>
+          <stop offset="50%"  stop-color="#C8A96A" stop-opacity="0.65"/>
+          <stop offset="100%" stop-color="#C8A96A" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
 
-const STATS = [
-  { value: '3 Sek.', label: 'für den ersten Eindruck' },
-  { value: '100%',   label: 'remote umsetzbar' },
-  { value: '0',      label: 'Kamerateam nötig' },
-  { value: '1',      label: 'Markenmoment, der bleibt' },
-];
+      <circle cx="400" cy="400" r="320" fill="url(#core)">
+        <animate attributeName="r" values="300;340;300" dur="10s" repeatCount="indefinite"/>
+      </circle>
 
-const FEATURES = [
-  { title: 'Brand Presence',          desc: 'Ein cineastischer erster Eindruck für deine Marke.', large: true },
-  { title: 'Brand Story',             desc: 'Eine emotionale Markenstory aus Stimme, Bildern und Persönlichkeit.' },
-  { title: 'Brand Impact',            desc: 'Eine intensive Markeninszenierung für Website, Instagram und Launch-Momente.' },
-  { title: 'KI-gestützte Produktion', desc: 'Modern, effizient und trotzdem persönlich.', large: true },
-  { title: 'Ohne Drehtag',            desc: 'Du brauchst kein Kamerateam, kein Studio und keine perfekte Vorbereitung.' },
-  { title: 'Premium Markenwirkung',   desc: 'Für Selbstständige, die sichtbar werden wollen, ohne laut zu werden.' },
-];
+      <circle cx="400" cy="400" r="260" fill="none" stroke="url(#ring)" stroke-width="0.9" opacity="0.55">
+        <animateTransform attributeName="transform" type="rotate" from="0 400 400" to="360 400 400" dur="30s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="400" cy="400" r="320" fill="none" stroke="url(#ring)" stroke-width="0.9" opacity="0.43">
+        <animateTransform attributeName="transform" type="rotate" from="0 400 400" to="-360 400 400" dur="39s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="400" cy="400" r="380" fill="none" stroke="url(#ring)" stroke-width="0.9" opacity="0.31">
+        <animateTransform attributeName="transform" type="rotate" from="0 400 400" to="360 400 400" dur="48s" repeatCount="indefinite"/>
+      </circle>
 
-const EASE = [0.16, 1, 0.3, 1];
+      <g id="wave" transform="translate(140 400)" opacity="0.55"></g>
+      <g id="particles" opacity="0.7"></g>
+    </svg>
+  </div>
 
-function App() {
-  const [scrolled, setScrolled]     = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const heroRef = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start'],
-  });
-  const heroY       = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.35]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
-    const onMove = (e) => {
-      document.documentElement.style.setProperty('--mx', e.clientX + 'px');
-      document.documentElement.style.setProperty('--my', e.clientY + 'px');
-    };
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, []);
-
-  return (
-    <div className="relative min-h-screen bg-black text-[#F6F1E8] font-light antialiased overflow-x-hidden selection:bg-[#C8A96A] selection:text-black">
-      <FilmGrain />
-      <MouseGlow />
-      <GridBackdrop />
-
-      <Navbar scrolled={scrolled} onOpenMenu={() => setMobileOpen(true)} />
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
-
-      {/* HERO */}
-      <section
-        ref={heroRef}
-        id="studio"
-        className="relative min-h-screen flex items-center px-6 md:px-16 pt-40 pb-32 overflow-hidden"
-      >
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 pointer-events-none">
-          <HeroVisual />
-        </motion.div>
-
-        <div className="relative z-10 max-w-7xl mx-auto w-full grid md:grid-cols-12 gap-12 md:gap-16 items-end">
-          <div className="md:col-span-7">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.3, ease: EASE }}
-              className="flex items-center gap-4 text-[10px] tracking-[0.4em] uppercase text-[#C8A96A] mb-10"
-            >
-              <span className="w-10 h-px bg-[#C8A96A]" />
-              Cinematic Brand Studio · Berlin
-            </motion.div>
-
-            <h1 className="font-serif font-extralight tracking-[-0.02em] leading-[0.95] text-[clamp(46px,8.6vw,148px)] text-[#F6F1E8]">
-              <RevealLine delay={0.45}>Marken, die man</RevealLine>
-              <RevealLine delay={0.6}>nicht nur sieht.</RevealLine>
-              <RevealLine delay={0.75}><span className="italic text-[#C8A96A]">Sondern fühlt.</span></RevealLine>
-            </h1>
-          </div>
-
-          <div className="md:col-span-5 md:pl-10 md:pb-3">
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 1.0, ease: EASE }}
-              className="text-[15px] md:text-[17px] leading-[1.78] text-[#F6F1E8]/70 max-w-md font-light"
-            >
-              Mindéa verwandelt deine Bilder, deine Stimme und deine Geschichte
-              in cineastische Brand Videos, die Vertrauen schaffen, bevor du
-              ein Wort erklärst.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 1.15, ease: EASE }}
-              className="mt-10 flex items-center gap-7 flex-wrap"
-            >
-              <GoldButton href="#anfrage" primary>Brand Video anfragen</GoldButton>
-              <a
-                href="#pakete"
-                className="group text-[11px] tracking-[0.32em] uppercase text-[#F6F1E8]/70 hover:text-[#C8A96A] transition-colors duration-500 inline-flex items-center gap-3"
-              >
-                Pakete ansehen
-                <span aria-hidden className="inline-block transition-transform duration-500 group-hover:translate-x-1.5">→</span>
-              </a>
-            </motion.div>
-          </div>
-        </div>
-
-        <ScrollCue />
-      </section>
-
-      {/* STATS */}
-      <section id="wirkung" className="relative px-6 md:px-16 py-24 md:py-28 border-y border-[#C8A96A]/15">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-y-14 md:gap-y-0 md:gap-x-0 md:divide-x divide-[#C8A96A]/15">
-          {STATS.map((s, i) => (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 1.1, delay: i * 0.08, ease: EASE }}
-              className="md:px-10 first:md:pl-0"
-            >
-              <div className="font-serif font-extralight text-[44px] md:text-[64px] leading-none tracking-tight text-[#F6F1E8] mb-4">
-                {s.value}
-              </div>
-              <div className="text-[10.5px] tracking-[0.3em] uppercase text-[#F6F1E8]/55">{s.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* FEATURES — BENTO */}
-      <section id="leistungen" className="relative px-6 md:px-16 py-32 md:py-48">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end gap-10 mb-20 md:mb-24">
-            <h2 className="font-serif font-extralight text-[clamp(36px,5.6vw,82px)] leading-[1] tracking-[-0.012em] max-w-3xl">
-              <RevealLine>Eine Marke ist</RevealLine>
-              <RevealLine delay={0.1}><span className="italic text-[#C8A96A]">kein Posting.</span></RevealLine>
-            </h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.1, delay: 0.25, ease: EASE }}
-              className="text-[15px] text-[#F6F1E8]/55 max-w-sm md:ml-auto md:text-right leading-[1.75]"
-            >
-              Sechs Bausteine, die ein Mindéa-Projekt zu einem cineastischen Markenmoment machen.
-            </motion.p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 auto-rows-[minmax(220px,auto)]">
-            {FEATURES.map((f, i) => (
-              <FeatureCard key={f.title} {...f} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* PACKAGES */}
-      <section id="pakete" className="relative px-6 md:px-16 py-32 md:py-44 border-t border-[#C8A96A]/10">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-12 gap-10 items-end mb-16">
-            <h2 className="md:col-span-7 font-serif font-extralight text-[clamp(36px,5.4vw,80px)] leading-[1.02] tracking-[-0.01em]">
-              <RevealLine>Drei <span className="italic text-[#C8A96A]">Inszenierungen.</span></RevealLine>
-              <RevealLine delay={0.1}>Ein Studio.</RevealLine>
-            </h2>
-            <motion.p
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.1, delay: 0.2, ease: EASE }}
-              className="md:col-span-5 text-[15px] leading-[1.78] text-[#F6F1E8]/60 max-w-md md:ml-auto"
-            >
-              Jedes Mindéa-Programm ist ein eigenes Kapitel — kuratiert für die Phase,
-              in der sich deine Marke gerade befindet.
-            </motion.p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-5">
-            <PackageCard
-              index={1}
-              title={<>Brand <span className="italic text-[#C8A96A]">Presence</span></>}
-              lede="Der erste cineastische Auftritt. Für Gründerinnen, die bereit sind, gesehen zu werden — leise, präzise, edel."
-              items={[
-                '1 Brand Film · 60–90 Sek.',
-                '3 Editorial Still Frames',
-                'Mindéa Color & Sound Grading',
-                'Strategischer Brand-Tonality Call',
-              ]}
-            />
-            <PackageCard
-              index={2}
-              featured
-              tag="Signature"
-              title={<>Brand <span className="italic text-[#C8A96A]">Story</span></>}
-              lede="Ein vollständiges Markenkapitel. Ein Film, der ein Gefühl trägt — eine visuelle Identität, die international wirkt."
-              items={[
-                '1 Hero Brand Film · bis 3 Min.',
-                '5 Cinematic Still Frames',
-                '3 Social Cuts in Editorial-Stil',
-                'Brand Sound Design & Voice Layer',
-                'Mindéa Strategy Session',
-              ]}
-            />
-            <PackageCard
-              index={3}
-              title={<>Brand <span className="italic text-[#C8A96A]">Impact</span></>}
-              lede="Eine vollständige cineastische Kampagne. Für Marken, die in eine neue Dimension wechseln — und das auch fühlen sollen."
-              items={[
-                '3 Brand Films · Kapitel-Konzept',
-                '10 Editorial Still Frames',
-                'Komplette Social Suite',
-                'Kampagnen-Choreografie & Rollout',
-                '6 Monate kuratierte Begleitung',
-              ]}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* FINAL CTA */}
-      <section id="anfrage" className="relative px-6 md:px-16 py-40 md:py-52 text-center overflow-hidden">
-        <div aria-hidden className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] max-w-[1100px] aspect-square rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(200,169,106,0.18), transparent 65%)' }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, ease: EASE }}
-            className="inline-flex items-center gap-4 text-[10px] tracking-[0.4em] uppercase text-[#C8A96A] mb-10"
-          >
-            <span className="w-10 h-px bg-[#C8A96A]" />
-            Beginne dein Kapitel
-          </motion.div>
-
-          <h2 className="font-serif font-extralight text-[clamp(42px,7.5vw,128px)] leading-[1.02] tracking-[-0.02em] mb-10">
-            <RevealLine>Wenn deine Marke</RevealLine>
-            <RevealLine delay={0.12}>bereit ist, <span className="italic text-[#C8A96A]">gefühlt zu werden.</span></RevealLine>
-          </h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, delay: 0.3, ease: EASE }}
-            className="text-[#F6F1E8]/65 max-w-xl mx-auto mb-12 leading-[1.78]"
-          >
-            Mindéa arbeitet pro Saison mit einer kleinen, kuratierten Anzahl von Marken.
-            Jedes Projekt beginnt mit einem persönlichen Gespräch.
-          </motion.p>
-
-          <GoldButton href="mailto:hello@mindea-studio.de" filled>Projekt anfragen</GoldButton>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="relative border-t border-[#C8A96A]/15 px-6 md:px-16 py-12">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 text-[11px] tracking-[0.22em] uppercase text-[#F6F1E8]/40">
-          <div className="font-serif text-2xl tracking-[0.08em] text-[#F6F1E8] normal-case">Mindéa</div>
-          <div>© 2026 · A Studio of Quiet Cinema · Berlin</div>
-          <div className="flex gap-7">
-            <a className="hover:text-[#C8A96A] transition-colors duration-500" href="#">Impressum</a>
-            <a className="hover:text-[#C8A96A] transition-colors duration-500" href="#">Datenschutz</a>
-          </div>
-        </div>
-      </footer>
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow hero-eyebrow">Cinematic Brand Studio · Berlin</div>
+      <h1>
+        <span class="line-mask l-1"><span>Marken, die man</span></span>
+        <span class="line-mask l-2"><span>nicht nur sieht.</span></span>
+        <span class="line-mask l-3"><span class="it">Sondern fühlt.</span></span>
+      </h1>
     </div>
-  );
-}
-
-/* ===================== Sub-components ===================== */
-
-function FilmGrain() {
-  return (
-    <div
-      aria-hidden
-      className="fixed inset-0 pointer-events-none z-[60] opacity-[0.08] mix-blend-overlay"
-      style={{
-        backgroundImage:
-          "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>\")",
-        animation: 'mindeaGrain 1.6s steps(6) infinite',
-      }}
-    />
-  );
-}
-
-function MouseGlow() {
-  return (
-    <div
-      aria-hidden
-      className="fixed inset-0 pointer-events-none z-[1]"
-      style={{
-        background:
-          'radial-gradient(560px circle at var(--mx, 50%) var(--my, 38%), rgba(200,169,106,0.10), transparent 70%)',
-      }}
-    />
-  );
-}
-
-function GridBackdrop() {
-  return (
-    <div
-      aria-hidden
-      className="fixed inset-0 pointer-events-none z-0 opacity-[0.06]"
-      style={{
-        backgroundImage:
-          'linear-gradient(rgba(246,241,232,0.22) 1px, transparent 1px), linear-gradient(90deg, rgba(246,241,232,0.22) 1px, transparent 1px)',
-        backgroundSize: '88px 88px',
-        WebkitMaskImage: 'radial-gradient(ellipse at center, black 25%, transparent 80%)',
-        maskImage: 'radial-gradient(ellipse at center, black 25%, transparent 80%)',
-      }}
-    />
-  );
-}
-
-function Navbar({ scrolled, onOpenMenu }) {
-  return (
-    <nav
-      className={
-        'fixed top-0 left-0 right-0 z-50 px-6 md:px-12 transition-all duration-700 ease-out ' +
-        (scrolled
-          ? 'py-3 bg-black/65 backdrop-blur-xl border-b border-[#C8A96A]/10'
-          : 'py-6 border-b border-transparent')
-      }
-    >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <a href="#" className="font-serif text-2xl tracking-[0.08em] text-[#F6F1E8]">Mindéa</a>
-
-        <ul className="hidden md:flex gap-10">
-          {NAV.map((n) => (
-            <li key={n.href}>
-              <a
-                href={n.href}
-                className="group relative text-[11px] tracking-[0.28em] uppercase text-[#F6F1E8]/70 hover:text-[#C8A96A] transition-colors duration-500"
-              >
-                {n.label}
-                <span className="absolute left-0 -bottom-1.5 w-0 h-px bg-[#C8A96A] group-hover:w-full transition-all duration-500" />
-              </a>
-            </li>
-          ))}
-        </ul>
-
-        <a
-          href="#anfrage"
-          className="hidden md:inline-flex relative items-center px-6 py-3 rounded-full text-[11px] tracking-[0.28em] uppercase text-[#F6F1E8] border border-[#C8A96A]/40 hover:border-[#C8A96A] transition-all duration-500 group"
-        >
-          <span className="relative z-10">Projekt anfragen</span>
-          <span
-            className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-            style={{ boxShadow: '0 0 50px rgba(200,169,106,0.4), inset 0 0 16px rgba(200,169,106,0.16)' }}
-          />
+    <div class="hero-right">
+      <p class="hero-sub">
+        Mindéa verwandelt deine Bilder, deine Stimme und deine Geschichte in
+        cineastische Brand Videos, die Vertrauen schaffen, bevor du ein Wort
+        erklärst.
+      </p>
+      <div class="hero-actions">
+        <a href="#anfrage" class="btn btn-primary">
+          <span>Brand Video anfragen</span><span class="arrow"></span>
         </a>
-
-        <button onClick={onOpenMenu} className="md:hidden flex flex-col items-end gap-[6px]" aria-label="Menü öffnen">
-          <span className="block w-7 h-px bg-[#F6F1E8]" />
-          <span className="block w-5 h-px bg-[#F6F1E8]" />
-        </button>
+        <a href="#pakete" class="text-link">Pakete ansehen <span class="ar">→</span></a>
       </div>
-    </nav>
-  );
-}
-
-function MobileMenu({ open, onClose }) {
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ y: '-100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '-100%' }}
-          transition={{ duration: 0.8, ease: EASE }}
-          className="fixed inset-0 z-[80] bg-black flex flex-col items-center justify-center gap-8 px-6"
-        >
-          <button onClick={onClose} className="absolute top-8 right-8 text-[10px] tracking-[0.34em] uppercase text-[#F6F1E8]/70 hover:text-[#C8A96A] transition-colors">
-            Schließen ✕
-          </button>
-
-          {NAV.map((n, i) => (
-            <motion.a
-              key={n.href}
-              href={n.href}
-              onClick={onClose}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 + i * 0.06, ease: EASE }}
-              className="font-serif text-4xl text-[#F6F1E8] hover:text-[#C8A96A] transition-colors duration-500"
-            >
-              {n.label}
-            </motion.a>
-          ))}
-
-          <motion.a
-            href="#anfrage"
-            onClick={onClose}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5, ease: EASE }}
-            className="mt-6 px-7 py-3.5 rounded-full border border-[#C8A96A] text-[11px] tracking-[0.32em] uppercase text-[#F6F1E8]"
-          >
-            Projekt anfragen
-          </motion.a>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-function HeroVisual() {
-  const rings = [260, 320, 380];
-  const particles = Array.from({ length: 28 });
-  const waves = Array.from({ length: 60 });
-  return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <motion.div
-        animate={{ scale: [1, 1.04, 1], rotate: [0, 4, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-        className="w-[140%] md:w-[78%] max-w-[1100px] aspect-square"
-      >
-        <svg viewBox="0 0 800 800" className="w-full h-full opacity-80" aria-hidden>
-          <defs>
-            <radialGradient id="mindeaCore" cx="50%" cy="50%" r="50%">
-              <stop offset="0%"   stopColor="#C8A96A" stopOpacity="0.55" />
-              <stop offset="45%"  stopColor="#A68F72" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-            </radialGradient>
-            <linearGradient id="mindeaRing" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%"   stopColor="#C8A96A" stopOpacity="0" />
-              <stop offset="50%"  stopColor="#C8A96A" stopOpacity="0.65" />
-              <stop offset="100%" stopColor="#C8A96A" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-
-          <circle cx="400" cy="400" r="320" fill="url(#mindeaCore)">
-            <animate attributeName="r" values="300;340;300" dur="10s" repeatCount="indefinite" />
-          </circle>
-
-          {rings.map((r, i) => (
-            <circle key={r} cx="400" cy="400" r={r} fill="none" stroke="url(#mindeaRing)" strokeWidth="0.9" opacity={0.55 - i * 0.12}>
-              <animateTransform
-                attributeName="transform" type="rotate"
-                from="0 400 400" to={(i % 2 ? -360 : 360) + ' 400 400'}
-                dur={(30 + i * 9) + 's'} repeatCount="indefinite"
-              />
-            </circle>
-          ))}
-
-          <g transform="translate(140 400)" opacity="0.55">
-            {waves.map((_, i) => {
-              const h = 8 + 38 * Math.abs(Math.sin(i * 0.42));
-              return (
-                <rect key={i} x={i * 9} y={-h / 2} width="1.4" height={h} fill="#C8A96A"
-                  opacity={0.4 + 0.6 * Math.abs(Math.cos(i * 0.3))}>
-                  <animate attributeName="height" values={h + ';' + (h * 0.35) + ';' + h} dur={(3 + (i % 5)) + 's'} repeatCount="indefinite" />
-                  <animate attributeName="y"      values={(-h / 2) + ';' + (-h * 0.18) + ';' + (-h / 2)} dur={(3 + (i % 5)) + 's'} repeatCount="indefinite" />
-                </rect>
-              );
-            })}
-          </g>
-
-          {particles.map((_, i) => {
-            const x = 120 + (i * 53) % 560;
-            const y = 120 + (i * 91) % 560;
-            return (
-              <circle key={i} cx={x} cy={y} r="1.4" fill="#C8A96A" opacity="0.55">
-                <animate attributeName="opacity" values="0.15;0.85;0.15" dur={(4 + (i % 6)) + 's'} repeatCount="indefinite" />
-                <animate attributeName="r"       values="0.8;2.4;0.8"    dur={(5 + (i % 4)) + 's'} repeatCount="indefinite" />
-              </circle>
-            );
-          })}
-        </svg>
-      </motion.div>
     </div>
-  );
-}
+  </div>
 
-function ScrollCue() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1.4, delay: 1.6, ease: EASE }}
-      className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3 text-[10px] tracking-[0.34em] uppercase text-[#F6F1E8]/45"
-    >
-      <span>Scroll</span>
-      <span className="relative block w-px h-14 overflow-hidden bg-gradient-to-b from-transparent to-[#C8A96A]/70">
-        <motion.span
-          animate={{ y: ['-100%', '110%'] }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F6F1E8] to-transparent"
-        />
-      </span>
-    </motion.div>
-  );
-}
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <span class="line"></span>
+  </div>
+</section>
 
-function RevealLine({ children, delay = 0 }) {
-  return (
-    <span className="block overflow-hidden">
-      <motion.span
-        className="block"
-        initial={{ y: '108%' }}
-        whileInView={{ y: '0%' }}
-        viewport={{ once: true, margin: '-10% 0px' }}
-        transition={{ duration: 1.2, ease: EASE, delay }}
-      >
-        {children}
-      </motion.span>
-    </span>
-  );
-}
+<!-- STATS -->
+<section class="stats" id="wirkung">
+  <div class="stats-grid">
+    <div class="reveal">
+      <div class="stat-val">3 Sek.</div>
+      <div class="stat-lbl">für den ersten Eindruck</div>
+    </div>
+    <div class="reveal r-d1">
+      <div class="stat-val">100%</div>
+      <div class="stat-lbl">remote umsetzbar</div>
+    </div>
+    <div class="reveal r-d2">
+      <div class="stat-val">0</div>
+      <div class="stat-lbl">Kamerateam nötig</div>
+    </div>
+    <div class="reveal r-d3">
+      <div class="stat-val">1</div>
+      <div class="stat-lbl">Markenmoment, der bleibt</div>
+    </div>
+  </div>
+</section>
 
-function GoldButton({ href, children, primary = false, filled = false }) {
-  const base = 'group relative inline-flex items-center gap-4 px-8 py-4 rounded-full text-[11px] tracking-[0.32em] uppercase font-medium transition-all duration-500 ease-out';
-  const variant = filled
-    ? 'bg-[#C8A96A] text-black hover:bg-[#F6F1E8]'
-    : primary
-      ? 'text-[#F6F1E8] border border-[#C8A96A]/60 hover:border-[#C8A96A]'
-      : 'text-[#F6F1E8] border border-[#F6F1E8]/30 hover:border-[#C8A96A]';
-  return (
-    <motion.a href={href} whileHover={{ y: -2 }} transition={{ duration: 0.4, ease: EASE }} className={base + ' ' + variant}>
-      <span className="relative z-10">{children}</span>
-      <span className="relative z-10 inline-flex items-center">
-        <span className="block w-4 h-px bg-current transition-all duration-500 group-hover:w-6" />
-        <span className="block w-[6px] h-[6px] border-t border-r border-current rotate-45 -ml-[3px]" />
-      </span>
-      {!filled && (
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          style={{ boxShadow: '0 0 50px rgba(200,169,106,0.45), inset 0 0 18px rgba(200,169,106,0.18)' }}
-        />
-      )}
-    </motion.a>
-  );
-}
+<!-- FEATURES BENTO -->
+<section class="section" id="leistungen">
+  <div class="container">
+    <div class="features-head">
+      <h2 class="reveal">
+        <span class="line-mask"><span>Eine Marke ist</span></span>
+        <span class="line-mask l-d1"><span class="it">kein Posting.</span></span>
+      </h2>
+      <p class="reveal r-d2">Sechs Bausteine, die ein Mindéa-Projekt zu einem cineastischen Markenmoment machen.</p>
+    </div>
 
-function FeatureCard({ title, desc, index, large = false }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-10% 0px' }}
-      transition={{ duration: 1.2, delay: index * 0.06, ease: EASE }}
-      whileHover={{ y: -6 }}
-      className={'group relative overflow-hidden rounded-2xl border border-[#C8A96A]/15 bg-[#0B0B0B] p-8 md:p-10 flex flex-col justify-between min-h-[280px] ' + (large ? 'md:col-span-2' : '')}
-    >
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(200,169,106,0.45), 0 0 80px -20px rgba(200,169,106,0.45)' }}
-      />
-      <span
-        aria-hidden
-        className="absolute -top-px left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(200,169,106,0.8), transparent)' }}
-      />
-      <div className="relative">
-        <div className="font-serif italic text-sm text-[#C8A96A]/90 mb-6">— {String(index + 1).padStart(2, '0')}</div>
-        <h3 className={'font-serif font-normal tracking-[-0.005em] leading-[1.08] text-[#F6F1E8] ' + (large ? 'text-3xl md:text-[44px]' : 'text-2xl md:text-3xl')}>
-          {title}
-        </h3>
+    <div class="bento">
+      <div class="bento-card large reveal">
+        <div>
+          <div class="bento-num">— 01</div>
+          <h3>Brand Presence</h3>
+        </div>
+        <p>Ein cineastischer erster Eindruck für deine Marke.</p>
       </div>
-      <p className="relative mt-10 text-[14px] leading-[1.72] text-[#F6F1E8]/55 max-w-md">{desc}</p>
-    </motion.div>
-  );
-}
-
-function PackageCard({ index, title, lede, items, featured = false, tag }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-10% 0px' }}
-      transition={{ duration: 1.2, delay: (index - 1) * 0.08, ease: EASE }}
-      whileHover={{ y: -6 }}
-      className={'group relative overflow-hidden rounded-2xl p-10 md:p-12 flex flex-col transition-colors duration-700 ' + (
-        featured
-          ? 'bg-gradient-to-b from-[#1a1612] to-[#0B0B0B] border border-[#C8A96A]/40'
-          : 'bg-[#0B0B0B] border border-[#C8A96A]/15 hover:border-[#C8A96A]/45'
-      )}
-    >
-      {featured && (
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-2xl pointer-events-none"
-          style={{ boxShadow: '0 0 80px -30px rgba(200,169,106,0.55), inset 0 0 0 1px rgba(200,169,106,0.18)' }}
-        />
-      )}
-      <div className="relative font-serif italic text-sm text-[#C8A96A] mb-8 tracking-[0.04em]">
-        — {String(index).padStart(2, '0')}{tag ? ' · ' + tag : ''}
+      <div class="bento-card reveal r-d1">
+        <div>
+          <div class="bento-num">— 02</div>
+          <h3>Brand Story</h3>
+        </div>
+        <p>Eine emotionale Markenstory aus Stimme, Bildern und Persönlichkeit.</p>
       </div>
-      <h3 className="relative font-serif font-normal text-3xl md:text-[40px] leading-[1.08] tracking-[-0.005em] text-[#F6F1E8] mb-5">{title}</h3>
-      <p className="relative text-[14.5px] leading-[1.72] text-[#F6F1E8]/55 mb-8 pb-7 border-b border-[#C8A96A]/15">{lede}</p>
-      <ul className="relative flex-1 space-y-2.5 mb-10">
-        {items.map((it) => (
-          <li key={it} className="relative pl-6 text-[14px] leading-[1.6] text-[#F6F1E8]/70">
-            <span className="absolute left-0 top-[13px] w-3 h-px bg-[#C8A96A]" />
-            {it}
-          </li>
-        ))}
-      </ul>
-      <a href="#anfrage" className="relative inline-flex items-center gap-3 text-[11px] tracking-[0.32em] uppercase text-[#F6F1E8] group-hover:text-[#C8A96A] transition-all duration-500">
-        Anfrage stellen
-        <span className="inline-block transition-transform duration-500 group-hover:translate-x-1.5">→</span>
-      </a>
-    </motion.div>
-  );
-}
+      <div class="bento-card reveal r-d2">
+        <div>
+          <div class="bento-num">— 03</div>
+          <h3>Brand Impact</h3>
+        </div>
+        <p>Eine intensive Markeninszenierung für Website, Instagram und Launch-Momente.</p>
+      </div>
+      <div class="bento-card large reveal r-d3">
+        <div>
+          <div class="bento-num">— 04</div>
+          <h3>KI-gestützte Produktion</h3>
+        </div>
+        <p>Modern, effizient und trotzdem persönlich.</p>
+      </div>
+      <div class="bento-card reveal r-d4">
+        <div>
+          <div class="bento-num">— 05</div>
+          <h3>Ohne Drehtag</h3>
+        </div>
+        <p>Du brauchst kein Kamerateam, kein Studio und keine perfekte Vorbereitung.</p>
+      </div>
+      <div class="bento-card reveal r-d5">
+        <div>
+          <div class="bento-num">— 06</div>
+          <h3>Premium Markenwirkung</h3>
+        </div>
+        <p>Für Selbstständige, die sichtbar werden wollen, ohne laut zu werden.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-createRoot(document.getElementById('root')).render(<App />);
+<!-- PACKAGES -->
+<section class="section" id="pakete" style="border-top:1px solid var(--line-soft);">
+  <div class="container">
+    <div class="packages-head">
+      <h2>
+        <span class="line-mask reveal-line"><span>Drei <span class="it">Inszenierungen.</span></span></span>
+        <span class="line-mask reveal-line l-d1"><span>Ein Studio.</span></span>
+      </h2>
+      <p class="reveal r-d2">
+        Jedes Mindéa-Programm ist ein eigenes Kapitel — kuratiert für die Phase,
+        in der sich deine Marke gerade befindet.
+      </p>
+    </div>
+
+    <div class="pkg-grid">
+      <div class="pkg reveal">
+        <div class="pkg-num">— 01</div>
+        <h3>Brand <span class="it">Presence</span></h3>
+        <p class="pkg-lede">
+          Der erste cineastische Auftritt. Für Gründerinnen, die bereit sind,
+          gesehen zu werden — leise, präzise, edel.
+        </p>
+        <ul class="pkg-list">
+          <li>1 Brand Film · 60–90 Sek.</li>
+          <li>3 Editorial Still Frames</li>
+          <li>Mindéa Color &amp; Sound Grading</li>
+          <li>Strategischer Brand-Tonality Call</li>
+        </ul>
+        <a href="#anfrage" class="pkg-cta">Anfrage stellen <span class="ar">→</span></a>
+      </div>
+
+      <div class="pkg pkg-featured reveal r-d1">
+        <div class="pkg-num">— 02 · Signature</div>
+        <h3>Brand <span class="it">Story</span></h3>
+        <p class="pkg-lede">
+          Ein vollständiges Markenkapitel. Ein Film, der ein Gefühl trägt —
+          eine visuelle Identität, die international wirkt.
+        </p>
+        <ul class="pkg-list">
+          <li>1 Hero Brand Film · bis 3 Min.</li>
+          <li>5 Cinematic Still Frames</li>
+          <li>3 Social Cuts in Editorial-Stil</li>
+          <li>Brand Sound Design &amp; Voice Layer</li>
+          <li>Mindéa Strategy Session</li>
+        </ul>
+        <a href="#anfrage" class="pkg-cta">Anfrage stellen <span class="ar">→</span></a>
+      </div>
+
+      <div class="pkg reveal r-d2">
+        <div class="pkg-num">— 03</div>
+        <h3>Brand <span class="it">Impact</span></h3>
+        <p class="pkg-lede">
+          Eine vollständige cineastische Kampagne. Für Marken, die in eine neue
+          Dimension wechseln — und das auch fühlen sollen.
+        </p>
+        <ul class="pkg-list">
+          <li>3 Brand Films · Kapitel-Konzept</li>
+          <li>10 Editorial Still Frames</li>
+          <li>Komplette Social Suite</li>
+          <li>Kampagnen-Choreografie &amp; Rollout</li>
+          <li>6 Monate kuratierte Begleitung</li>
+        </ul>
+        <a href="#anfrage" class="pkg-cta">Anfrage stellen <span class="ar">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="anfrage">
+  <div class="final-inner">
+    <div class="eyebrow reveal">Beginne dein Kapitel</div>
+    <h2>
+      <span class="line-mask reveal-line"><span>Wenn deine Marke</span></span>
+      <span class="line-mask reveal-line l-d1"><span>bereit ist, <span class="it">gefühlt zu werden.</span></span></span>
+    </h2>
+    <p class="reveal r-d2">
+      Mindéa arbeitet pro Saison mit einer kleinen, kuratierten Anzahl von Marken.
+      Jedes Projekt beginnt mit einem persönlichen Gespräch.
+    </p>
+    <a href="mailto:hello@mindea-studio.de" class="btn btn-filled reveal r-d3">
+      <span>Projekt anfragen</span><span class="arrow"></span>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-mark">Mindéa</div>
+    <div>© 2026 · A Studio of Quiet Cinema · Berlin</div>
+    <div class="footer-links">
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  // ---------- Build SVG waveform + particles (so hero feels alive) ----------
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const wave = document.getElementById('wave');
+  const particles = document.getElementById('particles');
+
+  if (wave) {
+    for (let i = 0; i < 60; i++) {
+      const h = 8 + 38 * Math.abs(Math.sin(i * 0.42));
+      const r = document.createElementNS(SVG_NS, 'rect');
+      r.setAttribute('x', i * 9);
+      r.setAttribute('y', -h / 2);
+      r.setAttribute('width', '1.4');
+      r.setAttribute('height', h);
+      r.setAttribute('fill', '#C8A96A');
+      r.setAttribute('opacity', (0.4 + 0.6 * Math.abs(Math.cos(i * 0.3))).toFixed(2));
+      const a1 = document.createElementNS(SVG_NS, 'animate');
+      a1.setAttribute('attributeName', 'height');
+      a1.setAttribute('values', `${h};${(h*0.35).toFixed(1)};${h}`);
+      a1.setAttribute('dur', (3 + (i % 5)) + 's');
+      a1.setAttribute('repeatCount', 'indefinite');
+      const a2 = document.createElementNS(SVG_NS, 'animate');
+      a2.setAttribute('attributeName', 'y');
+      a2.setAttribute('values', `${(-h/2).toFixed(1)};${(-h*0.18).toFixed(1)};${(-h/2).toFixed(1)}`);
+      a2.setAttribute('dur', (3 + (i % 5)) + 's');
+      a2.setAttribute('repeatCount', 'indefinite');
+      r.appendChild(a1); r.appendChild(a2);
+      wave.appendChild(r);
+    }
+  }
+
+  if (particles) {
+    for (let i = 0; i < 28; i++) {
+      const x = 120 + (i * 53) % 560;
+      const y = 120 + (i * 91) % 560;
+      const c = document.createElementNS(SVG_NS, 'circle');
+      c.setAttribute('cx', x); c.setAttribute('cy', y);
+      c.setAttribute('r', '1.4'); c.setAttribute('fill', '#C8A96A');
+      c.setAttribute('opacity', '0.55');
+      const a1 = document.createElementNS(SVG_NS, 'animate');
+      a1.setAttribute('attributeName', 'opacity');
+      a1.setAttribute('values', '0.15;0.85;0.15');
+      a1.setAttribute('dur', (4 + (i % 6)) + 's');
+      a1.setAttribute('repeatCount', 'indefinite');
+      const a2 = document.createElementNS(SVG_NS, 'animate');
+      a2.setAttribute('attributeName', 'r');
+      a2.setAttribute('values', '0.8;2.4;0.8');
+      a2.setAttribute('dur', (5 + (i % 4)) + 's');
+      a2.setAttribute('repeatCount', 'indefinite');
+      c.appendChild(a1); c.appendChild(a2);
+      particles.appendChild(c);
+    }
+  }
+
+  // ---------- Trigger hero line-mask reveals on load ----------
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.hero h1 .line-mask').forEach(el => el.classList.add('in'));
+  });
+
+  // ---------- Mouse glow follows cursor ----------
+  window.addEventListener('mousemove', (e) => {
+    document.documentElement.style.setProperty('--mx', e.clientX + 'px');
+    document.documentElement.style.setProperty('--my', e.clientY + 'px');
+  }, { passive: true });
+
+  // ---------- Nav scroll state ----------
+  const nav = document.getElementById('nav');
+  const updateNav = () => nav.classList.toggle('scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // ---------- Mobile menu ----------
+  const toggle = document.getElementById('navToggle');
+  const menu   = document.getElementById('mobileMenu');
+  const close  = document.getElementById('navClose');
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => menu.classList.add('open'));
+    close && close.addEventListener('click', () => menu.classList.remove('open'));
+    menu.querySelectorAll('a').forEach(a =>
+      a.addEventListener('click', () => menu.classList.remove('open'))
+    );
+  }
+
+  // ---------- Reveal on scroll (IntersectionObserver) ----------
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        // Also reveal inner line-masks if any
+        entry.target.querySelectorAll('.line-mask').forEach(el => el.classList.add('in'));
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.14, rootMargin: '0px 0px -60px 0px' });
+
+  document.querySelectorAll('.reveal, .reveal-line').forEach(el => io.observe(el));
+  // Stand-alone line-masks (not wrapped by .reveal)
+  document.querySelectorAll('.line-mask').forEach(el => io.observe(el));
+})();
 </script>
 
 </body>
