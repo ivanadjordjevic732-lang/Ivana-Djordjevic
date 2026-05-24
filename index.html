@@ -550,9 +550,94 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   border-radius:18px;
   padding:40px 36px 36px;
   display:flex; flex-direction:column;
-  transition:transform 0.7s var(--ease), border-color 0.7s var(--ease);
+  cursor:pointer;
+  align-self:start;
+  transition:transform 0.7s var(--ease), border-color 0.7s var(--ease), box-shadow 0.7s var(--ease);
 }
 .pkg:hover { transform:translateY(-6px); border-color:rgba(200,169,106,0.45); }
+.pkg.open {
+  transform:translateY(-8px);
+  border-color:var(--gold);
+  box-shadow:0 50px 100px -40px rgba(0,0,0,0.8), 0 0 80px -30px rgba(200,169,106,0.35);
+}
+.pkg-toggle-hint {
+  margin-top:4px;
+  font-size:10px; letter-spacing:0.32em; text-transform:uppercase;
+  color:rgba(246,241,232,0.4);
+  display:inline-flex; align-items:center; gap:10px;
+  transition:color 0.5s var(--ease);
+}
+.pkg-toggle-hint .chev {
+  display:inline-block;
+  transition:transform 0.6s var(--ease);
+}
+.pkg.open .pkg-toggle-hint { color:var(--gold); }
+.pkg.open .pkg-toggle-hint .chev { transform:rotate(180deg); }
+
+/* Expandable inner section using grid-row trick (smooth height anim) */
+.pkg-details {
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows 0.8s var(--ease), margin 0.8s var(--ease);
+  margin-top:0;
+}
+.pkg.open .pkg-details {
+  grid-template-rows:1fr;
+  margin-top:32px;
+}
+.pkg-details-inner {
+  overflow:hidden;
+  min-height:0;
+  padding-top:0;
+  border-top:1px solid var(--line);
+  opacity:0;
+  transition:opacity 0.6s var(--ease) 0.2s, padding-top 0.6s var(--ease);
+}
+.pkg.open .pkg-details-inner {
+  opacity:1;
+  padding-top:28px;
+}
+.pkg-price {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(36px, 4.2vw, 56px);
+  line-height:1;
+  letter-spacing:-0.015em;
+  color:var(--cream);
+  margin-bottom:6px;
+}
+.pkg-price .ab {
+  font-size:14px; font-style:italic;
+  color:var(--gold);
+  margin-right:6px;
+  letter-spacing:0.04em;
+  vertical-align:middle;
+}
+.pkg-price-note {
+  font-size:10.5px; letter-spacing:0.28em; text-transform:uppercase;
+  color:rgba(246,241,232,0.45);
+  margin-bottom:28px;
+}
+.pkg-long {
+  font-size:14.5px; line-height:1.78;
+  color:rgba(246,241,232,0.7);
+  margin-bottom:24px;
+}
+.pkg-long p + p { margin-top:14px; }
+.pkg-extra-link {
+  display:inline-flex; align-items:center; gap:12px;
+  font-size:11px; letter-spacing:0.32em; text-transform:uppercase;
+  color:var(--gold);
+  padding:14px 24px;
+  border:1px solid rgba(200,169,106,0.4);
+  border-radius:999px;
+  transition:background 0.5s var(--ease), color 0.5s var(--ease), border-color 0.5s var(--ease);
+  margin-top:8px;
+}
+.pkg-extra-link:hover {
+  background:var(--gold); color:var(--ink); border-color:var(--gold);
+}
+.pkg-extra-link .ar { transition:transform 0.5s var(--ease); display:inline-block; }
+.pkg-extra-link:hover .ar { transform:translateX(4px); }
 @media (min-width:880px){ .pkg { padding:48px 40px 40px; } }
 
 .pkg-featured {
@@ -884,7 +969,12 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
     </div>
 
     <div class="pkg-grid">
-      <div class="pkg reveal">
+
+      <!-- ============================================================
+           PAKET 1 · BRAND PRESENCE
+           >>> ERSETZE: data-price · data-link · .pkg-long · .pkg-list
+           ============================================================ -->
+      <div class="pkg reveal" data-pkg>
         <div class="pkg-num">— 01</div>
         <h3>Brand <span class="it">Presence</span></h3>
         <p class="pkg-lede">
@@ -897,10 +987,30 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
           <li>Mindéa Color &amp; Sound Grading</li>
           <li>Strategischer Brand-Tonality Call</li>
         </ul>
-        <a href="#anfrage" class="pkg-cta">Anfrage stellen <span class="ar">→</span></a>
+        <span class="pkg-toggle-hint">Details ansehen <span class="chev">▾</span></span>
+
+        <div class="pkg-details">
+          <div class="pkg-details-inner">
+            <div class="pkg-price"><span class="ab">ab</span>PREIS EINTRAGEN €</div>
+            <div class="pkg-price-note">zzgl. USt · einmalige Investition</div>
+            <div class="pkg-long">
+              <p>
+                <!-- ECHTEN LANGEN BESCHREIBUNGSTEXT VON
+                     mindea-studio.de/service-und-preise HIER EINFÜGEN -->
+                Platzhalter — lange Beschreibung zu Brand Presence einfügen.
+              </p>
+            </div>
+            <a href="#" class="pkg-extra-link">
+              Jetzt buchen <span class="ar">→</span>
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div class="pkg pkg-featured reveal r-d1">
+      <!-- ============================================================
+           PAKET 2 · BRAND STORY (SIGNATURE)
+           ============================================================ -->
+      <div class="pkg pkg-featured reveal r-d1" data-pkg>
         <div class="pkg-num">— 02 · Signature</div>
         <h3>Brand <span class="it">Story</span></h3>
         <p class="pkg-lede">
@@ -914,10 +1024,26 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
           <li>Brand Sound Design &amp; Voice Layer</li>
           <li>Mindéa Strategy Session</li>
         </ul>
-        <a href="#anfrage" class="pkg-cta">Anfrage stellen <span class="ar">→</span></a>
+        <span class="pkg-toggle-hint">Details ansehen <span class="chev">▾</span></span>
+
+        <div class="pkg-details">
+          <div class="pkg-details-inner">
+            <div class="pkg-price"><span class="ab">ab</span>PREIS EINTRAGEN €</div>
+            <div class="pkg-price-note">zzgl. USt · einmalige Investition</div>
+            <div class="pkg-long">
+              <p>Platzhalter — lange Beschreibung zu Brand Story einfügen.</p>
+            </div>
+            <a href="#" class="pkg-extra-link">
+              Jetzt buchen <span class="ar">→</span>
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div class="pkg reveal r-d2">
+      <!-- ============================================================
+           PAKET 3 · BRAND IMPACT
+           ============================================================ -->
+      <div class="pkg reveal r-d2" data-pkg>
         <div class="pkg-num">— 03</div>
         <h3>Brand <span class="it">Impact</span></h3>
         <p class="pkg-lede">
@@ -931,7 +1057,20 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
           <li>Kampagnen-Choreografie &amp; Rollout</li>
           <li>6 Monate kuratierte Begleitung</li>
         </ul>
-        <a href="#anfrage" class="pkg-cta">Anfrage stellen <span class="ar">→</span></a>
+        <span class="pkg-toggle-hint">Details ansehen <span class="chev">▾</span></span>
+
+        <div class="pkg-details">
+          <div class="pkg-details-inner">
+            <div class="pkg-price"><span class="ab">ab</span>PREIS EINTRAGEN €</div>
+            <div class="pkg-price-note">zzgl. USt · einmalige Investition</div>
+            <div class="pkg-long">
+              <p>Platzhalter — lange Beschreibung zu Brand Impact einfügen.</p>
+            </div>
+            <a href="#" class="pkg-extra-link">
+              Jetzt buchen <span class="ar">→</span>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1066,6 +1205,36 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   document.querySelectorAll('.reveal, .reveal-line').forEach(el => io.observe(el));
   // Stand-alone line-masks (not wrapped by .reveal)
   document.querySelectorAll('.line-mask').forEach(el => io.observe(el));
+
+  // ---------- Package cards: click to expand (only one open at a time) ----------
+  const pkgs = document.querySelectorAll('[data-pkg]');
+  pkgs.forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Don't toggle if user clicked an inner link (booking CTA, etc.)
+      if (e.target.closest('a')) return;
+      const wasOpen = card.classList.contains('open');
+      pkgs.forEach(c => c.classList.remove('open'));
+      if (!wasOpen) {
+        card.classList.add('open');
+        // Smooth scroll the expanded card into view so the price is visible
+        setTimeout(() => {
+          const rect = card.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight - 40) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, 250);
+      }
+    });
+    // Keyboard accessibility
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
 })();
 </script>
 
