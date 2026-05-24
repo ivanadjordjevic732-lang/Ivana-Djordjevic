@@ -1,0 +1,3301 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0b08">
+<meta name="apple-mobile-web-app-title" content="Mindéa">
+<title>Mindéa — Luxus-Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ============================================================
+   MINDÉA — LUXURY OPERATING SYSTEM
+   Master Design Tokens (Home Screen DNA → inherited globally)
+   ============================================================ */
+:root{
+  /* — Palette: warm champagne / editorial ivory — */
+  --ink-900:#0d0b08;
+  --ink-800:#1a1612;
+  --ink-700:#231e18;
+  --ink-600:#2c251e;
+  --ink-500:#3a3128;
+
+  --ivory-50:#fbf7f0;
+  --ivory-100:#f5ecdc;
+  --ivory-200:#ebdfc8;
+  --ivory-300:#dccdb0;
+
+  --champ-400:#c8a16a;
+  --champ-500:#b8904a;
+  --champ-600:#a07a3a;
+  --champ-700:#7d5c28;
+
+  --gold-glow:rgba(200,161,106,.18);
+  --gold-soft:rgba(200,161,106,.08);
+
+  /* — Semantic — */
+  --bg:        #f4ecdb;
+  --bg-elev:   #fbf7f0;
+  --bg-card:   #ffffff;
+  --bg-tint:   rgba(255,255,255,.55);
+  --bg-glass:  rgba(255,255,255,.42);
+  --border:    rgba(122, 92, 56, .12);
+  --border-strong: rgba(122, 92, 56, .22);
+  --text:      #2a2118;
+  --text-mute: #7a6549;
+  --text-faint:rgba(122,92,56,.45);
+
+  --accent:        #8b6432;
+  --accent-soft:   #b8904a;
+  --accent-tint:   rgba(139,100,50,.08);
+  --accent-tint-2: rgba(139,100,50,.14);
+
+  --pos: #2e7d5e;
+  --neg: #b8490a;
+  --info:#4a7a96;
+  --vio: #6b5a8e;
+
+  /* — Depth system — */
+  --sh-1: 0 1px 2px rgba(34,24,12,.04), 0 1px 1px rgba(34,24,12,.03);
+  --sh-2: 0 4px 14px -4px rgba(34,24,12,.10), 0 2px 6px -2px rgba(34,24,12,.06);
+  --sh-3: 0 18px 40px -16px rgba(34,24,12,.22), 0 6px 14px -6px rgba(34,24,12,.10);
+  --sh-glow: 0 0 0 1px rgba(200,161,106,.22), 0 18px 50px -16px rgba(184,144,74,.40);
+
+  /* — Geometry — */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-full: 999px;
+
+  /* — Motion — */
+  --ease: cubic-bezier(.2,.7,.2,1);
+  --spring: cubic-bezier(.34,1.56,.64,1);
+
+  /* — Gradients — */
+  --grad-gold: linear-gradient(135deg,#8b6432 0%,#b8904a 55%,#d6b378 100%);
+  --grad-ink:  linear-gradient(160deg,#1a1612 0%,#231e18 60%,#0d0b08 100%);
+  --grad-ambient: radial-gradient(120% 80% at 0% 0%, rgba(200,161,106,.20) 0%, transparent 55%),
+                  radial-gradient(80% 60% at 100% 100%, rgba(74,122,150,.10) 0%, transparent 60%);
+}
+
+/* Dark mode — entire app inherits */
+body.dark{
+  --bg:        #0d0b08;
+  --bg-elev:   #14110d;
+  --bg-card:   #1a1612;
+  --bg-tint:   rgba(255,255,255,.03);
+  --bg-glass:  rgba(26,22,18,.55);
+  --border:    rgba(200,161,106,.10);
+  --border-strong: rgba(200,161,106,.20);
+  --text:      #ece2cc;
+  --text-mute: #a89470;
+  --text-faint:rgba(200,161,106,.45);
+  --accent:        #c8a16a;
+  --accent-soft:   #d6b378;
+  --accent-tint:   rgba(200,161,106,.10);
+  --accent-tint-2: rgba(200,161,106,.18);
+  --sh-1: 0 1px 2px rgba(0,0,0,.40), 0 1px 1px rgba(0,0,0,.30);
+  --sh-2: 0 6px 18px -4px rgba(0,0,0,.55), 0 2px 6px -2px rgba(0,0,0,.35);
+  --sh-3: 0 22px 50px -16px rgba(0,0,0,.70), 0 8px 18px -6px rgba(0,0,0,.45);
+  --grad-ambient: radial-gradient(120% 80% at 0% 0%, rgba(200,161,106,.10) 0%, transparent 55%),
+                  radial-gradient(80% 60% at 100% 100%, rgba(74,122,150,.08) 0%, transparent 60%);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;overflow:hidden;position:fixed;inset:0}
+body{
+  font-family:'Inter','DM Sans',-apple-system,sans-serif;
+  font-feature-settings:'ss01','cv11','ss03';
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  letter-spacing:-.01em;
+  line-height:1.5;
+  font-size:14px;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;letter-spacing:inherit}
+input,textarea,select{font:inherit;color:inherit;background:none;border:none;outline:none;letter-spacing:inherit}
+svg{display:block}
+img{max-width:100%;display:block}
+
+/* Ambient texture layers — applied to the app shell so the entire UI sits on the same atmosphere */
+.atmosphere{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:var(--grad-ambient);
+  opacity:.9;
+}
+.grain{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  opacity:.045;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .8 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+.app{
+  position:relative;
+  width:100%;
+  max-width:480px;
+  height:100%;
+  margin:0 auto;
+  background:var(--bg);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  isolation:isolate;
+}
+@media (min-width:520px){
+  body{background:linear-gradient(180deg,#1a1612,#0d0b08);align-items:center;justify-content:center;display:flex;padding:24px}
+  body.dark{background:#000}
+  .app{
+    max-width:430px;
+    height:min(920px, calc(100% - 32px));
+    border-radius:44px;
+    box-shadow: 0 60px 120px -30px rgba(0,0,0,.55), 0 0 0 1px rgba(200,161,106,.10), inset 0 0 0 8px rgba(0,0,0,.6);
+    border:1px solid rgba(200,161,106,.12);
+  }
+}
+
+/* ============================================================
+   STATUS BAR / TOP BAR
+   ============================================================ */
+.status-bar{
+  position:relative;z-index:5;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px 6px;font-size:11px;font-weight:600;letter-spacing:.06em;
+  color:var(--text);opacity:.85;
+}
+.status-bar .right{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px}
+
+.top-bar{
+  position:relative;z-index:5;
+  padding:8px 22px 14px;
+  display:flex;align-items:center;gap:12px;
+}
+.brand{
+  display:flex;align-items:center;gap:11px;
+}
+.brand-mark{
+  width:38px;height:38px;border-radius:12px;
+  background:var(--grad-gold);
+  display:grid;place-items:center;
+  font-family:'Playfair Display',serif;font-weight:600;font-size:18px;color:#fff;font-style:italic;
+  box-shadow:0 8px 22px -6px rgba(184,144,74,.55), inset 0 1px 0 rgba(255,255,255,.30);
+  letter-spacing:-.02em;
+}
+.brand-text{display:flex;flex-direction:column;line-height:1.05}
+.brand-name{
+  font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);
+  letter-spacing:.02em;
+}
+.brand-meta{
+  font-size:9px;letter-spacing:.32em;font-weight:600;color:var(--text-faint);
+  text-transform:uppercase;margin-top:2px;
+}
+.top-actions{margin-left:auto;display:flex;gap:6px;align-items:center}
+.icon-btn{
+  width:38px;height:38px;border-radius:12px;
+  background:var(--bg-glass);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  display:grid;place-items:center;
+  color:var(--text);
+  transition:transform .25s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+  position:relative;
+}
+.icon-btn:hover{background:var(--bg-card);box-shadow:var(--sh-2)}
+.icon-btn:active{transform:scale(.92)}
+.icon-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.icon-btn .dot{
+  position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;
+  background:var(--accent-soft);box-shadow:0 0 0 2px var(--bg-card), 0 0 12px var(--accent-soft);
+}
+
+/* ============================================================
+   SCREEN SYSTEM
+   ============================================================ */
+.screens{
+  position:relative;z-index:2;
+  flex:1;min-height:0;overflow:hidden;
+}
+.screen{
+  position:absolute;inset:0;
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:8px 22px 140px;
+  opacity:0;pointer-events:none;
+  transform:translateY(8px) scale(.992);
+  transition:opacity .42s var(--ease), transform .55s var(--ease);
+  will-change:transform,opacity;
+}
+.screen.active{opacity:1;pointer-events:auto;transform:none}
+.screen::-webkit-scrollbar{width:0}
+
+/* — Page header (inherited everywhere) — */
+.page-head{
+  padding:6px 0 20px;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
+}
+.page-eyebrow{
+  font-size:10px;letter-spacing:.32em;font-weight:600;color:var(--text-faint);
+  text-transform:uppercase;margin-bottom:6px;
+}
+.page-title{
+  font-family:'Playfair Display',serif;
+  font-size:30px;line-height:1.05;font-weight:500;letter-spacing:-.015em;
+  color:var(--text);
+}
+.page-title em{font-style:italic;color:var(--accent)}
+.page-sub{margin-top:8px;font-size:13px;color:var(--text-mute);max-width:34ch}
+.page-aside{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+
+/* ============================================================
+   GLASS CARDS (the universal vocabulary)
+   ============================================================ */
+.card{
+  position:relative;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--r-md);
+  box-shadow:var(--sh-1);
+  overflow:hidden;
+}
+.card-pad{padding:18px}
+.card-pad-lg{padding:22px}
+.card.glass{
+  background:var(--bg-glass);
+  backdrop-filter:blur(28px) saturate(140%);
+  -webkit-backdrop-filter:blur(28px) saturate(140%);
+}
+.card.ink{
+  background:var(--grad-ink);
+  color:#ece2cc;
+  border:1px solid rgba(200,161,106,.18);
+  box-shadow:var(--sh-3);
+}
+.card.ink .text-mute{color:rgba(236,226,204,.55)}
+
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding-bottom:12px;margin-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.card-title{font-size:11px;letter-spacing:.22em;font-weight:600;text-transform:uppercase;color:var(--text-mute)}
+.card-action{font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.04em;display:flex;align-items:center;gap:4px}
+
+/* ============================================================
+   TYPOGRAPHY ATOMS
+   ============================================================ */
+.h-display{font-family:'Playfair Display',serif;font-weight:500;letter-spacing:-.015em}
+.eyebrow{font-size:10px;letter-spacing:.32em;font-weight:600;color:var(--text-faint);text-transform:uppercase}
+.label{font-size:10px;letter-spacing:.2em;font-weight:600;color:var(--text-mute);text-transform:uppercase}
+.metric{font-family:'Playfair Display',serif;font-weight:600;letter-spacing:-.02em;color:var(--text)}
+.mono{font-family:'JetBrains Mono',monospace;font-feature-settings:'tnum';letter-spacing:0}
+.text-mute{color:var(--text-mute)}
+.text-faint{color:var(--text-faint)}
+.text-accent{color:var(--accent)}
+.text-pos{color:var(--pos)}
+.text-neg{color:var(--neg)}
+
+/* ============================================================
+   FLOATING DOCK (inherited)
+   ============================================================ */
+.dock-wrap{
+  position:absolute;left:0;right:0;bottom:0;z-index:20;
+  padding:0 14px 14px;
+  pointer-events:none;
+}
+.dock{
+  pointer-events:auto;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-glass);
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  border:1px solid var(--border-strong);
+  border-radius:var(--r-full);
+  padding:8px;
+  box-shadow:var(--sh-3), inset 0 1px 0 rgba(255,255,255,.45);
+  gap:4px;
+}
+body.dark .dock{box-shadow:var(--sh-3), inset 0 1px 0 rgba(255,255,255,.06)}
+.dock-btn{
+  flex:1;height:48px;border-radius:var(--r-full);
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  color:var(--text-mute);
+  transition:all .35s var(--ease);
+  position:relative;
+  font-size:12px;font-weight:600;letter-spacing:.02em;
+  overflow:hidden;
+}
+.dock-btn svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.dock-btn .label-txt{display:none;white-space:nowrap}
+.dock-btn.active{
+  background:var(--grad-gold);
+  color:#fff;
+  flex:1.6;
+  box-shadow:0 10px 26px -8px rgba(184,144,74,.55), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.dock-btn.active .label-txt{display:inline}
+.dock-btn:hover:not(.active){background:var(--accent-tint);color:var(--text)}
+
+/* Dock secondary — "more" sheet */
+.dock-more{
+  position:absolute;left:14px;right:14px;bottom:78px;z-index:25;
+  background:var(--bg-glass);
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  border:1px solid var(--border-strong);
+  border-radius:var(--r-lg);
+  padding:14px;
+  box-shadow:var(--sh-3);
+  display:none;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+}
+.dock-more.open{display:grid;animation:popUp .35s var(--spring)}
+@keyframes popUp{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+.more-tile{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:14px 8px;border-radius:var(--r-md);
+  background:var(--bg-card);border:1px solid var(--border);
+  color:var(--text);font-size:10px;font-weight:600;letter-spacing:.02em;
+  transition:all .25s var(--ease);
+}
+.more-tile:hover{transform:translateY(-2px);box-shadow:var(--sh-2);border-color:var(--accent-tint-2)}
+.more-tile svg{width:18px;height:18px;stroke:var(--accent);stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============================================================
+   HOME — MASTER SCREEN
+   ============================================================ */
+.hero{
+  position:relative;
+  border-radius:var(--r-lg);
+  padding:24px 22px 22px;
+  overflow:hidden;
+  background:var(--grad-ink);
+  color:#ece2cc;
+  box-shadow:var(--sh-3);
+  margin-bottom:18px;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(80% 60% at 80% -10%, rgba(216,179,120,.35), transparent 60%),
+    radial-gradient(60% 50% at 0% 100%, rgba(107,90,142,.20), transparent 60%);
+  opacity:.9;
+}
+.hero::after{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.08'/></svg>");
+  mix-blend-mode:overlay;opacity:.6;pointer-events:none;
+}
+.hero-inner{position:relative;z-index:1}
+.hero-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+.hero-greet{font-size:11px;letter-spacing:.28em;font-weight:600;color:rgba(216,179,120,.85);text-transform:uppercase}
+.hero-name{
+  font-family:'Playfair Display',serif;
+  font-size:34px;font-weight:500;line-height:1.05;letter-spacing:-.015em;
+  margin-top:4px;color:#fff;
+}
+.hero-name em{font-style:italic;color:#d6b378}
+.hero-status{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 10px;border-radius:var(--r-full);
+  background:rgba(216,179,120,.14);
+  border:1px solid rgba(216,179,120,.22);
+  font-size:10px;letter-spacing:.18em;font-weight:600;color:#d6b378;text-transform:uppercase;
+}
+.hero-status .pulse{width:6px;height:6px;border-radius:50%;background:#d6b378;box-shadow:0 0 0 0 rgba(216,179,120,.6);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(216,179,120,.6)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+
+.hero-quote{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:15px;line-height:1.5;color:rgba(255,255,255,.85);
+  margin-top:14px;padding-top:14px;border-top:1px solid rgba(216,179,120,.18);
+}
+.hero-quote-by{font-size:10px;letter-spacing:.24em;color:rgba(216,179,120,.7);font-style:normal;margin-top:8px;display:block;text-transform:uppercase}
+
+.hero-kpis{
+  margin-top:18px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;
+  background:rgba(216,179,120,.16);
+  border-radius:var(--r-md);
+  overflow:hidden;
+}
+.hero-kpi{
+  padding:14px 12px;background:rgba(13,11,8,.55);
+  display:flex;flex-direction:column;gap:2px;
+}
+.hero-kpi-label{font-size:9px;letter-spacing:.22em;color:rgba(216,179,120,.7);font-weight:600;text-transform:uppercase}
+.hero-kpi-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:#fff;letter-spacing:-.01em}
+.hero-kpi-delta{font-size:10px;color:#9fc8a9;font-weight:600;display:flex;align-items:center;gap:3px;margin-top:2px}
+.hero-kpi-delta.neg{color:#e09a6b}
+
+/* Section system */
+.section{margin:24px 0}
+.section-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding-bottom:10px;margin-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.section-title{
+  font-family:'Playfair Display',serif;font-size:18px;font-weight:500;letter-spacing:-.01em;color:var(--text);
+}
+.section-link{font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.04em;display:flex;align-items:center;gap:3px}
+
+/* Stat trio (Home) */
+.stat-trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.stat{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:14px 12px;
+  position:relative;overflow:hidden;
+  box-shadow:var(--sh-1);
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), border-color .25s var(--ease);
+}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--sh-2);border-color:var(--border-strong)}
+.stat-icon{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--accent-tint);color:var(--accent);
+  display:grid;place-items:center;margin-bottom:10px;
+}
+.stat-icon svg{width:14px;height:14px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.stat-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--text);letter-spacing:-.01em;line-height:1}
+.stat-label{font-size:9px;letter-spacing:.22em;color:var(--text-mute);font-weight:600;margin-top:6px;text-transform:uppercase}
+.stat-delta{font-size:10px;color:var(--pos);margin-top:6px;display:flex;align-items:center;gap:3px;font-weight:600}
+.stat-delta.neg{color:var(--neg)}
+.stat-spark{position:absolute;right:6px;bottom:6px;opacity:.4}
+
+/* Quick actions */
+.quick-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.quick{
+  display:flex;align-items:center;gap:12px;
+  padding:14px;border-radius:var(--r-md);
+  background:var(--bg-card);border:1px solid var(--border);
+  box-shadow:var(--sh-1);
+  text-align:left;transition:all .35s var(--ease);
+}
+.quick:hover{transform:translateY(-2px);box-shadow:var(--sh-2);border-color:var(--border-strong)}
+.quick-ico{
+  width:38px;height:38px;border-radius:12px;flex-shrink:0;
+  background:var(--accent-tint);color:var(--accent);
+  display:grid;place-items:center;
+}
+.quick-ico svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.quick-text{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.quick-title{font-size:13px;font-weight:600;color:var(--text)}
+.quick-sub{font-size:11px;color:var(--text-mute);margin-top:1px}
+
+/* Activity feed */
+.feed{display:flex;flex-direction:column;gap:8px}
+.feed-row{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:14px 16px;border-radius:var(--r-md);
+  background:var(--bg-card);border:1px solid var(--border);
+  box-shadow:var(--sh-1);transition:all .3s var(--ease);
+}
+.feed-row:hover{border-color:var(--border-strong);box-shadow:var(--sh-2)}
+.feed-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-faint);width:42px;flex-shrink:0;padding-top:2px}
+.feed-rail{width:2px;background:var(--accent);border-radius:2px;align-self:stretch}
+.feed-body{flex:1;min-width:0}
+.feed-title{font-size:13px;font-weight:600;color:var(--text)}
+.feed-sub{font-size:11px;color:var(--text-mute);margin-top:2px}
+
+/* Insight strip */
+.insight{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:16px;border-radius:var(--r-md);
+  background:linear-gradient(135deg, var(--accent-tint), transparent 70%);
+  border:1px solid var(--border-strong);
+  box-shadow:var(--sh-1);
+}
+.insight-ico{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:var(--grad-gold);color:#fff;
+  display:grid;place-items:center;box-shadow:0 6px 16px -6px rgba(184,144,74,.5);
+}
+.insight-ico svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.insight-body{flex:1;min-width:0}
+.insight-label{font-size:9px;letter-spacing:.28em;color:var(--accent);font-weight:700;text-transform:uppercase}
+.insight-text{font-family:'Playfair Display',serif;font-size:15px;line-height:1.45;color:var(--text);margin-top:4px}
+
+/* ============================================================
+   AI CHAT
+   ============================================================ */
+.chat-wrap{display:flex;flex-direction:column;height:100%}
+.chat-scroll{flex:1;min-height:0;overflow-y:auto;padding-bottom:14px;display:flex;flex-direction:column;gap:14px}
+.chat-day{font-size:10px;letter-spacing:.28em;text-align:center;color:var(--text-faint);font-weight:600;text-transform:uppercase;margin:6px 0 2px}
+.msg{display:flex;gap:10px;animation:fadeIn .4s var(--ease)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.user{flex-direction:row-reverse}
+.msg-avatar{
+  width:28px;height:28px;border-radius:10px;flex-shrink:0;
+  background:var(--grad-gold);color:#fff;display:grid;place-items:center;
+  font-family:'Playfair Display',serif;font-weight:600;font-size:12px;font-style:italic;
+}
+.msg.user .msg-avatar{background:var(--ink-700);color:var(--ivory-100)}
+.msg-bubble{
+  max-width:80%;padding:13px 16px;border-radius:var(--r-md);
+  background:var(--bg-card);border:1px solid var(--border);
+  box-shadow:var(--sh-1);font-size:13.5px;line-height:1.55;color:var(--text);
+}
+.msg.user .msg-bubble{background:var(--accent);color:#fff;border-color:transparent;border-bottom-right-radius:6px}
+.msg.ai .msg-bubble{border-bottom-left-radius:6px}
+.msg-bubble .ai-block{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--accent-tint);border:1px solid var(--border);font-size:12px}
+.typing{display:inline-flex;gap:4px;padding:4px 0}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--text-mute);animation:dot 1.2s infinite ease-in-out}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,80%,100%{opacity:.3;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+
+.suggest-row{display:flex;gap:8px;overflow-x:auto;padding:8px 2px;margin:0 -22px 12px;padding-left:22px;padding-right:22px;scrollbar-width:none}
+.suggest-row::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0;padding:9px 14px;border-radius:var(--r-full);
+  background:var(--bg-card);border:1px solid var(--border);
+  font-size:12px;color:var(--text);font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:all .25s var(--ease);
+}
+.chip:hover{background:var(--accent-tint);border-color:var(--border-strong)}
+.chip svg{width:13px;height:13px;stroke:var(--accent);stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+.composer{
+  position:sticky;bottom:0;
+  padding:8px 0 4px;background:linear-gradient(180deg,transparent, var(--bg) 30%);
+}
+.composer-inner{
+  display:flex;align-items:flex-end;gap:8px;
+  background:var(--bg-card);border:1px solid var(--border-strong);
+  border-radius:var(--r-lg);padding:8px 8px 8px 16px;
+  box-shadow:var(--sh-2);
+}
+.composer-inner textarea{
+  flex:1;resize:none;min-height:22px;max-height:120px;
+  font-size:14px;color:var(--text);background:transparent;
+  border:0;padding:7px 0;line-height:1.4;
+}
+.composer-inner textarea::placeholder{color:var(--text-faint)}
+.send-btn{
+  width:38px;height:38px;border-radius:12px;
+  background:var(--grad-gold);color:#fff;display:grid;place-items:center;
+  box-shadow:0 6px 14px -4px rgba(184,144,74,.55);
+  transition:transform .2s var(--ease);
+}
+.send-btn:hover{transform:scale(1.05)}
+.send-btn:active{transform:scale(.95)}
+.send-btn svg{width:16px;height:16px;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============================================================
+   CRM / LEADS
+   ============================================================ */
+.tabs-row{
+  display:flex;gap:6px;overflow-x:auto;margin:0 -22px 14px;padding:2px 22px;scrollbar-width:none;
+}
+.tabs-row::-webkit-scrollbar{display:none}
+.tab-pill{
+  flex-shrink:0;padding:8px 14px;border-radius:var(--r-full);
+  background:var(--bg-card);border:1px solid var(--border);
+  font-size:12px;font-weight:600;color:var(--text-mute);letter-spacing:.02em;
+  transition:all .25s var(--ease);
+}
+.tab-pill.active{background:var(--text);color:var(--bg-card);border-color:transparent}
+body.dark .tab-pill.active{background:var(--accent);color:#fff}
+.tab-pill .count{margin-left:6px;font-size:10px;opacity:.6;font-weight:500}
+
+.lead-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:16px;margin-bottom:10px;
+  box-shadow:var(--sh-1);transition:all .3s var(--ease);
+  position:relative;overflow:hidden;
+}
+.lead-card:hover{border-color:var(--border-strong);box-shadow:var(--sh-2);transform:translateY(-1px)}
+.lead-stage-bar{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+.lead-stage-bar.warm{background:#c8a16a}
+.lead-stage-bar.cold{background:#7a8aa0}
+.lead-stage-bar.hot{background:#b8490a}
+.lead-stage-bar.won{background:#2e7d5e}
+
+.lead-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.lead-avatar{
+  width:42px;height:42px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg, var(--ink-600), var(--ink-800));
+  color:#fff;display:grid;place-items:center;
+  font-family:'Playfair Display',serif;font-weight:500;font-size:15px;font-style:italic;
+}
+.lead-info{flex:1;min-width:0}
+.lead-name{font-size:14px;font-weight:600;color:var(--text)}
+.lead-meta{font-size:11px;color:var(--text-mute);margin-top:2px;display:flex;align-items:center;gap:6px}
+.lead-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--text-faint)}
+.lead-value{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.lead-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.tag{
+  font-size:10px;padding:3px 8px;border-radius:var(--r-full);
+  background:var(--accent-tint);color:var(--accent);font-weight:600;letter-spacing:.04em;
+}
+.tag.warm{background:rgba(200,161,106,.12);color:#a07a3a}
+.tag.hot{background:rgba(184,73,10,.10);color:#b8490a}
+.tag.won{background:rgba(46,125,94,.12);color:#2e7d5e}
+.tag.cold{background:rgba(74,122,150,.12);color:#4a7a96}
+
+.lead-progress{margin-top:12px;display:flex;align-items:center;gap:10px}
+.lead-progress-bar{flex:1;height:4px;border-radius:2px;background:var(--accent-tint);overflow:hidden}
+.lead-progress-fill{height:100%;background:var(--grad-gold);border-radius:2px}
+.lead-progress-val{font-size:11px;color:var(--text-mute);font-weight:600;font-family:'JetBrains Mono',monospace}
+
+/* ============================================================
+   ANALYTICS
+   ============================================================ */
+.analytics-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.kpi-tile{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:18px;
+  box-shadow:var(--sh-1);
+}
+.kpi-tile.span-2{grid-column:span 2}
+.kpi-label{font-size:10px;letter-spacing:.22em;color:var(--text-mute);font-weight:600;text-transform:uppercase}
+.kpi-value{font-family:'Playfair Display',serif;font-size:32px;font-weight:600;letter-spacing:-.02em;color:var(--text);margin-top:6px;line-height:1}
+.kpi-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.kpi-delta{font-size:11px;font-weight:600;color:var(--pos);display:flex;align-items:center;gap:4px}
+.kpi-delta.neg{color:var(--neg)}
+.kpi-mini-chart{height:34px;width:80px}
+
+.chart-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:18px;margin-bottom:14px;
+  box-shadow:var(--sh-1);
+}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.chart-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:500;letter-spacing:-.01em;color:var(--text)}
+.chart-seg{
+  display:inline-flex;background:var(--accent-tint);
+  border-radius:var(--r-full);padding:3px;
+}
+.seg-btn{
+  padding:6px 12px;font-size:11px;font-weight:600;letter-spacing:.04em;
+  color:var(--text-mute);border-radius:var(--r-full);
+}
+.seg-btn.active{background:var(--bg-card);color:var(--text);box-shadow:var(--sh-1)}
+.chart-canvas-wrap{height:200px;position:relative}
+
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-mute);font-weight:500}
+.legend-dot{width:8px;height:8px;border-radius:2px}
+
+/* ============================================================
+   CALENDAR
+   ============================================================ */
+.cal-month-head{display:flex;align-items:center;justify-content:space-between;padding:4px 0 14px}
+.cal-month{font-family:'Playfair Display',serif;font-size:22px;font-weight:500;letter-spacing:-.01em}
+.cal-month em{color:var(--accent);font-style:italic}
+.cal-nav{display:flex;gap:6px}
+
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:14px;
+  box-shadow:var(--sh-1);
+}
+.cal-dow{font-size:9px;letter-spacing:.22em;color:var(--text-faint);font-weight:700;text-align:center;padding:4px 0;text-transform:uppercase}
+.cal-day{
+  aspect-ratio:1;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:500;color:var(--text);
+  position:relative;
+  transition:background .2s var(--ease);
+}
+.cal-day:hover{background:var(--accent-tint)}
+.cal-day.faint{color:var(--text-faint)}
+.cal-day.today{background:var(--text);color:var(--bg-card);font-weight:600}
+body.dark .cal-day.today{background:var(--accent);color:#fff}
+.cal-day.has-event::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
+
+.event-list{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+.event-row{
+  display:flex;gap:14px;padding:14px;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);box-shadow:var(--sh-1);
+}
+.event-time{
+  flex-shrink:0;width:56px;text-align:center;
+  padding-right:14px;border-right:1px solid var(--border);
+}
+.event-time-h{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);line-height:1}
+.event-time-m{font-size:10px;color:var(--text-mute);letter-spacing:.1em;margin-top:3px;text-transform:uppercase}
+.event-body{flex:1;min-width:0}
+.event-title{font-size:14px;font-weight:600;color:var(--text)}
+.event-meta{font-size:11px;color:var(--text-mute);margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* ============================================================
+   TASKS
+   ============================================================ */
+.task-section{margin-bottom:18px}
+.task-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.task-section-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:500;letter-spacing:-.01em}
+.task-count{font-size:11px;color:var(--text-mute);font-family:'JetBrains Mono',monospace}
+.task{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px;border-radius:var(--r-md);
+  background:var(--bg-card);border:1px solid var(--border);
+  box-shadow:var(--sh-1);margin-bottom:6px;
+  transition:all .25s var(--ease);
+}
+.task:hover{border-color:var(--border-strong)}
+.task-check{
+  width:20px;height:20px;border-radius:8px;flex-shrink:0;
+  border:1.5px solid var(--border-strong);background:transparent;
+  display:grid;place-items:center;cursor:pointer;margin-top:1px;
+  transition:all .2s var(--ease);
+}
+.task-check:hover{border-color:var(--accent)}
+.task-check.done{background:var(--accent);border-color:var(--accent)}
+.task-check.done svg{stroke:#fff}
+.task-check svg{width:11px;height:11px;stroke:transparent;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.task-body{flex:1;min-width:0}
+.task-title{font-size:13.5px;font-weight:500;color:var(--text);line-height:1.4}
+.task.done .task-title{text-decoration:line-through;color:var(--text-mute)}
+.task-meta{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.task-meta-item{font-size:10px;color:var(--text-mute);display:flex;align-items:center;gap:4px;font-weight:500}
+.task-prio{
+  width:6px;height:6px;border-radius:50%;
+  margin-top:8px;flex-shrink:0;
+}
+.task-prio.hi{background:#b8490a}
+.task-prio.md{background:#c8a16a}
+.task-prio.lo{background:var(--text-faint)}
+
+/* ============================================================
+   REVENUE
+   ============================================================ */
+.rev-hero{
+  position:relative;
+  border-radius:var(--r-lg);
+  padding:28px 22px;
+  background:var(--grad-ink);
+  color:#fff;overflow:hidden;
+  box-shadow:var(--sh-3);margin-bottom:16px;
+}
+.rev-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(70% 60% at 90% 0%, rgba(216,179,120,.30), transparent 60%);
+}
+.rev-hero-inner{position:relative;z-index:1}
+.rev-label{font-size:10px;letter-spacing:.32em;color:rgba(216,179,120,.85);font-weight:600;text-transform:uppercase}
+.rev-amount{
+  font-family:'Playfair Display',serif;
+  font-size:48px;font-weight:500;letter-spacing:-.02em;
+  margin-top:6px;color:#fff;line-height:1;
+}
+.rev-cur{font-size:24px;color:rgba(216,179,120,.85);vertical-align:top;margin-right:4px;font-weight:400}
+.rev-delta{margin-top:14px;display:flex;align-items:center;gap:8px;font-size:13px;color:#9fc8a9;font-weight:600}
+.rev-delta-pill{padding:4px 9px;border-radius:var(--r-full);background:rgba(159,200,169,.15);font-size:11px;font-family:'JetBrains Mono',monospace}
+
+.rev-split{
+  margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:rgba(216,179,120,.16);border-radius:var(--r-md);overflow:hidden;
+}
+.rev-split-cell{padding:14px;background:rgba(13,11,8,.55)}
+.rev-split-cell .label{color:rgba(216,179,120,.75)}
+.rev-split-cell .val{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:#fff;letter-spacing:-.01em;margin-top:4px}
+
+.rev-streams{display:flex;flex-direction:column;gap:8px}
+.stream-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:var(--r-md);
+  box-shadow:var(--sh-1);
+}
+.stream-ico{width:36px;height:36px;border-radius:10px;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;flex-shrink:0}
+.stream-ico svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.stream-body{flex:1;min-width:0}
+.stream-name{font-size:13px;font-weight:600;color:var(--text)}
+.stream-pct{margin-top:6px;height:4px;background:var(--accent-tint);border-radius:2px;overflow:hidden}
+.stream-pct-fill{height:100%;background:var(--grad-gold)}
+.stream-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+
+/* ============================================================
+   CONTENT PLANNER
+   ============================================================ */
+.content-week{
+  display:flex;gap:6px;overflow-x:auto;margin:0 -22px 14px;padding:0 22px;scrollbar-width:none;
+}
+.content-week::-webkit-scrollbar{display:none}
+.day-pill{
+  flex-shrink:0;width:54px;border-radius:14px;
+  background:var(--bg-card);border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:10px 0;
+  transition:all .25s var(--ease);
+}
+.day-pill.active{background:var(--text);color:var(--bg-card);border-color:transparent}
+body.dark .day-pill.active{background:var(--accent);color:#fff}
+.day-pill-dow{font-size:9px;letter-spacing:.18em;font-weight:600;opacity:.6;text-transform:uppercase}
+.day-pill-num{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;letter-spacing:-.01em;margin-top:2px}
+.day-pill-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:5px}
+.day-pill.active .day-pill-dot{background:#fff}
+
+.post-card{
+  position:relative;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:var(--r-md);
+  overflow:hidden;margin-bottom:10px;box-shadow:var(--sh-1);
+  display:flex;
+}
+.post-thumb{
+  width:108px;flex-shrink:0;position:relative;
+  background:var(--grad-ink);overflow:hidden;
+}
+.post-thumb::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(60% 60% at 30% 30%, rgba(216,179,120,.4), transparent 60%);
+}
+.post-thumb .platform{
+  position:absolute;top:8px;left:8px;
+  font-size:9px;letter-spacing:.22em;font-weight:700;color:#fff;
+  padding:3px 8px;border-radius:var(--r-full);background:rgba(0,0,0,.4);backdrop-filter:blur(8px);text-transform:uppercase;
+}
+.post-body{flex:1;padding:14px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.post-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:500;color:var(--text);line-height:1.3;letter-spacing:-.005em}
+.post-cap{font-size:11px;color:var(--text-mute);margin-top:4px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.post-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.post-status{font-size:10px;letter-spacing:.18em;font-weight:700;color:var(--accent);text-transform:uppercase}
+.post-time{font-size:10px;color:var(--text-faint);font-family:'JetBrains Mono',monospace}
+
+/* ============================================================
+   CLIENT AREA
+   ============================================================ */
+.client-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.client-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:16px;
+  box-shadow:var(--sh-1);
+  display:flex;flex-direction:column;gap:10px;
+  transition:all .3s var(--ease);
+}
+.client-card:hover{box-shadow:var(--sh-2);border-color:var(--border-strong);transform:translateY(-2px)}
+.client-card-head{display:flex;align-items:center;gap:10px}
+.client-logo{
+  width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(135deg, var(--ink-600), var(--ink-800));
+  color:#d6b378;display:grid;place-items:center;
+  font-family:'Playfair Display',serif;font-weight:500;font-size:14px;font-style:italic;flex-shrink:0;
+}
+.client-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.2}
+.client-tier{font-size:9px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-top:2px;text-transform:uppercase}
+.client-metric{display:flex;align-items:baseline;justify-content:space-between}
+.client-metric-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.client-metric-lbl{font-size:10px;color:var(--text-mute);letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.client-progress{height:3px;border-radius:2px;background:var(--accent-tint);overflow:hidden}
+.client-progress-fill{height:100%;background:var(--grad-gold)}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+.settings-group{margin-bottom:18px}
+.settings-group-title{font-size:10px;letter-spacing:.32em;color:var(--text-faint);font-weight:700;margin:0 4px 8px;text-transform:uppercase}
+.settings-list{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden}
+.settings-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  transition:background .2s var(--ease);
+}
+.settings-row:last-child{border-bottom:0}
+.settings-row:hover{background:var(--accent-tint)}
+.settings-ico{
+  width:34px;height:34px;border-radius:10px;
+  background:var(--accent-tint);color:var(--accent);
+  display:grid;place-items:center;flex-shrink:0;
+}
+.settings-ico svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.settings-text{flex:1;min-width:0}
+.settings-title{font-size:13.5px;font-weight:500;color:var(--text)}
+.settings-sub{font-size:11px;color:var(--text-mute);margin-top:2px}
+.settings-val{font-size:12px;color:var(--text-mute);font-weight:500}
+.settings-chev{color:var(--text-faint)}
+.settings-chev svg{width:14px;height:14px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* Toggle */
+.toggle{
+  width:44px;height:26px;border-radius:var(--r-full);
+  background:var(--border-strong);position:relative;
+  transition:background .3s var(--ease);flex-shrink:0;
+}
+.toggle::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:20px;height:20px;border-radius:50%;
+  background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);
+  transition:transform .3s var(--spring);
+}
+.toggle.on{background:var(--accent)}
+.toggle.on::after{transform:translateX(18px)}
+
+/* Profile */
+.profile-head{
+  background:var(--grad-ink);color:#fff;
+  border-radius:var(--r-lg);padding:24px;
+  display:flex;align-items:center;gap:16px;
+  box-shadow:var(--sh-3);margin-bottom:14px;
+  position:relative;overflow:hidden;
+}
+.profile-head::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 80% at 100% 0%, rgba(216,179,120,.30), transparent 60%)}
+.profile-avatar{
+  width:74px;height:74px;border-radius:24px;
+  background:var(--grad-gold);color:#fff;
+  display:grid;place-items:center;
+  font-family:'Playfair Display',serif;font-weight:500;font-size:30px;font-style:italic;
+  box-shadow:0 8px 24px -6px rgba(184,144,74,.55), inset 0 1px 0 rgba(255,255,255,.30);
+  flex-shrink:0;position:relative;z-index:1;
+}
+.profile-info{flex:1;min-width:0;position:relative;z-index:1}
+.profile-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:500;letter-spacing:-.01em;color:#fff}
+.profile-role{font-size:11px;letter-spacing:.24em;color:#d6b378;font-weight:600;margin-top:4px;text-transform:uppercase}
+.profile-meta{font-size:12px;color:rgba(236,226,204,.7);margin-top:6px;display:flex;align-items:center;gap:8px}
+
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+.notif{
+  display:flex;gap:12px;padding:14px;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);box-shadow:var(--sh-1);margin-bottom:8px;
+  transition:all .3s var(--ease);position:relative;
+}
+.notif.unread{border-color:var(--border-strong);background:linear-gradient(135deg, var(--accent-tint) 0%, transparent 60%)}
+.notif.unread::before{content:'';position:absolute;left:8px;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent-soft)}
+.notif-ico{
+  width:36px;height:36px;border-radius:12px;flex-shrink:0;
+  background:var(--accent-tint);color:var(--accent);
+  display:grid;place-items:center;
+}
+.notif-ico svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.notif-body{flex:1;min-width:0}
+.notif-title{font-size:13px;font-weight:600;color:var(--text)}
+.notif-text{font-size:12px;color:var(--text-mute);margin-top:3px;line-height:1.45}
+.notif-time{font-size:10px;color:var(--text-faint);margin-top:6px;letter-spacing:.04em;font-family:'JetBrains Mono',monospace}
+
+/* ============================================================
+   TEAM
+   ============================================================ */
+.team-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:var(--r-md);
+  margin-bottom:8px;box-shadow:var(--sh-1);
+}
+.team-avatar{
+  width:46px;height:46px;border-radius:16px;
+  background:linear-gradient(135deg, var(--ink-600), var(--ink-800));
+  color:#d6b378;display:grid;place-items:center;
+  font-family:'Playfair Display',serif;font-weight:500;font-size:17px;font-style:italic;
+  position:relative;flex-shrink:0;
+}
+.team-status{position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;border:2.5px solid var(--bg-card);background:var(--pos)}
+.team-status.away{background:#c8a16a}
+.team-status.off{background:var(--text-faint)}
+.team-info{flex:1;min-width:0}
+.team-name{font-size:13.5px;font-weight:600;color:var(--text)}
+.team-role{font-size:11px;color:var(--text-mute);margin-top:2px}
+.team-actions{display:flex;gap:4px}
+
+/* ============================================================
+   AUTOMATION FLOWS
+   ============================================================ */
+.flow-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:16px;margin-bottom:10px;
+  box-shadow:var(--sh-1);
+  position:relative;
+}
+.flow-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.flow-name{font-size:14px;font-weight:600;color:var(--text)}
+.flow-status{
+  font-size:9px;letter-spacing:.22em;font-weight:700;
+  padding:3px 8px;border-radius:var(--r-full);
+  background:rgba(46,125,94,.12);color:#2e7d5e;text-transform:uppercase;
+}
+.flow-status.paused{background:var(--accent-tint);color:var(--accent)}
+
+.flow-nodes{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:6px 0;scrollbar-width:none}
+.flow-nodes::-webkit-scrollbar{display:none}
+.flow-node{
+  flex-shrink:0;padding:8px 12px;border-radius:10px;
+  background:var(--accent-tint);color:var(--accent);
+  font-size:11px;font-weight:600;letter-spacing:.02em;
+  display:flex;align-items:center;gap:6px;
+  border:1px solid var(--border-strong);
+}
+.flow-node svg{width:13px;height:13px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flow-arrow{color:var(--text-faint);font-size:14px;flex-shrink:0}
+.flow-stats{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:18px}
+.flow-stat-label{font-size:9px;letter-spacing:.18em;color:var(--text-faint);font-weight:700;text-transform:uppercase}
+.flow-stat-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.01em;margin-top:2px}
+
+/* ============================================================
+   INSIGHTS
+   ============================================================ */
+.insight-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:18px;margin-bottom:10px;
+  box-shadow:var(--sh-1);position:relative;overflow:hidden;
+}
+.insight-card.featured{background:linear-gradient(135deg, var(--accent-tint), var(--bg-card) 80%);border-color:var(--border-strong)}
+.insight-row{display:flex;gap:12px;align-items:flex-start}
+.insight-tag{
+  font-size:9px;letter-spacing:.28em;font-weight:700;
+  color:var(--accent);text-transform:uppercase;
+}
+.insight-title-card{font-family:'Playfair Display',serif;font-size:18px;font-weight:500;color:var(--text);line-height:1.3;letter-spacing:-.01em;margin-top:6px}
+.insight-desc{font-size:12.5px;color:var(--text-mute);line-height:1.55;margin-top:8px}
+.insight-bar{margin-top:12px;display:flex;align-items:center;gap:10px}
+.insight-confidence{font-size:10px;color:var(--text-mute);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.confidence-bar{flex:1;height:4px;background:var(--accent-tint);border-radius:2px;overflow:hidden}
+.confidence-fill{height:100%;background:var(--grad-gold)}
+
+/* ============================================================
+   DOCUMENTS
+   ============================================================ */
+.doc-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:var(--r-md);
+  box-shadow:var(--sh-1);margin-bottom:6px;
+  transition:all .25s var(--ease);
+}
+.doc-row:hover{border-color:var(--border-strong);box-shadow:var(--sh-2)}
+.doc-ico{
+  width:42px;height:48px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,#fff, #f5ecdc);
+  border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;
+}
+body.dark .doc-ico{background:linear-gradient(135deg, var(--ink-600), var(--ink-700))}
+.doc-ico::before{content:'';position:absolute;top:0;right:0;width:10px;height:10px;background:var(--accent-tint);border-bottom-left-radius:4px}
+.doc-ico-type{font-size:8px;letter-spacing:.1em;font-weight:700;color:var(--accent);text-transform:uppercase}
+.doc-info{flex:1;min-width:0}
+.doc-name{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-meta{font-size:11px;color:var(--text-mute);margin-top:3px;display:flex;align-items:center;gap:8px}
+
+/* ============================================================
+   MEDIA LIBRARY
+   ============================================================ */
+.media-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.media-tile{
+  aspect-ratio:1;border-radius:14px;
+  background:var(--grad-ink);
+  position:relative;overflow:hidden;
+  border:1px solid var(--border);
+}
+.media-tile:nth-child(3n+1){background:linear-gradient(135deg,#8b6432,#b8904a)}
+.media-tile:nth-child(3n+2){background:linear-gradient(135deg,#4a7a96,#6b5a8e)}
+.media-tile:nth-child(3n){background:linear-gradient(135deg,#231e18,#3a3128)}
+.media-tile::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(70% 70% at 30% 30%, rgba(255,255,255,.18), transparent 60%);
+}
+.media-tile .meta{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:8px;color:#fff;font-size:10px;font-weight:600;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.5));
+  display:flex;align-items:center;justify-content:space-between;
+}
+.media-tile.big{grid-column:span 2;grid-row:span 2}
+
+/* ============================================================
+   BILLING
+   ============================================================ */
+.plan-card{
+  background:var(--grad-ink);color:#fff;
+  border-radius:var(--r-lg);padding:24px;
+  box-shadow:var(--sh-3);margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.plan-card::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 60% at 80% 20%, rgba(216,179,120,.30), transparent 60%)}
+.plan-head{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.plan-tier{
+  font-size:10px;letter-spacing:.32em;color:#d6b378;font-weight:700;
+  padding:4px 10px;border-radius:var(--r-full);background:rgba(216,179,120,.14);border:1px solid rgba(216,179,120,.24);text-transform:uppercase;
+}
+.plan-price-row{position:relative;z-index:1;display:flex;align-items:baseline;gap:6px}
+.plan-price{font-family:'Playfair Display',serif;font-size:42px;font-weight:500;letter-spacing:-.02em;color:#fff;line-height:1}
+.plan-period{font-size:13px;color:rgba(216,179,120,.85);letter-spacing:.04em}
+.plan-feats{position:relative;z-index:1;margin-top:18px;display:flex;flex-direction:column;gap:8px}
+.plan-feat{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(236,226,204,.85)}
+.plan-feat svg{width:14px;height:14px;stroke:#d6b378;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+.invoice-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:var(--r-md);
+  margin-bottom:6px;box-shadow:var(--sh-1);
+}
+.invoice-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-faint)}
+.invoice-date{font-size:13px;color:var(--text);font-weight:500;margin-top:2px}
+.invoice-status{font-size:9px;letter-spacing:.22em;font-weight:700;padding:3px 8px;border-radius:var(--r-full);background:rgba(46,125,94,.12);color:#2e7d5e;text-transform:uppercase}
+.invoice-amt{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+
+/* ============================================================
+   ONBOARDING
+   ============================================================ */
+.onboard-progress{display:flex;gap:5px;margin-bottom:24px}
+.onboard-progress span{flex:1;height:3px;border-radius:2px;background:var(--accent-tint)}
+.onboard-progress span.done{background:var(--accent)}
+.onboard-hero{
+  text-align:center;padding:24px 8px;
+}
+.onboard-visual{
+  width:120px;height:120px;border-radius:36px;
+  background:var(--grad-gold);
+  margin:0 auto 22px;display:grid;place-items:center;color:#fff;
+  box-shadow:0 18px 50px -16px rgba(184,144,74,.55), inset 0 1px 0 rgba(255,255,255,.30);
+  position:relative;
+}
+.onboard-visual svg{width:48px;height:48px;stroke:#fff;stroke-width:1.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.onboard-eyebrow{font-size:10px;letter-spacing:.32em;color:var(--accent);font-weight:700;text-transform:uppercase}
+.onboard-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:500;letter-spacing:-.015em;color:var(--text);margin-top:8px;line-height:1.1}
+.onboard-title em{color:var(--accent);font-style:italic}
+.onboard-desc{font-size:14px;color:var(--text-mute);line-height:1.55;margin-top:12px;max-width:32ch;margin-left:auto;margin-right:auto}
+
+.onboard-choice{
+  display:flex;align-items:center;gap:14px;
+  padding:18px;background:var(--bg-card);
+  border:1.5px solid var(--border);border-radius:var(--r-md);
+  margin-bottom:10px;box-shadow:var(--sh-1);
+  transition:all .3s var(--ease);text-align:left;width:100%;
+}
+.onboard-choice:hover, .onboard-choice.sel{border-color:var(--accent);background:var(--accent-tint)}
+.onboard-choice-ico{
+  width:46px;height:46px;border-radius:14px;flex-shrink:0;
+  background:var(--accent-tint);color:var(--accent);
+  display:grid;place-items:center;
+}
+.onboard-choice-ico svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.onboard-choice-title{font-size:14px;font-weight:600;color:var(--text)}
+.onboard-choice-sub{font-size:12px;color:var(--text-mute);margin-top:3px}
+
+.btn-primary{
+  width:100%;padding:16px;border-radius:var(--r-md);
+  background:var(--grad-gold);color:#fff;
+  font-weight:600;letter-spacing:.04em;font-size:13.5px;
+  box-shadow:0 12px 26px -8px rgba(184,144,74,.55), inset 0 1px 0 rgba(255,255,255,.30);
+  transition:transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 16px 32px -10px rgba(184,144,74,.65)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{
+  width:100%;padding:14px;border-radius:var(--r-md);
+  background:transparent;color:var(--text);
+  font-weight:600;letter-spacing:.04em;font-size:13px;
+  border:1px solid var(--border-strong);margin-top:8px;
+}
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+.search-bar{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;border-radius:var(--r-lg);
+  background:var(--bg-card);border:1px solid var(--border-strong);
+  box-shadow:var(--sh-2);margin-bottom:16px;
+}
+.search-bar svg{width:16px;height:16px;stroke:var(--text-mute);stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.search-bar input{flex:1;font-size:15px;color:var(--text)}
+.search-bar input::placeholder{color:var(--text-faint)}
+.search-bar kbd{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  padding:3px 7px;border-radius:6px;background:var(--accent-tint);color:var(--accent);
+}
+
+.search-section-title{font-size:10px;letter-spacing:.32em;color:var(--text-faint);font-weight:700;margin:10px 4px 8px;text-transform:uppercase}
+.search-result{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:var(--r-md);
+  background:var(--bg-card);border:1px solid var(--border);
+  margin-bottom:6px;box-shadow:var(--sh-1);
+  transition:all .2s var(--ease);
+}
+.search-result:hover{background:var(--accent-tint);border-color:var(--border-strong)}
+.search-result-ico{
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  background:var(--accent-tint);color:var(--accent);
+  display:grid;place-items:center;
+}
+.search-result-ico svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.search-result-title{font-size:13px;font-weight:600;color:var(--text)}
+.search-result-sub{font-size:11px;color:var(--text-mute);margin-top:2px}
+.search-result-kbd{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-faint);letter-spacing:.05em;padding:3px 7px;border-radius:6px;background:var(--accent-tint);border:1px solid var(--border)}
+
+/* ============================================================
+   SKELETON / LOADING
+   ============================================================ */
+.skel{background:linear-gradient(90deg, var(--accent-tint) 0%, var(--accent-tint-2) 50%, var(--accent-tint) 100%);background-size:200% 100%;border-radius:8px;animation:shimmer 1.8s linear infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ============================================================
+   EMPTY STATES
+   ============================================================ */
+.empty{padding:40px 20px;text-align:center}
+.empty-ico{
+  width:72px;height:72px;border-radius:24px;margin:0 auto 16px;
+  background:var(--accent-tint);color:var(--accent);
+  display:grid;place-items:center;
+}
+.empty-ico svg{width:30px;height:30px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.empty-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:500;letter-spacing:-.01em;color:var(--text)}
+.empty-desc{font-size:13px;color:var(--text-mute);line-height:1.5;margin-top:8px;max-width:30ch;margin-left:auto;margin-right:auto}
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.flex{display:flex}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}
+.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}.mt-6{margin-top:24px}
+.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}
+.full{width:100%}
+
+/* Stagger entry animation for cards */
+.screen.active .stagger > *{animation:fadeInUp .55s var(--ease) both}
+.screen.active .stagger > *:nth-child(1){animation-delay:.04s}
+.screen.active .stagger > *:nth-child(2){animation-delay:.10s}
+.screen.active .stagger > *:nth-child(3){animation-delay:.16s}
+.screen.active .stagger > *:nth-child(4){animation-delay:.22s}
+.screen.active .stagger > *:nth-child(5){animation-delay:.28s}
+.screen.active .stagger > *:nth-child(6){animation-delay:.34s}
+.screen.active .stagger > *:nth-child(7){animation-delay:.40s}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Tooltips / micro-helpers */
+.divider{height:1px;background:var(--border);margin:18px 0}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="atmosphere"></div>
+  <div class="grain"></div>
+
+  <!-- ============= STATUS BAR ============= -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span class="right">
+      <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><rect x="0" y="6" width="2.5" height="4" rx="1" fill="currentColor"/><rect x="3.5" y="4" width="2.5" height="6" rx="1" fill="currentColor"/><rect x="7" y="2" width="2.5" height="8" rx="1" fill="currentColor"/><rect x="10.5" y="0" width="2.5" height="10" rx="1" fill="currentColor"/></svg>
+      <svg width="14" height="10" viewBox="0 0 16 10" fill="none"><path d="M2 4a8 8 0 0112 0M5 6.5a4 4 0 016 0M8 9h.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span style="margin-left:4px">100</span>
+    </span>
+  </div>
+
+  <!-- ============= TOP BAR ============= -->
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <div class="brand-name">Mindéa</div>
+        <div class="brand-meta">Workspace · Atelier</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" onclick="go('search')" aria-label="Suche">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <button class="icon-btn" onclick="go('notifications')" aria-label="Benachrichtigungen">
+        <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+        <span class="dot"></span>
+      </button>
+      <button class="icon-btn" onclick="toggleTheme()" aria-label="Erscheinungsbild">
+        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============= SCREENS ============= -->
+  <div class="screens" id="screens">
+
+    <!-- ========================= HOME ========================= -->
+    <section class="screen active" id="screen-home">
+      <div class="stagger">
+        <!-- Hero -->
+        <div class="hero">
+          <div class="hero-inner">
+            <div class="hero-row">
+              <div>
+                <div class="hero-greet">Sonntag · 24. Mai</div>
+                <div class="hero-name">Guten Morgen,<br><em>Ivana</em></div>
+              </div>
+              <div class="hero-status"><span class="pulse"></span>Fokus</div>
+            </div>
+            <div class="hero-quote">
+              „Disziplin ist die Brücke zwischen Vision und Wirklichkeit."
+              <span class="hero-quote-by">Täglich kuratiert</span>
+            </div>
+            <div class="hero-kpis">
+              <div class="hero-kpi">
+                <span class="hero-kpi-label">Umsatz</span>
+                <span class="hero-kpi-value">48,2 T€</span>
+                <span class="hero-kpi-delta">↗ +18,4 %</span>
+              </div>
+              <div class="hero-kpi">
+                <span class="hero-kpi-label">Leads</span>
+                <span class="hero-kpi-value">127</span>
+                <span class="hero-kpi-delta">↗ +12</span>
+              </div>
+              <div class="hero-kpi">
+                <span class="hero-kpi-label">Fokus</span>
+                <span class="hero-kpi-value">94<span style="font-size:14px;opacity:.6">%</span></span>
+                <span class="hero-kpi-delta">↗ Spitze</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Insight -->
+        <div class="insight">
+          <div class="insight-ico">
+            <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </div>
+          <div class="insight-body">
+            <div class="insight-label">Luna · KI-Impuls</div>
+            <div class="insight-text">Drei Leads sind diese Woche abgekühlt. Ein handgeschriebenes Follow-up an <em>Maison Étoile</em> könnte 12 T€ Pipeline reaktivieren.</div>
+          </div>
+        </div>
+
+        <!-- Stat trio -->
+        <div class="section">
+          <div class="section-head">
+            <div class="section-title">Diese Woche</div>
+            <a class="section-link" onclick="go('analytics')">Analytik öffnen →</a>
+          </div>
+          <div class="stat-trio">
+            <div class="stat">
+              <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 6-6"/></svg></div>
+              <div class="stat-value">12,8 T€</div>
+              <div class="stat-label">Erlöst</div>
+              <div class="stat-delta">↗ 22 %</div>
+            </div>
+            <div class="stat">
+              <div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M22 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+              <div class="stat-value">38</div>
+              <div class="stat-label">Neue Leads</div>
+              <div class="stat-delta">↗ 9</div>
+            </div>
+            <div class="stat">
+              <div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+              <div class="stat-value">42 h</div>
+              <div class="stat-label">Fokus</div>
+              <div class="stat-delta neg">↘ 3 h</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="section">
+          <div class="section-head">
+            <div class="section-title">Schnellzugriff</div>
+          </div>
+          <div class="quick-row">
+            <button class="quick" onclick="go('ai')">
+              <div class="quick-ico"><svg viewBox="0 0 24 24"><path d="M12 8V4H8M4 8h4v4M4 12v4h4M8 20h4v-4M16 16v4h-4M20 16h-4v-4M20 12V8h-4M16 4h-4v4"/></svg></div>
+              <div class="quick-text">
+                <div class="quick-title">Luna fragen</div>
+                <div class="quick-sub">KI-Co-Pilot</div>
+              </div>
+            </button>
+            <button class="quick" onclick="go('crm')">
+              <div class="quick-ico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-3-3.87M4 21v-2a4 4 0 0 1 3-3.87M12 7a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/></svg></div>
+              <div class="quick-text">
+                <div class="quick-title">Lead anlegen</div>
+                <div class="quick-sub">zur Pipeline</div>
+              </div>
+            </button>
+            <button class="quick" onclick="go('content')">
+              <div class="quick-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div>
+              <div class="quick-text">
+                <div class="quick-title">Post planen</div>
+                <div class="quick-sub">3 in Warteschlange</div>
+              </div>
+            </button>
+            <button class="quick" onclick="go('revenue')">
+              <div class="quick-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <div class="quick-text">
+                <div class="quick-title">Rechnung</div>
+                <div class="quick-sub">4,2 T€ offen</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Activity feed -->
+        <div class="section">
+          <div class="section-head">
+            <div class="section-title">Heutiger Puls</div>
+            <a class="section-link" onclick="go('calendar')">Kalender →</a>
+          </div>
+          <div class="feed">
+            <div class="feed-row">
+              <div class="feed-time">09:30</div>
+              <div class="feed-rail"></div>
+              <div class="feed-body">
+                <div class="feed-title">Strategie-Call · Maison Étoile</div>
+                <div class="feed-sub">30 Min · Zoom · Marken-Repositionierung</div>
+              </div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-time">11:00</div>
+              <div class="feed-rail" style="background:var(--info)"></div>
+              <div class="feed-body">
+                <div class="feed-title">Redaktionsabnahme</div>
+                <div class="feed-sub">7 Beiträge zur Freigabe</div>
+              </div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-time">15:00</div>
+              <div class="feed-rail" style="background:var(--vio)"></div>
+              <div class="feed-body">
+                <div class="feed-title">Deep-Work-Block</div>
+                <div class="feed-sub">90 Min · Angebot Q3-Expansion</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= AI CHAT ========================= -->
+    <section class="screen" id="screen-ai">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">💬 Modul · 04</div>
+          <div class="page-title">Luna <em>Coach</em></div>
+          <div class="page-sub">Dein Strategie-Coach — auf deine Tonalität trainiert.</div>
+        </div>
+      </div>
+
+      <div class="chat-wrap">
+        <div class="chat-scroll" id="chatScroll">
+          <div class="chat-day">Heute · 09:42</div>
+
+          <div class="msg ai">
+            <div class="msg-avatar">L</div>
+            <div>
+              <div class="msg-bubble">
+                Guten Morgen, Ivana. Ich habe einen behutsamen Reaktivierungs-Entwurf für <strong>Maison Étoile</strong> vorbereitet — der Kontakt ist seit 8 Tagen ruhig.
+                <div class="ai-block">
+                  <strong>Entwurf-Vorschau</strong><br>
+                  <span style="font-family:'Playfair Display',serif;font-style:italic;">„Liebe Camille, unser letztes Gespräch zur Atelier-Linie geht mir noch nach — und ein Gedanke wäre es wert, ihn bei einem Kaffee zu teilen …"</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:8px;margin-left:38px">
+                <button class="chip"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Entwurf senden</button>
+                <button class="chip">Ton verfeinern</button>
+                <button class="chip">Kopieren</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="msg user">
+            <div class="msg-avatar">I</div>
+            <div class="msg-bubble">Mach es 20 % wärmer und nimm Bezug auf unsere Arbeit aus Q1.</div>
+          </div>
+
+          <div class="msg ai">
+            <div class="msg-avatar">L</div>
+            <div class="msg-bubble">
+              <div class="typing"><span></span><span></span><span></span></div>
+              <em style="color:var(--text-mute);font-size:12px;">Q1-Bezüge einweben und Eröffnung weicher gestalten …</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="suggest-row">
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>E-Mail entwerfen</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>Content planen</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 6-6"/></svg>Wochenrückblick</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>Calls zusammenfassen</button>
+        </div>
+
+        <div class="composer">
+          <div class="composer-inner">
+            <textarea placeholder="Frag Luna, was du willst …" rows="1"></textarea>
+            <button class="send-btn"><svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= CRM ========================= -->
+    <section class="screen" id="screen-crm">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">💰 Modul · 127 Leads</div>
+          <div class="page-title">Sales <em>Pipeline</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>
+
+      <div class="tabs-row stagger">
+        <button class="tab-pill active">Alle <span class="count">127</span></button>
+        <button class="tab-pill">Heiß <span class="count">12</span></button>
+        <button class="tab-pill">Warm <span class="count">38</span></button>
+        <button class="tab-pill">Kalt <span class="count">61</span></button>
+        <button class="tab-pill">Gewonnen <span class="count">16</span></button>
+      </div>
+
+      <div class="stagger">
+        <div class="lead-card">
+          <div class="lead-stage-bar hot"></div>
+          <div class="lead-top">
+            <div class="lead-avatar">M</div>
+            <div class="lead-info">
+              <div class="lead-name">Maison Étoile</div>
+              <div class="lead-meta">Camille Roux <span class="lead-meta-dot"></span> Paris <span class="lead-meta-dot"></span> 8 T</div>
+            </div>
+            <div class="lead-value">12,4 T€</div>
+          </div>
+          <div class="lead-tags">
+            <span class="tag hot">Heiß</span>
+            <span class="tag">Luxus</span>
+            <span class="tag">Q3</span>
+          </div>
+          <div class="lead-progress">
+            <div class="lead-progress-bar"><div class="lead-progress-fill" style="width:78%"></div></div>
+            <span class="lead-progress-val">78%</span>
+          </div>
+        </div>
+
+        <div class="lead-card">
+          <div class="lead-stage-bar warm"></div>
+          <div class="lead-top">
+            <div class="lead-avatar">A</div>
+            <div class="lead-info">
+              <div class="lead-name">Atelier Noir Studio</div>
+              <div class="lead-meta">Sophia Bruun <span class="lead-meta-dot"></span> Kopenhagen <span class="lead-meta-dot"></span> 2 T</div>
+            </div>
+            <div class="lead-value">6,8 T€</div>
+          </div>
+          <div class="lead-tags">
+            <span class="tag warm">Warm</span>
+            <span class="tag">Editorial</span>
+          </div>
+          <div class="lead-progress">
+            <div class="lead-progress-bar"><div class="lead-progress-fill" style="width:52%"></div></div>
+            <span class="lead-progress-val">52%</span>
+          </div>
+        </div>
+
+        <div class="lead-card">
+          <div class="lead-stage-bar won"></div>
+          <div class="lead-top">
+            <div class="lead-avatar">V</div>
+            <div class="lead-info">
+              <div class="lead-name">Villa Serenità</div>
+              <div class="lead-meta">Lorenzo Ferrari <span class="lead-meta-dot"></span> Mailand <span class="lead-meta-dot"></span> abgeschlossen</div>
+            </div>
+            <div class="lead-value">28,0 T€</div>
+          </div>
+          <div class="lead-tags">
+            <span class="tag won">Gewonnen</span>
+            <span class="tag">Hotellerie</span>
+            <span class="tag">Retainer</span>
+          </div>
+          <div class="lead-progress">
+            <div class="lead-progress-bar"><div class="lead-progress-fill" style="width:100%"></div></div>
+            <span class="lead-progress-val">100%</span>
+          </div>
+        </div>
+
+        <div class="lead-card">
+          <div class="lead-stage-bar cold"></div>
+          <div class="lead-top">
+            <div class="lead-avatar">K</div>
+            <div class="lead-info">
+              <div class="lead-name">Kōan Apothecary</div>
+              <div class="lead-meta">Yuki Tanaka <span class="lead-meta-dot"></span> Kyoto <span class="lead-meta-dot"></span> 21 T</div>
+            </div>
+            <div class="lead-value">4,5 T€</div>
+          </div>
+          <div class="lead-tags">
+            <span class="tag cold">Kalt</span>
+            <span class="tag">Wellness</span>
+          </div>
+          <div class="lead-progress">
+            <div class="lead-progress-bar"><div class="lead-progress-fill" style="width:24%"></div></div>
+            <span class="lead-progress-val">24%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= ANALYTICS ========================= -->
+    <section class="screen" id="screen-analytics">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">📊 Modul · Letzte 30 Tage</div>
+          <div class="page-title"><em>Analytics</em></div>
+        </div>
+        <div class="chart-seg">
+          <button class="seg-btn">7 T</button>
+          <button class="seg-btn active">30 T</button>
+          <button class="seg-btn">QTL</button>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="analytics-kpis">
+          <div class="kpi-tile span-2">
+            <div class="kpi-label">Wiederkehrend / Monat</div>
+            <div class="kpi-value">48.240 €</div>
+            <div class="kpi-foot">
+              <div class="kpi-delta">↗ 18,4 % ggü. Vormonat</div>
+              <canvas class="kpi-mini-chart" id="kpi1"></canvas>
+            </div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-label">Conversion</div>
+            <div class="kpi-value">3,8<span style="font-size:18px;color:var(--text-mute)">%</span></div>
+            <div class="kpi-delta mt-2">↗ 0,6 Pp</div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-label">LTV</div>
+            <div class="kpi-value">8,2 T€</div>
+            <div class="kpi-delta neg mt-2">↘ 4 %</div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <div class="chart-title">Umsatzverlauf</div>
+            <span class="label">€ EUR</span>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="chartRevenue"></canvas></div>
+          <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span>Umsatz</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--info)"></span>Prognose</div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <div class="chart-title">Quellenverteilung</div>
+          </div>
+          <div class="chart-canvas-wrap" style="height:180px"><canvas id="chartDist"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= CALENDAR ========================= -->
+    <section class="screen" id="screen-calendar">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">📅 Modul · Mai 2026</div>
+          <div class="page-title"><em>Wochenplan</em></div>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="cal-month-head">
+          <div class="cal-month">Mai <em>'26</em></div>
+          <div class="cal-nav">
+            <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+          </div>
+        </div>
+
+        <div class="cal-grid" id="calGrid"></div>
+
+        <div class="event-list">
+          <div class="section-head" style="margin-top:18px"><div class="section-title">Heute</div><span class="label">3 Termine</span></div>
+          <div class="event-row">
+            <div class="event-time">
+              <div class="event-time-h">09:30</div>
+              <div class="event-time-m">MEZ</div>
+            </div>
+            <div class="event-body">
+              <div class="event-title">Strategie-Call · Maison Étoile</div>
+              <div class="event-meta">30 Min · Zoom · Camille Roux</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">
+              <div class="event-time-h">11:00</div>
+              <div class="event-time-m">MEZ</div>
+            </div>
+            <div class="event-body">
+              <div class="event-title">Redaktionskonferenz</div>
+              <div class="event-meta">45 Min · Atelier · 7 Beiträge</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">
+              <div class="event-time-h">15:00</div>
+              <div class="event-time-m">MEZ</div>
+            </div>
+            <div class="event-body">
+              <div class="event-title">Deep-Work · Q3-Angebot</div>
+              <div class="event-meta">90 Min · nicht stören</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= TASKS ========================= -->
+    <section class="screen" id="screen-tasks">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">⚡ Modul · 14 aktiv · 2 überfällig</div>
+          <div class="page-title">Akquise <em>Turbo</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>
+
+      <div class="stagger">
+        <div class="task-section">
+          <div class="task-section-head">
+            <div class="task-section-title">Heutiger Fokus</div>
+            <span class="task-count">4 / 7</span>
+          </div>
+          <div class="task done">
+            <button class="task-check done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <div class="task-body">
+              <div class="task-title">Morgenritual · 20 Min Journaling</div>
+              <div class="task-meta">
+                <span class="task-meta-item">⌁ 06:30</span>
+                <span class="task-meta-item">· Ritual</span>
+              </div>
+            </div>
+          </div>
+          <div class="task">
+            <button class="task-check"></button>
+            <div class="task-prio hi"></div>
+            <div class="task-body">
+              <div class="task-title">Q3-Angebot finalisieren · Maison Étoile</div>
+              <div class="task-meta">
+                <span class="task-meta-item">📎 3 Dok.</span>
+                <span class="task-meta-item">· 90 Min</span>
+                <span class="task-meta-item" style="color:var(--neg)">· fällig 16:00</span>
+              </div>
+            </div>
+          </div>
+          <div class="task">
+            <button class="task-check"></button>
+            <div class="task-prio md"></div>
+            <div class="task-body">
+              <div class="task-title">7 Redaktions-Entwürfe prüfen</div>
+              <div class="task-meta">
+                <span class="task-meta-item">📰 Content</span>
+                <span class="task-meta-item">· 45 Min</span>
+              </div>
+            </div>
+          </div>
+          <div class="task">
+            <button class="task-check"></button>
+            <div class="task-prio lo"></div>
+            <div class="task-body">
+              <div class="task-title">Rechnungs-Batch freigeben · 12 Kund:innen</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-section">
+          <div class="task-section-head">
+            <div class="task-section-title">Diese Woche</div>
+            <span class="task-count">10 offen</span>
+          </div>
+          <div class="task">
+            <button class="task-check"></button>
+            <div class="task-body">
+              <div class="task-title">Studio-Shoot Vorbereitung · Villa Serenità</div>
+              <div class="task-meta">
+                <span class="task-meta-item">📅 Do</span>
+              </div>
+            </div>
+          </div>
+          <div class="task">
+            <button class="task-check"></button>
+            <div class="task-body">
+              <div class="task-title">Junior-Strateg:in einstellen · 5er Shortlist</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= REVENUE ========================= -->
+    <section class="screen" id="screen-revenue">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">💰 Untermodul · Quartal bis heute</div>
+          <div class="page-title">Sales · <em>Umsatz</em></div>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="rev-hero">
+          <div class="rev-hero-inner">
+            <div class="rev-label">Netto-Umsatz · Q2 2026</div>
+            <div class="rev-amount"><span class="rev-cur">€</span>148.420</div>
+            <div class="rev-delta">
+              <span class="rev-delta-pill">+24,8 %</span>
+              ggü. Q1 · Prognose im Plan
+            </div>
+            <div class="rev-split">
+              <div class="rev-split-cell">
+                <div class="label">Wiederkehrend</div>
+                <div class="val">96,2 T€</div>
+              </div>
+              <div class="rev-split-cell">
+                <div class="label">Projekte</div>
+                <div class="val">52,2 T€</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <div class="chart-title">90-Tage-Verlauf</div>
+            <div class="chart-seg">
+              <button class="seg-btn active">Netto</button>
+              <button class="seg-btn">Brutto</button>
+            </div>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="chartRev2"></canvas></div>
+        </div>
+
+        <div class="section-head"><div class="section-title">Erlösquellen</div></div>
+        <div class="rev-streams">
+          <div class="stream-row">
+            <div class="stream-ico"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="13" y="6" width="3" height="12"/></svg></div>
+            <div class="stream-body">
+              <div class="flex items-center justify-between"><span class="stream-name">Retainer</span><span class="stream-val">68,4 T€</span></div>
+              <div class="stream-pct"><div class="stream-pct-fill" style="width:86%"></div></div>
+            </div>
+          </div>
+          <div class="stream-row">
+            <div class="stream-ico"><svg viewBox="0 0 24 24"><path d="M19 7H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM16 3v4M8 3v4M3 11h18"/></svg></div>
+            <div class="stream-body">
+              <div class="flex items-center justify-between"><span class="stream-name">Kampagnen</span><span class="stream-val">52,2 T€</span></div>
+              <div class="stream-pct"><div class="stream-pct-fill" style="width:64%"></div></div>
+            </div>
+          </div>
+          <div class="stream-row">
+            <div class="stream-ico"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div>
+            <div class="stream-body">
+              <div class="flex items-center justify-between"><span class="stream-name">Workshops</span><span class="stream-val">18,8 T€</span></div>
+              <div class="stream-pct"><div class="stream-pct-fill" style="width:32%"></div></div>
+            </div>
+          </div>
+          <div class="stream-row">
+            <div class="stream-ico"><svg viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M5 12h14"/></svg></div>
+            <div class="stream-body">
+              <div class="flex items-center justify-between"><span class="stream-name">Lizenzierung</span><span class="stream-val">9,0 T€</span></div>
+              <div class="stream-pct"><div class="stream-pct-fill" style="width:16%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= CONTENT PLANNER ========================= -->
+    <section class="screen" id="screen-content">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">🖼️ Modul · 7 in Warteschlange</div>
+          <div class="page-title">Brand <em>Karussell</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>
+
+      <div class="content-week stagger">
+        <div class="day-pill"><span class="day-pill-dow">Mo</span><span class="day-pill-num">20</span></div>
+        <div class="day-pill"><span class="day-pill-dow">Di</span><span class="day-pill-num">21</span><span class="day-pill-dot"></span></div>
+        <div class="day-pill"><span class="day-pill-dow">Mi</span><span class="day-pill-num">22</span></div>
+        <div class="day-pill"><span class="day-pill-dow">Do</span><span class="day-pill-num">23</span><span class="day-pill-dot"></span></div>
+        <div class="day-pill active"><span class="day-pill-dow">Fr</span><span class="day-pill-num">24</span><span class="day-pill-dot"></span></div>
+        <div class="day-pill"><span class="day-pill-dow">Sa</span><span class="day-pill-num">25</span></div>
+        <div class="day-pill"><span class="day-pill-dow">So</span><span class="day-pill-num">26</span><span class="day-pill-dot"></span></div>
+      </div>
+
+      <div class="stagger">
+        <div class="post-card">
+          <div class="post-thumb">
+            <span class="platform">Instagram</span>
+          </div>
+          <div class="post-body">
+            <div>
+              <div class="post-title">Atelier Notes · Band III</div>
+              <div class="post-cap">„Der langsame Rhythmus hinter jeder Premium-Marke, mit der wir arbeiten. Drei stille Rituale unseres Studios …"</div>
+            </div>
+            <div class="post-foot">
+              <span class="post-status">Geplant</span>
+              <span class="post-time">Fr · 18:30</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-thumb" style="background:linear-gradient(135deg,#4a7a96,#6b5a8e)">
+            <span class="platform">LinkedIn</span>
+          </div>
+          <div class="post-body">
+            <div>
+              <div class="post-title">Über editorialen Geschmack · Langform</div>
+              <div class="post-cap">„Warum deine Tonalität deine teuerste Design-Entscheidung ist — ein leises Manifest für Gründer:innen …"</div>
+            </div>
+            <div class="post-foot">
+              <span class="post-status" style="color:var(--info)">Entwurf</span>
+              <span class="post-time">— · —</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-thumb" style="background:linear-gradient(135deg,#231e18,#3a3128)">
+            <span class="platform">Substack</span>
+          </div>
+          <div class="post-body">
+            <div>
+              <div class="post-title">Sonntagsbrief № 24</div>
+              <div class="post-cap">„Was ich gelernt habe, dieses Quartal 100 E-Mails an Gründer:innen zu schreiben — und wie es unser Angebot verändert hat …"</div>
+            </div>
+            <div class="post-foot">
+              <span class="post-status" style="color:var(--pos)">Freigegeben</span>
+              <span class="post-time">So · 08:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= CLIENT AREA ========================= -->
+    <section class="screen" id="screen-clients">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">📋 Modul · 16 aktiv · 4 im Onboarding</div>
+          <div class="page-title">Briefing <em>+ Angebot</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>
+
+      <div class="client-grid stagger">
+        <div class="client-card">
+          <div class="client-card-head">
+            <div class="client-logo">M</div>
+            <div>
+              <div class="client-name">Maison Étoile</div>
+              <div class="client-tier">Stufe · Atelier</div>
+            </div>
+          </div>
+          <div class="client-metric">
+            <span class="client-metric-val">28 T€</span>
+            <span class="client-metric-lbl">MRR</span>
+          </div>
+          <div class="client-progress"><div class="client-progress-fill" style="width:78%"></div></div>
+        </div>
+
+        <div class="client-card">
+          <div class="client-card-head">
+            <div class="client-logo">V</div>
+            <div>
+              <div class="client-name">Villa Serenità</div>
+              <div class="client-tier">Stufe · Heritage</div>
+            </div>
+          </div>
+          <div class="client-metric">
+            <span class="client-metric-val">18 T€</span>
+            <span class="client-metric-lbl">MRR</span>
+          </div>
+          <div class="client-progress"><div class="client-progress-fill" style="width:62%"></div></div>
+        </div>
+
+        <div class="client-card">
+          <div class="client-card-head">
+            <div class="client-logo">A</div>
+            <div>
+              <div class="client-name">Atelier Noir</div>
+              <div class="client-tier">Stufe · Studio</div>
+            </div>
+          </div>
+          <div class="client-metric">
+            <span class="client-metric-val">6,8 T€</span>
+            <span class="client-metric-lbl">Projekt</span>
+          </div>
+          <div class="client-progress"><div class="client-progress-fill" style="width:48%"></div></div>
+        </div>
+
+        <div class="client-card">
+          <div class="client-card-head">
+            <div class="client-logo">K</div>
+            <div>
+              <div class="client-name">Kōan Apothecary</div>
+              <div class="client-tier">Stufe · Studio</div>
+            </div>
+          </div>
+          <div class="client-metric">
+            <span class="client-metric-val">4,5 T€</span>
+            <span class="client-metric-lbl">Pilot</span>
+          </div>
+          <div class="client-progress"><div class="client-progress-fill" style="width:26%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= SETTINGS ========================= -->
+    <section class="screen" id="screen-settings">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">Workspace</div>
+          <div class="page-title"><em>Einstellungen</em></div>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="settings-group">
+          <div class="settings-group-title">Erscheinungsbild</div>
+          <div class="settings-list">
+            <div class="settings-row">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Design</div>
+                <div class="settings-sub">Hell · Dunkel · Automatisch</div>
+              </div>
+              <span class="settings-val">Auto</span>
+              <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+            </div>
+            <div class="settings-row">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Typografie</div>
+                <div class="settings-sub">Playfair · Inter · editorial</div>
+              </div>
+              <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+            </div>
+            <div class="settings-row">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Akzentfarbe</div>
+                <div class="settings-sub">Champagner · Onyx · Salbei</div>
+              </div>
+              <span style="width:18px;height:18px;border-radius:6px;background:var(--grad-gold);box-shadow:0 0 0 1px var(--border)"></span>
+              <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">Workspace</div>
+          <div class="settings-list">
+            <div class="settings-row">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Benachrichtigungen</div>
+                <div class="settings-sub">Ruhezeiten · 22:00 — 07:30</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Privatsphäre-Modus</div>
+                <div class="settings-sub">Umsatzzahlen in Screenshots ausblenden</div>
+              </div>
+              <div class="toggle"></div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Auto-Sync</div>
+                <div class="settings-sub">iCloud + Notion + Kalender</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">Konto</div>
+          <div class="settings-list">
+            <div class="settings-row" onclick="go('profile')" style="cursor:pointer">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Profil</div>
+                <div class="settings-sub">Ivana Djordjević · Atelier-Inhaberin</div>
+              </div>
+              <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+            </div>
+            <div class="settings-row" onclick="go('billing')" style="cursor:pointer">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Abrechnung &amp; Tarif</div>
+                <div class="settings-sub">Atelier · 49 € / Monat</div>
+              </div>
+              <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= NOTIFICATIONS ========================= -->
+    <section class="screen" id="screen-notifications">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">3 neu · 12 insgesamt</div>
+          <div class="page-title"><em>Benachrichtigungen</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></svg></button>
+      </div>
+
+      <div class="stagger">
+        <div class="notif unread" style="padding-left:24px">
+          <div class="notif-ico" style="background:var(--grad-gold);color:#fff"><svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg></div>
+          <div class="notif-body">
+            <div class="notif-title">Luna · Impuls bereit</div>
+            <div class="notif-text">Drei Leads abgekühlt · Reaktivierungs-Strategie im handschriftlichen Ton entworfen.</div>
+            <div class="notif-time">09:42 · heute</div>
+          </div>
+        </div>
+
+        <div class="notif unread" style="padding-left:24px">
+          <div class="notif-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="notif-body">
+            <div class="notif-title">4.200 € eingegangen</div>
+            <div class="notif-text">Villa Serenità · Q2-Retainer · Überweisung gebucht</div>
+            <div class="notif-time">08:14 · heute</div>
+          </div>
+        </div>
+
+        <div class="notif unread" style="padding-left:24px">
+          <div class="notif-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+          <div class="notif-body">
+            <div class="notif-title">Neuer Lead · Studio Velluto</div>
+            <div class="notif-text">via Substack-Empfehlung · Florenz · Interior-Marke</div>
+            <div class="notif-time">07:55 · heute</div>
+          </div>
+        </div>
+
+        <div class="notif">
+          <div class="notif-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <div class="notif-body">
+            <div class="notif-title">Redaktionsabnahme · in 18 Min</div>
+            <div class="notif-text">7 Beiträge warten auf deine finale Freigabe</div>
+            <div class="notif-time">gestern · 16:42</div>
+          </div>
+        </div>
+
+        <div class="notif">
+          <div class="notif-ico"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="notif-body">
+            <div class="notif-title">Camille Roux hat geantwortet</div>
+            <div class="notif-text">„Liebe das Angebot — lass uns Q3 fixieren."</div>
+            <div class="notif-time">gestern · 14:08</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= PROFILE ========================= -->
+    <section class="screen" id="screen-profile">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">Atelier-Inhaberin</div>
+          <div class="page-title">Profil-<em>Atelier</em></div>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="profile-head">
+          <div class="profile-avatar">I</div>
+          <div class="profile-info">
+            <div class="profile-name">Ivana Djordjević</div>
+            <div class="profile-role">Gründerin · Mindéa Atelier</div>
+            <div class="profile-meta">📍 Belgrad · Wien</div>
+          </div>
+        </div>
+
+        <div class="analytics-kpis">
+          <div class="kpi-tile">
+            <div class="kpi-label">Aktive Kund:innen</div>
+            <div class="kpi-value">16</div>
+            <div class="kpi-delta mt-2">↗ 3 neu</div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-label">Jahre</div>
+            <div class="kpi-value">6,4</div>
+            <div class="kpi-delta mt-2">Seit 2019</div>
+          </div>
+          <div class="kpi-tile span-2">
+            <div class="kpi-label">Lebenszeit-Umsatz</div>
+            <div class="kpi-value">1,84 Mio €</div>
+            <div class="kpi-foot">
+              <div class="kpi-delta">↗ 148 T€ dieses Quartal</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-list">
+          <div class="settings-row">
+            <div class="settings-ico"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 11l-3 3-3-3M9 7a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg></div>
+            <div class="settings-text">
+              <div class="settings-title">Profil bearbeiten</div>
+              <div class="settings-sub">Name · Foto · Bio</div>
+            </div>
+            <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+          </div>
+          <div class="settings-row">
+            <div class="settings-ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="settings-text">
+              <div class="settings-title">Sicherheit</div>
+              <div class="settings-sub">2FA · Biometrie · Sitzungen</div>
+            </div>
+            <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+          </div>
+          <div class="settings-row">
+            <div class="settings-ico"><svg viewBox="0 0 24 24"><path d="M9 19V6l11 7-11 6z"/></svg></div>
+            <div class="settings-text">
+              <div class="settings-title">Abmelden</div>
+              <div class="settings-sub">Diese Workspace-Sitzung beenden</div>
+            </div>
+            <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= TEAM ========================= -->
+    <section class="screen" id="screen-team">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">🔥 Modul · 6 aktiv · 2 eingeladen</div>
+          <div class="page-title">Brand <em>Mastery</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M19 8v6M16 11h6M8.5 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg></button>
+      </div>
+
+      <div class="stagger">
+        <div class="card card-pad">
+          <div class="card-head">
+            <div class="card-title">Aktueller Sprint</div>
+            <span class="label">KW 21</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="metric" style="font-size:24px">12 / 18</div>
+              <div class="text-mute mt-2" style="font-size:11px">Aufgaben erledigt</div>
+            </div>
+            <div class="lead-progress-bar" style="width:120px"><div class="lead-progress-fill" style="width:66%"></div></div>
+          </div>
+        </div>
+
+        <div class="team-row">
+          <div class="team-avatar">I<span class="team-status"></span></div>
+          <div class="team-info">
+            <div class="team-name">Ivana Djordjević</div>
+            <div class="team-role">Gründerin · Atelier · online</div>
+          </div>
+        </div>
+        <div class="team-row">
+          <div class="team-avatar">E<span class="team-status"></span></div>
+          <div class="team-info">
+            <div class="team-name">Elena Marchetti</div>
+            <div class="team-role">Markenstrategin · online</div>
+          </div>
+        </div>
+        <div class="team-row">
+          <div class="team-avatar">N<span class="team-status away"></span></div>
+          <div class="team-info">
+            <div class="team-name">Niko Andersen</div>
+            <div class="team-role">Redaktionsleitung · abwesend</div>
+          </div>
+        </div>
+        <div class="team-row">
+          <div class="team-avatar">A<span class="team-status off"></span></div>
+          <div class="team-info">
+            <div class="team-name">Amélie Chen</div>
+            <div class="team-role">Senior Designerin · offline</div>
+          </div>
+        </div>
+        <div class="team-row">
+          <div class="team-avatar">L<span class="team-status off"></span></div>
+          <div class="team-info">
+            <div class="team-name">Liam O'Connell</div>
+            <div class="team-role">Ops & Finanzen · offline</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= AUTOMATIONS ========================= -->
+    <section class="screen" id="screen-flows">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">📧 Modul · 8 aktiv · 234 Läufe / Wo</div>
+          <div class="page-title">Email <em>Turbo</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>
+
+      <div class="stagger">
+        <div class="flow-card">
+          <div class="flow-head">
+            <div class="flow-name">Lead-Pflege · abgekühlt</div>
+            <div class="flow-status">Aktiv</div>
+          </div>
+          <div class="flow-nodes">
+            <div class="flow-node"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>14 T inaktiv</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>E-Mail</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node"><svg viewBox="0 0 24 24"><path d="M12 8V4H8M4 8h4v4"/></svg>KI-Ton</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Benachrichtigen</div>
+          </div>
+          <div class="flow-stats">
+            <div>
+              <div class="flow-stat-label">Läufe</div>
+              <div class="flow-stat-val">42</div>
+            </div>
+            <div>
+              <div class="flow-stat-label">Öffnungsrate</div>
+              <div class="flow-stat-val">68 %</div>
+            </div>
+            <div>
+              <div class="flow-stat-label">Reaktiviert</div>
+              <div class="flow-stat-val">9</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-card">
+          <div class="flow-head">
+            <div class="flow-name">Rechnung · Auto-Entwurf</div>
+            <div class="flow-status">Aktiv</div>
+          </div>
+          <div class="flow-nodes">
+            <div class="flow-node">Projekt abgeschlossen</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">Verfassen</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">Stripe senden</div>
+          </div>
+          <div class="flow-stats">
+            <div>
+              <div class="flow-stat-label">Läufe</div>
+              <div class="flow-stat-val">16</div>
+            </div>
+            <div>
+              <div class="flow-stat-label">Bezahlt &lt; 7 T</div>
+              <div class="flow-stat-val">94 %</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-card">
+          <div class="flow-head">
+            <div class="flow-name">Redaktion · Publikations-Ritual</div>
+            <div class="flow-status paused">Pausiert</div>
+          </div>
+          <div class="flow-nodes">
+            <div class="flow-node">So 08:00</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">Substack</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">LinkedIn</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">Team informieren</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= AI INSIGHTS ========================= -->
+    <section class="screen" id="screen-insights">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">🧠 Modul · 7 neue diese Woche</div>
+          <div class="page-title">KI <em>News</em></div>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="insight-card featured">
+          <div class="insight-row">
+            <div class="insight-ico"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 6-6"/></svg></div>
+            <div class="insight-body">
+              <div class="insight-tag">Umsatz · Muster</div>
+              <div class="insight-title-card">Freitage performen 38 % besser als Montage</div>
+              <div class="insight-desc">Werden Angebote freitagnachmittags gesendet, steigt die Abschlussquote von 26 % → 36 %. Verschiebung von 4 offenen Angeboten könnte Q2 um ~14 T€ heben.</div>
+              <div class="insight-bar">
+                <span class="insight-confidence">Konfidenz</span>
+                <div class="confidence-bar"><div class="confidence-fill" style="width:88%"></div></div>
+                <span class="text-mute mono" style="font-size:11px">88 %</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-row">
+            <div class="insight-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+            <div class="insight-body">
+              <div class="insight-tag">CRM · Abkühlung</div>
+              <div class="insight-title-card">3 Leads in den letzten 9 Tagen abgekühlt</div>
+              <div class="insight-desc">Maison Étoile, Studio Velluto und Lume Co. sind verstummt. Eine handgeschriebene Notiz reaktiviert historisch 64 % vergleichbarer Leads.</div>
+              <div class="insight-bar">
+                <span class="insight-confidence">Konfidenz</span>
+                <div class="confidence-bar"><div class="confidence-fill" style="width:74%"></div></div>
+                <span class="text-mute mono" style="font-size:11px">74 %</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-row">
+            <div class="insight-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div>
+            <div class="insight-body">
+              <div class="insight-tag">Content · Geschmack</div>
+              <div class="insight-title-card">Editorial-Posts schlagen Karussells um Faktor 2,4</div>
+              <div class="insight-desc">Deine „Atelier Notes"-Reihe erzielt 2,4× mehr Saves als Karussell-Posts. Eine Verdopplung editorialer Slots könnte den Inbound um ~22 % heben.</div>
+              <div class="insight-bar">
+                <span class="insight-confidence">Konfidenz</span>
+                <div class="confidence-bar"><div class="confidence-fill" style="width:91%"></div></div>
+                <span class="text-mute mono" style="font-size:11px">91 %</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= DOCUMENTS ========================= -->
+    <section class="screen" id="screen-docs">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">🛡️ Modul · 84 Dateien · 2,4 GB</div>
+          <div class="page-title">Einwand-<em>Bibliothek</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5-5 5 5M12 5v12"/></svg></button>
+      </div>
+
+      <div class="stagger">
+        <div class="tabs-row">
+          <button class="tab-pill active">Alle</button>
+          <button class="tab-pill">Angebote</button>
+          <button class="tab-pill">Verträge</button>
+          <button class="tab-pill">Briefings</button>
+          <button class="tab-pill">Notizen</button>
+        </div>
+
+        <div class="doc-row">
+          <div class="doc-ico"><span class="doc-ico-type">PDF</span></div>
+          <div class="doc-info">
+            <div class="doc-name">Q3-Angebot · Maison Étoile</div>
+            <div class="doc-meta">2,4 MB · heute · 24. Mai</div>
+          </div>
+          <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h7M19 16l-5-4 5-4"/></svg></span>
+        </div>
+        <div class="doc-row">
+          <div class="doc-ico"><span class="doc-ico-type">DOCX</span></div>
+          <div class="doc-info">
+            <div class="doc-name">Markentonalitäts-Leitfaden · Atelier</div>
+            <div class="doc-meta">1,1 MB · 21. Mai · Niko</div>
+          </div>
+          <span class="settings-chev"><svg viewBox="0 0 24 24"><path d="M19 16l-5-4 5-4"/></svg></span>
+        </div>
+        <div class="doc-row">
+          <div class="doc-ico"><span class="doc-ico-type">FIG</span></div>
+          <div class="doc-info">
+            <div class="doc-name">Villa Serenità · Identity v3</div>
+            <div class="doc-meta">8 Frames · 18. Mai · Amélie</div>
+          </div>
+        </div>
+        <div class="doc-row">
+          <div class="doc-ico"><span class="doc-ico-type">MD</span></div>
+          <div class="doc-info">
+            <div class="doc-name">Gründerbrief · Entwurf 04</div>
+            <div class="doc-meta">14 KB · 17. Mai · Ivana</div>
+          </div>
+        </div>
+        <div class="doc-row">
+          <div class="doc-ico"><span class="doc-ico-type">XLSX</span></div>
+          <div class="doc-info">
+            <div class="doc-name">Q2-Prognose · Kanäle</div>
+            <div class="doc-meta">412 KB · 12. Mai · Liam</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= MEDIA LIBRARY ========================= -->
+    <section class="screen" id="screen-media">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">🎥 Modul · 128 Assets · kuratiert</div>
+          <div class="page-title">KI-<em>Prompts</em></div>
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5-5 5 5M12 5v12"/></svg></button>
+      </div>
+
+      <div class="stagger">
+        <div class="tabs-row">
+          <button class="tab-pill active">Alle</button>
+          <button class="tab-pill">Fotos</button>
+          <button class="tab-pill">Videos</button>
+          <button class="tab-pill">Marke</button>
+        </div>
+
+        <div class="media-grid">
+          <div class="media-tile big">
+            <div class="meta"><span>Atelier Notes · Cover</span><span>2,4 MB</span></div>
+          </div>
+          <div class="media-tile"><div class="meta"><span>IG · 04</span></div></div>
+          <div class="media-tile"><div class="meta"><span>IG · 05</span></div></div>
+          <div class="media-tile"><div class="meta"><span>Villa-Shoot</span></div></div>
+          <div class="media-tile"><div class="meta"><span>Logo</span></div></div>
+          <div class="media-tile"><div class="meta"><span>Studio</span></div></div>
+          <div class="media-tile"><div class="meta"><span>Textur · Grain</span></div></div>
+          <div class="media-tile"><div class="meta"><span>Hand · Ritual</span></div></div>
+          <div class="media-tile"><div class="meta"><span>Editorial 01</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= BILLING ========================= -->
+    <section class="screen" id="screen-billing">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">Abonnement · Tarif</div>
+          <div class="page-title">Abrechnung <em>&amp; Tarif</em></div>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="plan-card">
+          <div class="plan-head">
+            <div>
+              <div class="plan-tier">Atelier · Stufe III</div>
+            </div>
+            <div class="hero-status"><span class="pulse"></span>Aktiv</div>
+          </div>
+          <div class="plan-price-row">
+            <span class="plan-price">49 €</span>
+            <span class="plan-period">/ Monat · jährliche Abrechnung</span>
+          </div>
+          <div class="plan-feats">
+            <div class="plan-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Unbegrenzte Luna-KI-Gespräche</div>
+            <div class="plan-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Vollständiges CRM · 5 Workspaces · 6 Plätze</div>
+            <div class="plan-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Editorial-Veröffentlichung auf 12 Kanälen</div>
+            <div class="plan-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Priority-Concierge-Support</div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">Zahlungsmethode</div>
+          <div class="settings-list">
+            <div class="settings-row">
+              <div class="settings-ico"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+              <div class="settings-text">
+                <div class="settings-title">Visa · •• 4242</div>
+                <div class="settings-sub">gültig bis 08/27</div>
+              </div>
+              <span class="invoice-status">Primär</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">Rechnungen</div>
+          <div class="invoice-row">
+            <div style="flex:1">
+              <div class="invoice-num">RG-2026-051</div>
+              <div class="invoice-date">1. Mai · Atelier monatlich</div>
+            </div>
+            <div style="text-align:right">
+              <div class="invoice-amt">49,00 €</div>
+              <div class="invoice-status" style="margin-top:4px">Bezahlt</div>
+            </div>
+          </div>
+          <div class="invoice-row">
+            <div style="flex:1">
+              <div class="invoice-num">RG-2026-042</div>
+              <div class="invoice-date">1. Apr · Atelier monatlich</div>
+            </div>
+            <div style="text-align:right">
+              <div class="invoice-amt">49,00 €</div>
+              <div class="invoice-status" style="margin-top:4px">Bezahlt</div>
+            </div>
+          </div>
+          <div class="invoice-row">
+            <div style="flex:1">
+              <div class="invoice-num">RG-2026-033</div>
+              <div class="invoice-date">1. Mär · Atelier monatlich</div>
+            </div>
+            <div style="text-align:right">
+              <div class="invoice-amt">49,00 €</div>
+              <div class="invoice-status" style="margin-top:4px">Bezahlt</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= ONBOARDING ========================= -->
+    <section class="screen" id="screen-onboard">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">🎯 Modul · Schritt 02 von 04</div>
+          <div class="page-title"><em>Akquise</em></div>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="onboard-progress">
+          <span class="done"></span>
+          <span class="done"></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="onboard-hero">
+          <div class="onboard-visual">
+            <svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="onboard-eyebrow">Erzähl uns von dir</div>
+          <div class="onboard-title">Welche Art <em>Atelier</em> baust du?</div>
+          <div class="onboard-desc">Wir stimmen Luna und dein Dashboard auf dein Handwerk ab. Du kannst das jederzeit in den Einstellungen anpassen.</div>
+        </div>
+
+        <div style="margin-top:8px">
+          <button class="onboard-choice sel">
+            <div class="onboard-choice-ico"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 6-6"/></svg></div>
+            <div>
+              <div class="onboard-choice-title">Kreativ-Atelier</div>
+              <div class="onboard-choice-sub">Marke · Editorial · Content-Studio</div>
+            </div>
+          </button>
+          <button class="onboard-choice">
+            <div class="onboard-choice-ico"><svg viewBox="0 0 24 24"><path d="M9 18V6l11 7-11 6z"/></svg></div>
+            <div>
+              <div class="onboard-choice-title">Gründer-Workspace</div>
+              <div class="onboard-choice-sub">Solo-Gründer:in · persönliches OS</div>
+            </div>
+          </button>
+          <button class="onboard-choice">
+            <div class="onboard-choice-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+            <div>
+              <div class="onboard-choice-title">Premium-Beratung</div>
+              <div class="onboard-choice-sub">Retainer-basiert · kundennah</div>
+            </div>
+          </button>
+        </div>
+
+        <div style="margin-top:18px">
+          <button class="btn-primary">Weiter</button>
+          <button class="btn-secondary">Vorerst überspringen</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= SEARCH ========================= -->
+    <section class="screen" id="screen-search">
+      <div class="page-head">
+        <div>
+          <div class="page-eyebrow">Universal-Suche</div>
+          <div class="page-title"><em>Suche</em></div>
+        </div>
+      </div>
+
+      <div class="stagger">
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Leads, Posts, Rechnungen, Einstellungen …" autofocus>
+          <kbd>⌘ K</kbd>
+        </div>
+
+        <div class="search-section-title">Schnellaktionen</div>
+        <button class="search-result">
+          <div class="search-result-ico"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div style="flex:1">
+            <div class="search-result-title">Neuen Lead anlegen</div>
+            <div class="search-result-sub">CRM-Eintrag erstellen</div>
+          </div>
+          <span class="search-result-kbd">N L</span>
+        </button>
+        <button class="search-result">
+          <div class="search-result-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div style="flex:1">
+            <div class="search-result-title">Rechnung entwerfen</div>
+            <div class="search-result-sub">Vorausgefüllt mit Kund:in + letztem Projekt</div>
+          </div>
+          <span class="search-result-kbd">N R</span>
+        </button>
+
+        <div class="search-section-title">Zuletzt verwendet</div>
+        <button class="search-result">
+          <div class="search-result-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+          <div style="flex:1">
+            <div class="search-result-title">Maison Étoile</div>
+            <div class="search-result-sub">Sales Pipeline · Heiß · 12,4 T€</div>
+          </div>
+        </button>
+        <button class="search-result">
+          <div class="search-result-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div>
+          <div style="flex:1">
+            <div class="search-result-title">Atelier Notes · Band III</div>
+            <div class="search-result-sub">Geplant · Freitag 18:30</div>
+          </div>
+        </button>
+        <button class="search-result">
+          <div class="search-result-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+          <div style="flex:1">
+            <div class="search-result-title">Q3-Angebot · Maison Étoile</div>
+            <div class="search-result-sub">Dokument · heute</div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============= MORE SHEET ============= -->
+  <div class="dock-more" id="dockMore">
+    <button class="more-tile" onclick="go('tasks')"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Akquise Turbo</button>
+    <button class="more-tile" onclick="go('calendar')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Wochenplan</button>
+    <button class="more-tile" onclick="go('content')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>Brand Karussell</button>
+    <button class="more-tile" onclick="go('clients')"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>Briefing</button>
+    <button class="more-tile" onclick="go('team')"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M22 21v-2a4 4 0 0 0-3-3.87"/></svg>Brand Mastery</button>
+    <button class="more-tile" onclick="go('flows')"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Email Turbo</button>
+    <button class="more-tile" onclick="go('insights')"><svg viewBox="0 0 24 24"><path d="M12 2v4M4.93 4.93l2.83 2.83M2 12h4"/></svg>KI News</button>
+    <button class="more-tile" onclick="go('docs')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Einwand-Bibliothek</button>
+    <button class="more-tile" onclick="go('media')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>KI-Prompts</button>
+    <button class="more-tile" onclick="go('billing')"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Abrechnung</button>
+    <button class="more-tile" onclick="go('onboard')"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5z"/></svg>Akquise</button>
+    <button class="more-tile" onclick="go('profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg>Profil-Atelier</button>
+  </div>
+
+  <!-- ============= FLOATING DOCK ============= -->
+  <div class="dock-wrap">
+    <nav class="dock" id="dock">
+      <button class="dock-btn active" data-screen="home">
+        <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        <span class="label-txt">Heute</span>
+      </button>
+      <button class="dock-btn" data-screen="ai">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="label-txt">Luna</span>
+      </button>
+      <button class="dock-btn" data-screen="crm">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        <span class="label-txt">Sales</span>
+      </button>
+      <button class="dock-btn" data-screen="revenue">
+        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 6-6"/></svg>
+        <span class="label-txt">Umsatz</span>
+      </button>
+      <button class="dock-btn" data-screen="analytics">
+        <svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="8"/><rect x="10" y="6" width="4" height="14"/><rect x="17" y="9" width="4" height="11"/></svg>
+        <span class="label-txt">Analytics</span>
+      </button>
+      <button class="dock-btn" id="dockMoreBtn" data-screen="more">
+        <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+        <span class="label-txt">Mehr</span>
+      </button>
+    </nav>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ROUTING — every screen inherits the same shell/dock/theme
+   ============================================================ */
+const SCREENS = ['home','ai','crm','analytics','calendar','tasks','revenue','content','clients','settings','notifications','profile','team','flows','insights','docs','media','billing','onboard','search'];
+const DOCK_DIRECT = ['home','ai','crm','revenue','analytics'];
+
+function go(name){
+  const el = document.getElementById('screen-'+name);
+  if(!el) return;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  el.scrollTop = 0;
+  // dock state
+  document.querySelectorAll('.dock-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.screen===name);
+  });
+  if(!DOCK_DIRECT.includes(name)){
+    // keep "more" highlighted when on a secondary screen
+    document.querySelectorAll('.dock-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('dockMoreBtn').classList.add('active');
+  }
+  // close the more-sheet
+  document.getElementById('dockMore').classList.remove('open');
+  // trigger any charts for that screen
+  if(name==='analytics') initAnalytics();
+  if(name==='revenue') initRevenueChart();
+}
+
+document.querySelectorAll('.dock-btn[data-screen]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = btn.dataset.screen;
+    if(target==='more'){
+      document.getElementById('dockMore').classList.toggle('open');
+      return;
+    }
+    go(target);
+  });
+});
+
+// Close more-sheet when tapping outside
+document.addEventListener('click', (e)=>{
+  const more = document.getElementById('dockMore');
+  if(!more.classList.contains('open')) return;
+  if(more.contains(e.target)) return;
+  if(e.target.closest('#dockMoreBtn')) return;
+  more.classList.remove('open');
+});
+
+/* Theme toggle — every variable cascades */
+function toggleTheme(){
+  document.body.classList.toggle('dark');
+  // re-render charts so they pick up the new colours
+  setTimeout(()=>{ initAnalytics(true); initRevenueChart(true); }, 200);
+}
+
+/* ============================================================
+   CALENDAR GRID
+   ============================================================ */
+(function buildCal(){
+  const grid = document.getElementById('calGrid');
+  if(!grid) return;
+  const dow = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+  dow.forEach(d=>{
+    const el = document.createElement('div');
+    el.className='cal-dow';
+    el.textContent=d;
+    grid.appendChild(el);
+  });
+  // May 2026: starts Fri (offset 4)
+  const offset = 4;
+  for(let i=0;i<offset;i++){
+    const el = document.createElement('div');
+    el.className='cal-day faint';
+    el.textContent = 27+i;
+    grid.appendChild(el);
+  }
+  const today = 24;
+  const events = [3,8,12,16,20,24,28];
+  for(let d=1;d<=31;d++){
+    const el = document.createElement('button');
+    el.className='cal-day';
+    if(d===today) el.classList.add('today');
+    if(events.includes(d)) el.classList.add('has-event');
+    el.textContent=d;
+    grid.appendChild(el);
+  }
+})();
+
+/* ============================================================
+   CHARTS — colours derived from CSS vars (inherit theme)
+   ============================================================ */
+let analyticsInited = false, revInited = false;
+let charts = {};
+
+function cssVar(name){return getComputedStyle(document.body).getPropertyValue(name).trim();}
+
+function initAnalytics(force){
+  if(analyticsInited && !force) return;
+  analyticsInited = true;
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});
+
+  const accent = cssVar('--accent') || '#8b6432';
+  const accentSoft = cssVar('--accent-soft') || '#b8904a';
+  const info = cssVar('--info') || '#4a7a96';
+  const text = cssVar('--text');
+  const grid = cssVar('--border');
+
+  // Main revenue trajectory
+  const c1 = document.getElementById('chartRevenue');
+  if(c1){
+    const ctx = c1.getContext('2d');
+    const grad = ctx.createLinearGradient(0,0,0,200);
+    grad.addColorStop(0, accent+'66');
+    grad.addColorStop(1, accent+'00');
+    charts.c1 = new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:['KW1','KW2','KW3','KW4','KW5','KW6','KW7','KW8'],
+        datasets:[{
+          label:'Umsatz',
+          data:[18,22,19,28,32,30,38,48],
+          borderColor:accent,backgroundColor:grad,
+          borderWidth:2,fill:true,tension:.4,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:accent
+        },{
+          label:'Prognose',
+          data:[null,null,null,null,null,30,40,52],
+          borderColor:info,borderDash:[4,4],borderWidth:1.5,fill:false,tension:.4,pointRadius:0
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{display:false},ticks:{color:text+'88',font:{size:10}}},
+          y:{grid:{color:grid},ticks:{color:text+'88',font:{size:10}}}
+        }
+      }
+    });
+  }
+
+  // Source distribution
+  const c2 = document.getElementById('chartDist');
+  if(c2){
+    charts.c2 = new Chart(c2.getContext('2d'),{
+      type:'doughnut',
+      data:{
+        labels:['Empfehlungen','Inbound','Editorial','Sonstige'],
+        datasets:[{
+          data:[42,28,22,8],
+          backgroundColor:[accent,accentSoft,info,cssVar('--vio')||'#6b5a8e'],
+          borderWidth:0
+        }]
+      },
+      options:{
+        cutout:'70%',responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{color:text,font:{size:11},padding:14,boxWidth:8,boxHeight:8,usePointStyle:true,pointStyle:'rectRounded'}}}
+      }
+    });
+  }
+
+  // Mini sparkline
+  const c3 = document.getElementById('kpi1');
+  if(c3){
+    const ctx = c3.getContext('2d');
+    const grad = ctx.createLinearGradient(0,0,0,34);
+    grad.addColorStop(0, accent+'55');
+    grad.addColorStop(1, accent+'00');
+    charts.c3 = new Chart(ctx,{
+      type:'line',
+      data:{labels:[1,2,3,4,5,6,7,8],datasets:[{data:[3,4,3.5,5,4.8,6,7,8],borderColor:accent,backgroundColor:grad,borderWidth:1.6,fill:true,tension:.45,pointRadius:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}
+    });
+  }
+}
+
+function initRevenueChart(force){
+  if(revInited && !force) return;
+  revInited = true;
+  try{ charts.cR && charts.cR.destroy() }catch(e){}
+  const c = document.getElementById('chartRev2');
+  if(!c) return;
+  const accent = cssVar('--accent');
+  const text = cssVar('--text');
+  const ctx = c.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,200);
+  grad.addColorStop(0, accent+'55');
+  grad.addColorStop(1, accent+'00');
+  charts.cR = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:['Mär','Apr','Mai','Jun (Prog.)'],
+      datasets:[{
+        data:[38,42,48,56],
+        backgroundColor:[accent+'cc',accent+'cc',accent,accent+'66'],
+        borderRadius:8,borderSkipped:false
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{color:text+'88',font:{size:10}}},y:{grid:{color:cssVar('--border')},ticks:{color:text+'88',font:{size:10}}}}
+    }
+  });
+}
+
+// Pre-init the analytics canvases (they only render when their screen becomes active)
+window.addEventListener('load', ()=>{
+  // Auto-detect system preference once
+  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+    // keep light for the editorial intro — user can toggle
+  }
+});
+
+/* ============================================================
+   MICROINTERACTIONS — toggles, checks, send
+   ============================================================ */
+document.body.addEventListener('click', (e)=>{
+  const t = e.target.closest('.toggle');
+  if(t){ t.classList.toggle('on'); }
+  const ch = e.target.closest('.task-check');
+  if(ch){
+    ch.classList.toggle('done');
+    const row = ch.closest('.task');
+    row && row.classList.toggle('done');
+  }
+});
+
+// Composer enter-to-send (visual only)
+document.querySelectorAll('.composer-inner textarea').forEach(ta=>{
+  ta.addEventListener('input', ()=>{
+    ta.style.height='22px';
+    ta.style.height = Math.min(ta.scrollHeight, 120)+'px';
+  });
+});
+
+// Tab pills become active on click within their row
+document.querySelectorAll('.tabs-row').forEach(row=>{
+  row.addEventListener('click', e=>{
+    const p = e.target.closest('.tab-pill');
+    if(!p) return;
+    row.querySelectorAll('.tab-pill').forEach(b=>b.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+
+// Day pill swap
+document.querySelectorAll('.content-week').forEach(row=>{
+  row.addEventListener('click', e=>{
+    const p = e.target.closest('.day-pill');
+    if(!p) return;
+    row.querySelectorAll('.day-pill').forEach(b=>b.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+
+// Seg toggle
+document.querySelectorAll('.chart-seg').forEach(seg=>{
+  seg.addEventListener('click', e=>{
+    const b = e.target.closest('.seg-btn');
+    if(!b) return;
+    seg.querySelectorAll('.seg-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  });
+});
+</script>
+
+<!-- ====================================================================
+     MINDÉA V5 · ENGINE BRIDGE
+     Lädt mindea-engine.html (v4_9_14) in einem Iframe-Overlay.
+     Dock-Buttons öffnen das passende Modul via #hash.
+     localStorage wird geteilt (same-origin) → Daten 1:1 verfügbar.
+     ==================================================================== -->
+<style>
+#engine-overlay{
+  position:fixed; inset:0; z-index:500;
+  background:rgba(13,11,8,.55);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none;
+  transition:opacity .35s cubic-bezier(.2,.7,.2,1);
+  display:flex; flex-direction:column;
+  padding:0;
+}
+#engine-overlay.open{ opacity:1; pointer-events:auto; }
+.engine-bar{
+  display:flex; align-items:center; gap:10px;
+  padding:14px 18px;
+  background:var(--bg-glass);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border-bottom:1px solid var(--border-strong);
+  flex-shrink:0;
+}
+.engine-bar-title{
+  font-family:'Playfair Display',serif;
+  font-size:15px; font-weight:600; letter-spacing:-.01em;
+  color:var(--text); flex:1; min-width:0;
+}
+.engine-bar-title em{ font-style:italic; color:var(--accent); }
+.engine-bar-meta{
+  font-size:10px; letter-spacing:.22em; color:var(--text-faint);
+  font-weight:600; text-transform:uppercase;
+  font-family:'JetBrains Mono',monospace;
+}
+.engine-close{
+  width:38px; height:38px; border-radius:12px;
+  background:var(--bg-card); border:1px solid var(--border);
+  display:grid; place-items:center;
+  cursor:pointer; color:var(--text);
+  transition:transform .25s cubic-bezier(.2,.7,.2,1), background .2s;
+}
+.engine-close:hover{ background:var(--accent-tint); }
+.engine-close:active{ transform:scale(.92); }
+.engine-close svg{ width:16px; height:16px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+#engine-frame{
+  flex:1; width:100%; border:0; background:transparent;
+  min-height:0;
+}
+@media(min-width:520px){
+  #engine-overlay{ padding:24px; }
+  #engine-overlay .engine-shell{
+    flex:1; display:flex; flex-direction:column;
+    max-width:430px; margin:0 auto; width:100%;
+    border-radius:44px; overflow:hidden;
+    background:var(--bg);
+    box-shadow: 0 60px 120px -30px rgba(0,0,0,.55), 0 0 0 1px rgba(200,161,106,.10);
+  }
+  #engine-overlay:not(.has-shell) .engine-shell{ /* fallback */ }
+}
+@media(max-width:519px){
+  #engine-overlay .engine-shell{
+    flex:1; display:flex; flex-direction:column;
+    width:100%; height:100%;
+  }
+}
+</style>
+
+<div id="engine-overlay" role="dialog" aria-label="Mindéa Engine">
+  <div class="engine-shell">
+    <div class="engine-bar">
+      <span class="engine-bar-meta">Mindéa · Engine</span>
+      <span class="engine-bar-title" id="engineTitle">Workspace</span>
+      <button class="engine-close" onclick="closeEngine()" aria-label="Schließen">
+        <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <iframe id="engine-frame" src="about:blank" allow="clipboard-write *; clipboard-read *"></iframe>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ENGINE BRIDGE — Mindéa V5 ↔ V4_9_14
+   ============================================================ */
+(function(){
+  'use strict';
+
+  // Mapping: App-Screen-ID → Engine-Modul-ID (aus MOD_META)
+  const SCREEN_TO_MOD = {
+    'home':           'home',            // → goHome()
+    'ai':             'luna',            // → openMod('luna')
+    'crm':            'sales-enhanced',  // → openMod('sales-enhanced')
+    'analytics':      'analytics',
+    'calendar':       'kalender',
+    'tasks':          'akquise-turbo',
+    'revenue':        'revenue-forecast',
+    'content':        'post',            // Brand Karussell
+    'clients':        'briefing',
+    'flows':          'email-turbo',
+    'insights':       'news',            // KI News
+    'docs':           'einwaende',       // Einwand-Bibliothek
+    'media':          'prompts',         // KI-Prompts
+    'onboard':        'akquise',
+    'team':           'start-tag',       // Brand Mastery
+    'search':         'lib'              // Bibliothek / Library
+  };
+
+  const TITLES = {
+    'home':'Heute', 'luna':'Luna · Coach',
+    'sales-enhanced':'Sales Pipeline', 'analytics':'Analytics',
+    'kalender':'Kalender', 'akquise-turbo':'Akquise Turbo',
+    'revenue-forecast':'Revenue Forecast', 'post':'Brand Karussell',
+    'briefing':'Briefing + Angebot', 'email-turbo':'Email Turbo',
+    'news':'KI News', 'einwaende':'Einwand-Bibliothek',
+    'prompts':'KI-Prompts', 'akquise':'Akquise',
+    'start-tag':'Brand Mastery', 'lib':'Bibliothek'
+  };
+
+  const ENGINE_URL = 'mindea-engine.html';
+  let engineLoaded = false;
+  let pendingHash = '';
+
+  function getFrame(){ return document.getElementById('engine-frame'); }
+
+  window.openEngine = function(modId){
+    const overlay = document.getElementById('engine-overlay');
+    const title = document.getElementById('engineTitle');
+    if (!overlay) return;
+
+    const t = TITLES[modId] || 'Workspace';
+    title.innerHTML = '<em>' + t.split(' ')[0] + '</em>' + (t.split(' ').slice(1).length ? ' ' + t.split(' ').slice(1).join(' ') : '');
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    const frame = getFrame();
+    const targetSrc = ENGINE_URL + '#' + modId;
+
+    if (!engineLoaded) {
+      // First load
+      frame.src = targetSrc;
+      engineLoaded = true;
+    } else {
+      // Already loaded — just nav via hash + dispatch hashchange in iframe
+      try {
+        const w = frame.contentWindow;
+        if (w) {
+          const url = new URL(frame.src, location.href);
+          url.hash = '#' + modId;
+          // Use replaceState + manual hashchange to avoid reload
+          if (w.location.hash !== '#' + modId) {
+            w.location.hash = '#' + modId;
+          } else {
+            // re-trigger
+            w.dispatchEvent(new HashChangeEvent('hashchange'));
+          }
+        }
+      } catch(e) {
+        // Cross-origin guard — fallback to reload
+        frame.src = targetSrc;
+      }
+    }
+  };
+
+  window.closeEngine = function(){
+    const overlay = document.getElementById('engine-overlay');
+    if (overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // Override the app's go() function so dock taps open the real engine
+  const _origGo = window.go;
+  window.go = function(name){
+    // Always run the visual app screen switch (for the brief preview behind the overlay)
+    if (typeof _origGo === 'function') {
+      try { _origGo(name); } catch(e){}
+    }
+    const modId = SCREEN_TO_MOD[name];
+    if (modId) {
+      // Slight delay so the overlay fade looks intentional after dock animation
+      setTimeout(function(){ openEngine(modId); }, 60);
+    }
+  };
+
+  // ESC closes the engine
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeEngine();
+  });
+
+  // Listen for nav events from inside the engine — sync the dock state
+  window.addEventListener('message', function(ev){
+    const d = ev && ev.data;
+    if (!d || d.mindea !== 'nav') return;
+    const mod = d.mod;
+    // Find matching screen-name in SCREEN_TO_MOD
+    const screenName = Object.keys(SCREEN_TO_MOD).find(k => SCREEN_TO_MOD[k] === mod);
+    if (screenName) {
+      document.querySelectorAll('.dock-btn').forEach(b=>{
+        b.classList.toggle('active', b.dataset.screen === screenName);
+      });
+    }
+  });
+
+  // Quick visual hint in the dock that taps now lead to the live engine
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.dock-btn[data-screen]').forEach(function(b){
+      b.title = 'Öffnet das echte Modul (v4_9_14-Engine)';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
