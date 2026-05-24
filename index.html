@@ -26070,7 +26070,292 @@ body.dark .next-post-btn{
 body.dark #app-header{
   background:rgba(20,17,13,.65) !important;
 }
+
+/* ============================================================
+   PHASE 1 · FLOATING DOCK + MORE-SHEET (Mobile primary nav)
+   Ruft echte v4_9_14-Funktionen auf — kein Original-Code geändert
+   ============================================================ */
+@media(max-width:767px){
+  /* Original hamburger versteckt — Dock übernimmt */
+  .hamburger-btn{ display:none !important; }
+  /* Platz unten für Dock */
+  #main-panel{ padding-bottom:84px !important; }
+  .screen{ padding-bottom:88px !important; }
+  #lux-dock-wrap{ display:block !important; }
+}
+@media(min-width:768px){
+  #lux-dock-wrap{ display:none !important; }
+}
+
+#lux-dock-wrap{
+  display:none;
+  position:fixed; left:0; right:0; bottom:0;
+  z-index:200;
+  padding:0 12px 12px;
+  pointer-events:none;
+}
+.lux-dock{
+  pointer-events:auto;
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--lux-glass);
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  border:1px solid var(--lux-glass-border);
+  border-radius:999px;
+  padding:7px;
+  box-shadow:0 18px 40px -16px rgba(34,24,12,.30), inset 0 1px 0 rgba(255,255,255,.40);
+  gap:3px;
+}
+body.dark .lux-dock{
+  box-shadow:0 18px 40px -16px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.lux-dock-btn{
+  flex:1; height:46px; border-radius:999px;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  color:var(--ts); background:none; border:0; cursor:pointer;
+  transition:all .35s var(--lux-ease);
+  font-size:12px; font-weight:600; letter-spacing:.01em;
+  font-family:'Inter','DM Sans',sans-serif;
+  overflow:hidden;
+}
+.lux-dock-btn .lux-ico{ font-size:17px; line-height:1; }
+.lux-dock-btn .lux-lbl{ display:none; white-space:nowrap; }
+.lux-dock-btn.active{
+  background:var(--gg); color:#fff; flex:1.65;
+  box-shadow:0 10px 22px -8px rgba(184,144,74,.55), inset 0 1px 0 rgba(255,255,255,.30);
+}
+.lux-dock-btn.active .lux-lbl{ display:inline; }
+.lux-dock-btn:active{ transform:scale(.94); }
+.lux-dock-btn:hover:not(.active){ background:rgba(139,100,50,.10); color:var(--tc); }
+
+/* MORE sheet */
+#lux-more-sheet{
+  position:fixed; left:12px; right:12px; bottom:80px;
+  z-index:201;
+  background:var(--lux-glass);
+  backdrop-filter:blur(30px) saturate(160%);
+  -webkit-backdrop-filter:blur(30px) saturate(160%);
+  border:1px solid var(--lux-glass-border);
+  border-radius:24px;
+  padding:14px;
+  box-shadow:0 28px 60px -18px rgba(34,24,12,.40);
+  display:none;
+  max-height:65vh; overflow-y:auto;
+}
+#lux-more-sheet.open{ display:block; animation:lux-pop .35s var(--lux-spring); }
+@keyframes lux-pop{ from{opacity:0;transform:translateY(8px) scale(.97)} to{opacity:1;transform:none} }
+.lux-more-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:6px;
+}
+.lux-more-tile{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  padding:14px 6px; border-radius:14px;
+  background:var(--bc); border:1px solid var(--bd);
+  color:var(--tc); font-size:10.5px; font-weight:600; letter-spacing:.01em;
+  text-align:center; line-height:1.2;
+  cursor:pointer; transition:all .25s var(--lux-ease);
+  font-family:'Inter','DM Sans',sans-serif;
+}
+.lux-more-tile:hover{ transform:translateY(-2px); box-shadow:var(--sm); border-color:rgba(122,92,56,.22); }
+.lux-more-tile:active{ transform:translateY(0) scale(.97); }
+.lux-more-tile .lux-tile-ico{ font-size:20px; line-height:1; }
+.lux-more-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 6px 12px; margin-bottom:8px;
+  border-bottom:1px solid var(--bd);
+}
+.lux-more-title{
+  font-family:'Playfair Display',serif; font-size:14px; font-weight:600;
+  letter-spacing:.02em; color:var(--tc);
+}
+.lux-more-close{
+  width:30px; height:30px; border-radius:50%;
+  background:var(--bc); border:1px solid var(--bd);
+  display:grid; place-items:center; cursor:pointer;
+  font-size:16px; color:var(--ts);
+}
+#lux-sheet-backdrop{
+  display:none; position:fixed; inset:0; z-index:199;
+  background:rgba(13,11,8,.35);
+  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+}
+#lux-sheet-backdrop.open{ display:block; animation:lux-fade-in .25s var(--lux-ease); }
+@keyframes lux-fade-in{ from{opacity:0} to{opacity:1} }
 </style>
+
+<!-- ============================================================
+     PHASE 1 · MARKUP: Floating Dock + More Sheet
+     Wird via vanilla JS verkabelt — ruft echte v4_9_14-Funktionen
+     ============================================================ -->
+<div id="lux-sheet-backdrop" onclick="luxCloseSheet()"></div>
+
+<div id="lux-more-sheet">
+  <div class="lux-more-head">
+    <div class="lux-more-title"><em style="font-style:italic">Alle</em> Module</div>
+    <button class="lux-more-close" onclick="luxCloseSheet()" aria-label="Schließen">×</button>
+  </div>
+  <div class="lux-more-grid" id="lux-more-grid">
+    <!-- befüllt durch luxBuildMoreSheet() -->
+  </div>
+</div>
+
+<div id="lux-dock-wrap">
+  <nav class="lux-dock" role="navigation" aria-label="Hauptnavigation">
+    <button class="lux-dock-btn active" data-lux-action="home" onclick="luxNav('home', this)" aria-label="Heute">
+      <span class="lux-ico">⚡</span><span class="lux-lbl">Heute</span>
+    </button>
+    <button class="lux-dock-btn" data-lux-action="mod:luna" onclick="luxNav('mod:luna', this)" aria-label="Luna Coach">
+      <span class="lux-ico">💬</span><span class="lux-lbl">Luna</span>
+    </button>
+    <button class="lux-dock-btn" data-lux-action="mod:sales-enhanced" onclick="luxNav('mod:sales-enhanced', this)" aria-label="Sales Pipeline">
+      <span class="lux-ico">💰</span><span class="lux-lbl">Sales</span>
+    </button>
+    <button class="lux-dock-btn" data-lux-action="mod:analytics" onclick="luxNav('mod:analytics', this)" aria-label="Analytics">
+      <span class="lux-ico">📊</span><span class="lux-lbl">Analytics</span>
+    </button>
+    <button class="lux-dock-btn" data-lux-action="lib" onclick="luxNav('lib', this)" aria-label="Bibliothek">
+      <span class="lux-ico">📚</span><span class="lux-lbl">Library</span>
+    </button>
+    <button class="lux-dock-btn" data-lux-action="more" onclick="luxToggleSheet()" aria-label="Mehr">
+      <span class="lux-ico">⋯</span><span class="lux-lbl">Mehr</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+/* ============================================================
+   PHASE 1 — Luxus-Dock-Verkabelung
+   Nutzt v4_9_14-Funktionen: goHome(), openMod(id), goLib()
+   Kein einziges Original-Symbol wird überschrieben.
+   ============================================================ */
+(function(){
+  'use strict';
+
+  function luxSafeCall(fn){
+    try { return typeof window[fn] === 'function' ? window[fn].apply(null, [].slice.call(arguments,1)) : null; }
+    catch(e){ console.warn('[lux] '+fn+' failed:', e); }
+  }
+
+  window.luxNav = function(action, btn){
+    // Aktivierungs-State im Dock
+    document.querySelectorAll('.lux-dock-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    luxCloseSheet();
+
+    if (action === 'home')   { luxSafeCall('goHome'); return; }
+    if (action === 'lib')    { luxSafeCall('goLib');  return; }
+    if (action.indexOf('mod:') === 0) {
+      var id = action.slice(4);
+      luxSafeCall('openMod', id);
+      return;
+    }
+  };
+
+  window.luxToggleSheet = function(){
+    var s = document.getElementById('lux-more-sheet');
+    var b = document.getElementById('lux-sheet-backdrop');
+    if (!s) return;
+    if (s.classList.contains('open')) { luxCloseSheet(); return; }
+    luxBuildMoreSheet();
+    s.classList.add('open');
+    b.classList.add('open');
+    // Mehr-Button visuell aktiv
+    document.querySelectorAll('.lux-dock-btn').forEach(b => b.classList.remove('active'));
+    var more = document.querySelector('.lux-dock-btn[data-lux-action="more"]');
+    if (more) more.classList.add('active');
+  };
+
+  window.luxCloseSheet = function(){
+    var s = document.getElementById('lux-more-sheet');
+    var b = document.getElementById('lux-sheet-backdrop');
+    if (s) s.classList.remove('open');
+    if (b) b.classList.remove('open');
+  };
+
+  // Sheet-Inhalt aus MOD_META aufbauen — nur die Module, die NICHT im Haupt-Dock liegen
+  var DOCK_IDS = ['luna','sales-enhanced','analytics'];
+
+  window.luxBuildMoreSheet = function(){
+    var grid = document.getElementById('lux-more-grid');
+    if (!grid) return;
+    if (typeof MOD_META !== 'object') { grid.innerHTML = '<div style="grid-column:1/-1;padding:18px;text-align:center;color:var(--ts);font-size:12px">Module noch nicht geladen.</div>'; return; }
+
+    var ordered = [
+      // Tagesablauf
+      'tagesplan','heute','wochenplan','kalender',
+      // Akquise / Sales
+      'akquise','akquise-turbo','einwaende','preiscoach',
+      // Brand / Content
+      'start-tag','post','reels','story','text','launchplan',
+      // Kunden
+      'briefing','scriptdir','prompts','video-konzept','video-review',
+      // Tools / Coaches
+      'chatbot','socialtrainer','adaptive-planner','email-turbo','dm-templates',
+      // Reflexion & Daten
+      'tagesreflexion','wochenreflexion','weekly-review','monthly-review',
+      'revenue-forecast','lead-sources','skills-report','evening-debrief',
+      // KI Wissen
+      'news','projekte'
+    ];
+
+    var html = '';
+    var seen = {};
+    ordered.forEach(function(id){
+      if (seen[id]) return;
+      if (DOCK_IDS.indexOf(id) !== -1) return;
+      var m = MOD_META[id];
+      if (!m) return;
+      seen[id] = 1;
+      html += '<button class="lux-more-tile" onclick="luxNav(\'mod:'+id+'\')">'
+        + '<span class="lux-tile-ico">'+(m.icon||'•')+'</span>'
+        + '<span>'+m.title+'</span>'
+        + '</button>';
+    });
+    // Library als Spezial-Tile
+    html += '<button class="lux-more-tile" onclick="luxNav(\'lib\')">'
+      + '<span class="lux-tile-ico">📚</span><span>Bibliothek</span></button>';
+
+    grid.innerHTML = html || '<div style="grid-column:1/-1;padding:18px;text-align:center;color:var(--ts);font-size:12px">Keine Module gefunden.</div>';
+  };
+
+  // Synchronisiere aktiven Dock-Button, wenn der User über Sidebar/Hamburger navigiert
+  // (überwacht .sb-item-Klicks)
+  document.addEventListener('click', function(e){
+    var sb = e.target.closest && e.target.closest('.sb-item');
+    if (!sb) return;
+    var onclickAttr = sb.getAttribute('onclick') || '';
+    var match = onclickAttr.match(/openMod\('([^']+)'\)/);
+    var dockBtn = null;
+    if (match) {
+      dockBtn = document.querySelector('.lux-dock-btn[data-lux-action="mod:'+match[1]+'"]');
+    } else if (/goHome\(/.test(onclickAttr)) {
+      dockBtn = document.querySelector('.lux-dock-btn[data-lux-action="home"]');
+    } else if (/goLib\(/.test(onclickAttr)) {
+      dockBtn = document.querySelector('.lux-dock-btn[data-lux-action="lib"]');
+    }
+    if (dockBtn) {
+      document.querySelectorAll('.lux-dock-btn').forEach(b => b.classList.remove('active'));
+      dockBtn.classList.add('active');
+    }
+    luxCloseSheet();
+  });
+
+  // Beim Backdrop-Klick + ESC schließen
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') luxCloseSheet(); });
+
+  // Initial sync — wenn beim Laden home-screen aktiv ist, dock auf "Heute"
+  document.addEventListener('DOMContentLoaded', function(){
+    var home = document.getElementById('home-screen');
+    if (home && home.classList.contains('active')) {
+      var btn = document.querySelector('.lux-dock-btn[data-lux-action="home"]');
+      if (btn) {
+        document.querySelectorAll('.lux-dock-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+  });
+})();
+</script>
 
 </body>
 </html>
