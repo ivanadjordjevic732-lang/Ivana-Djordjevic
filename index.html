@@ -4,12 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>Mindéa — Cinematic Brand Studio</title>
-<meta name="description" content="Mindéa — Ein KI-gestütztes Brand Studio für cineastische Markeninszenierungen. Marken, die man nicht nur sieht. Sondern fühlt.">
+
+<!-- ============================================================
+     SEO / Social
+     >>> ANPASSEN: title, description, canonical URL, OG image
+     ============================================================ -->
+<title>Mindéa — Cinematic Brand Studio · Marken, die man fühlt</title>
+<meta name="description" content="Mindéa — Ein KI-gestütztes Brand Studio für cineastische Markeninszenierungen. Brand Films, Editorial Frames und Markenklang aus deinen Bildern und deiner Stimme. Ohne Drehtag.">
+<link rel="canonical" href="https://mindea-studio.de/">
+<meta name="author" content="Mindéa Studio">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_DE">
+<meta property="og:site_name" content="Mindéa Studio">
+<meta property="og:title" content="Mindéa — Cinematic Brand Studio">
+<meta property="og:description" content="Marken, die man nicht nur sieht. Sondern fühlt. Cineastische Brand Videos aus deinen Bildern und deiner Stimme. Ohne Drehtag.">
+<meta property="og:url" content="https://mindea-studio.de/">
+<meta property="og:image" content="https://mindea-studio.de/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Favicon (inline SVG monogram) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23000'/%3E%3Ctext x='50%25' y='52%25' text-anchor='middle' dominant-baseline='middle' fill='%23C8A96A' font-family='Times New Roman, serif' font-style='italic' font-size='42' font-weight='400'%3EM%3C/text%3E%3C/svg%3E">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- JSON-LD Schema for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Mindéa Studio",
+  "description": "KI-gestütztes Brand Studio für cineastische Markeninszenierungen",
+  "url": "https://mindea-studio.de",
+  "image": "https://mindea-studio.de/og-image.jpg",
+  "address": { "@type": "PostalAddress", "addressLocality": "Berlin", "addressCountry": "DE" },
+  "priceRange": "€€€",
+  "sameAs": []
+}
+</script>
 
 <style>
 /* ============================================================
@@ -18,34 +51,30 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-  --ink:      #000000;
-  --deep:     #0B0B0B;
-  --cream:    #F6F1E8;
-  --gold:     #C8A96A;
-  --gold-dim: rgba(200,169,106,0.55);
-  --taupe:    #A68F72;
-  --line:     rgba(200,169,106,0.15);
+  --ink:       #000000;
+  --deep:      #0B0B0B;
+  --deeper:    #07070a;
+  --cream:     #F6F1E8;
+  --gold:      #C8A96A;
+  --gold-dim:  rgba(200,169,106,0.55);
+  --taupe:     #A68F72;
+  --line:      rgba(200,169,106,0.15);
   --line-soft: rgba(200,169,106,0.08);
-  --serif:    'Cormorant Garamond','Times New Roman',serif;
-  --sans:     'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --ease:     cubic-bezier(0.16,1,0.3,1);
+  --serif:     'Cormorant Garamond','Times New Roman',serif;
+  --sans:      'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ease:      cubic-bezier(0.16,1,0.3,1);
 }
 
 html { -webkit-text-size-adjust:100%; background:var(--ink); scroll-behavior:smooth; }
-
 body {
-  font-family:var(--sans);
-  font-weight:300;
-  background:var(--ink);
-  color:var(--cream);
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  line-height:1.65;
+  font-family:var(--sans); font-weight:300;
+  background:var(--ink); color:var(--cream);
+  overflow-x:hidden; line-height:1.65;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
-
 a { color:inherit; text-decoration:none; }
 button { font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+input, textarea, select { font:inherit; color:inherit; background:none; border:none; outline:none; }
 ::selection { background:var(--gold); color:var(--ink); }
 ::-webkit-scrollbar { width:6px; height:6px; }
 ::-webkit-scrollbar-track { background:var(--ink); }
@@ -55,8 +84,7 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
    FIXED OVERLAYS
    ============================================================ */
 .grain {
-  position:fixed; inset:-50%;
-  width:200%; height:200%;
+  position:fixed; inset:-50%; width:200%; height:200%;
   pointer-events:none; z-index:60;
   opacity:0.08; mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
@@ -67,19 +95,14 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   40%{transform:translate(4%,-2%)} 60%{transform:translate(-3%,4%)}
   80%{transform:translate(2%,-3%)}
 }
-
 .glow {
-  position:fixed; inset:0;
-  pointer-events:none; z-index:1;
+  position:fixed; inset:0; pointer-events:none; z-index:1;
   background:radial-gradient(560px circle at var(--mx,50%) var(--my,38%),
     rgba(200,169,106,0.12), transparent 70%);
   transition:background 0.35s ease-out;
 }
-
 .gridbg {
-  position:fixed; inset:0;
-  pointer-events:none; z-index:0;
-  opacity:0.06;
+  position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.06;
   background-image:
     linear-gradient(rgba(246,241,232,0.22) 1px, transparent 1px),
     linear-gradient(90deg, rgba(246,241,232,0.22) 1px, transparent 1px);
@@ -92,8 +115,7 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
    NAV
    ============================================================ */
 .nav {
-  position:fixed; top:0; left:0; right:0;
-  z-index:50;
+  position:fixed; top:0; left:0; right:0; z-index:50;
   padding:24px clamp(20px, 4vw, 48px);
   display:flex; align-items:center; justify-content:space-between;
   transition:padding 0.7s var(--ease), background 0.7s var(--ease), border-color 0.7s var(--ease);
@@ -108,7 +130,7 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 }
 .nav-inner { max-width:1280px; width:100%; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
 .nav-logo { font-family:var(--serif); font-size:26px; letter-spacing:0.08em; color:var(--cream); font-weight:500; }
-.nav-menu { list-style:none; display:flex; gap:40px; }
+.nav-menu { list-style:none; display:flex; gap:36px; }
 .nav-menu a {
   position:relative;
   font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
@@ -122,42 +144,30 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 }
 .nav-menu a:hover { color:var(--gold); }
 .nav-menu a:hover::after { width:100%; }
-
 .nav-cta {
-  position:relative;
-  padding:12px 24px;
+  position:relative; padding:12px 24px;
   font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
   color:var(--cream);
-  border:1px solid rgba(200,169,106,0.4);
-  border-radius:999px;
+  border:1px solid rgba(200,169,106,0.4); border-radius:999px;
   transition:border-color 0.5s var(--ease);
 }
 .nav-cta:hover { border-color:var(--gold); }
 .nav-cta::before {
-  content:''; position:absolute; inset:0;
-  border-radius:999px; opacity:0;
+  content:''; position:absolute; inset:0; border-radius:999px; opacity:0;
   box-shadow:0 0 50px rgba(200,169,106,0.4), inset 0 0 16px rgba(200,169,106,0.16);
-  transition:opacity 0.5s var(--ease);
-  pointer-events:none;
+  transition:opacity 0.5s var(--ease); pointer-events:none;
 }
 .nav-cta:hover::before { opacity:1; }
-
 .nav-toggle { display:none; flex-direction:column; align-items:flex-end; gap:6px; padding:6px; }
 .nav-toggle span { display:block; height:1px; background:var(--cream); transition:width 0.4s var(--ease); }
 .nav-toggle span:nth-child(1){ width:28px; }
 .nav-toggle span:nth-child(2){ width:20px; }
-
-@media (max-width:880px){
-  .nav-menu, .nav-cta { display:none; }
-  .nav-toggle { display:flex; }
-}
+@media (max-width:980px){ .nav-menu, .nav-cta { display:none; } .nav-toggle { display:flex; } }
 
 .mobile-menu {
   position:fixed; inset:0; z-index:80;
   background:var(--ink);
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  gap:24px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px;
   transform:translateY(-100%);
   transition:transform 0.8s var(--ease);
   visibility:hidden;
@@ -169,19 +179,16 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   color:rgba(246,241,232,0.7);
 }
 .mobile-menu a {
-  font-family:var(--serif);
-  font-size:36px; font-weight:400;
-  color:var(--cream);
-  transition:color 0.5s var(--ease);
+  font-family:var(--serif); font-size:32px; font-weight:400;
+  color:var(--cream); transition:color 0.5s var(--ease);
 }
 .mobile-menu a:hover { color:var(--gold); }
 .mobile-menu .mob-cta {
-  margin-top:16px;
+  margin-top:14px;
   font-family:var(--sans); font-size:11px;
   letter-spacing:0.32em; text-transform:uppercase;
   padding:14px 26px;
-  border:1px solid var(--gold);
-  border-radius:999px;
+  border:1px solid var(--gold); border-radius:999px;
 }
 
 /* ============================================================
@@ -189,17 +196,15 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
    ============================================================ */
 .container { max-width:1280px; margin:0 auto; padding:0 clamp(20px, 4vw, 48px); position:relative; z-index:2; }
 .section { padding:clamp(96px, 14vh, 160px) 0; position:relative; z-index:2; }
+.section-tight { padding:clamp(72px, 10vh, 120px) 0; }
 
 .eyebrow {
   display:inline-flex; align-items:center; gap:16px;
   font-size:10px; letter-spacing:0.4em; text-transform:uppercase;
   color:var(--gold); font-weight:500;
 }
-.eyebrow::before {
-  content:''; width:36px; height:1px; background:var(--gold);
-}
+.eyebrow::before { content:''; width:36px; height:1px; background:var(--gold); }
 
-/* Buttons */
 .btn {
   display:inline-flex; align-items:center; gap:14px;
   padding:18px 32px;
@@ -208,31 +213,17 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   transition:transform 0.5s var(--ease), background 0.5s var(--ease), color 0.5s var(--ease), border-color 0.5s var(--ease);
   position:relative;
 }
-.btn-primary {
-  color:var(--cream);
-  border:1px solid rgba(200,169,106,0.6);
-}
+.btn-primary { color:var(--cream); border:1px solid rgba(200,169,106,0.6); }
 .btn-primary:hover { border-color:var(--gold); transform:translateY(-2px); }
 .btn-primary::before {
-  content:''; position:absolute; inset:0; border-radius:999px;
-  opacity:0;
+  content:''; position:absolute; inset:0; border-radius:999px; opacity:0;
   box-shadow:0 0 50px rgba(200,169,106,0.45), inset 0 0 18px rgba(200,169,106,0.18);
-  transition:opacity 0.5s var(--ease);
-  pointer-events:none;
+  transition:opacity 0.5s var(--ease); pointer-events:none;
 }
 .btn-primary:hover::before { opacity:1; }
-
-.btn-filled {
-  background:var(--gold);
-  color:var(--ink);
-  border:1px solid var(--gold);
-}
+.btn-filled { background:var(--gold); color:var(--ink); border:1px solid var(--gold); }
 .btn-filled:hover { background:var(--cream); border-color:var(--cream); transform:translateY(-2px); }
-
-.btn .arrow {
-  width:16px; height:1px; background:currentColor;
-  position:relative; transition:width 0.5s var(--ease);
-}
+.btn .arrow { width:16px; height:1px; background:currentColor; position:relative; transition:width 0.5s var(--ease); }
 .btn .arrow::after {
   content:''; position:absolute; right:0; top:-3px;
   width:6px; height:6px;
@@ -251,37 +242,30 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 .text-link:hover { color:var(--gold); }
 .text-link:hover span.ar { transform:translateX(6px); }
 
-/* ============================================================
-   REVEAL
-   ============================================================ */
+/* Reveal */
 .reveal {
   opacity:0; transform:translateY(36px);
   transition:opacity 1.3s var(--ease), transform 1.3s var(--ease);
 }
 .reveal.in { opacity:1; transform:translateY(0); }
 .r-d1{ transition-delay:0.10s; } .r-d2{ transition-delay:0.22s; }
-.r-d3{ transition-delay:0.34s; } .r-d4{ transition-delay:0.46s; }
-.r-d5{ transition-delay:0.58s; }
+.r-d3{ transition-delay:0.34s; } .r-d4{ transition-delay:0.46s; } .r-d5{ transition-delay:0.58s; }
 
-/* Line mask reveal (per-line) */
 .line-mask { display:block; overflow:hidden; }
 .line-mask > span {
-  display:block;
-  transform:translateY(108%);
+  display:block; transform:translateY(108%);
   transition:transform 1.2s var(--ease);
 }
 .reveal.in .line-mask > span,
 .line-mask.in > span { transform:translateY(0); }
 .line-mask.l-d1 > span { transition-delay:0.10s; }
 .line-mask.l-d2 > span { transition-delay:0.22s; }
-.line-mask.l-d3 > span { transition-delay:0.34s; }
 
 /* ============================================================
    HERO
    ============================================================ */
 .hero {
-  position:relative;
-  min-height:100vh;
+  position:relative; min-height:100vh;
   display:flex; align-items:center;
   padding:160px clamp(20px, 4vw, 48px) 120px;
   overflow:hidden;
@@ -292,15 +276,12 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   pointer-events:none;
 }
 .hero-visual svg {
-  width:140%; max-width:1100px;
-  aspect-ratio:1/1;
+  width:140%; max-width:1100px; aspect-ratio:1/1;
   opacity:0.78;
   animation:heroBreath 22s ease-in-out infinite;
   will-change:transform;
 }
-@media (min-width:768px){
-  .hero-visual svg { width:78%; }
-}
+@media (min-width:768px){ .hero-visual svg { width:78%; } }
 @keyframes heroBreath {
   0%,100% { transform:scale(1) rotate(0deg); }
   50%     { transform:scale(1.05) rotate(4deg); }
@@ -308,16 +289,11 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 
 .hero-grid {
   position:relative; z-index:2;
-  max-width:1280px; margin:0 auto;
-  width:100%;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:48px;
-  align-items:end;
+  max-width:1280px; margin:0 auto; width:100%;
+  display:grid; grid-template-columns:1fr;
+  gap:48px; align-items:end;
 }
-@media (min-width:880px){
-  .hero-grid { grid-template-columns:1.4fr 1fr; gap:64px; }
-}
+@media (min-width:880px){ .hero-grid { grid-template-columns:1.4fr 1fr; gap:64px; } }
 
 .hero-eyebrow {
   margin-bottom:32px;
@@ -327,11 +303,9 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
 .hero h1 {
-  font-family:var(--serif);
-  font-weight:200;
+  font-family:var(--serif); font-weight:200;
   font-size:clamp(46px, 8.6vw, 148px);
-  line-height:0.95;
-  letter-spacing:-0.02em;
+  line-height:0.95; letter-spacing:-0.02em;
   color:var(--cream);
 }
 .hero h1 .it { font-style:italic; color:var(--gold); font-weight:300; }
@@ -341,28 +315,22 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 .hero h1 .line-mask.l-3 > span { transition-delay:0.75s; }
 
 .hero-sub {
-  font-size:clamp(15px, 1.2vw, 17px);
-  line-height:1.78;
-  color:rgba(246,241,232,0.7);
-  max-width:440px;
+  font-size:clamp(15px, 1.2vw, 17px); line-height:1.78;
+  color:rgba(246,241,232,0.7); max-width:440px;
   opacity:0; transform:translateY(16px);
   animation:fadeUp 1.2s var(--ease) forwards 1.0s;
 }
-
 .hero-actions {
   margin-top:36px;
   display:flex; align-items:center; gap:24px; flex-wrap:wrap;
   opacity:0; transform:translateY(16px);
   animation:fadeUp 1.2s var(--ease) forwards 1.15s;
 }
-
 .hero-right { padding-bottom:8px; }
 @media (min-width:880px){ .hero-right { padding-left:32px; } }
 
 .scroll-cue {
-  position:absolute;
-  bottom:36px; left:50%;
-  transform:translateX(-50%);
+  position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
   display:flex; flex-direction:column; align-items:center; gap:12px;
   font-size:10px; letter-spacing:0.34em; text-transform:uppercase;
   color:rgba(246,241,232,0.45);
@@ -371,8 +339,7 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   z-index:3;
 }
 .scroll-cue .line {
-  position:relative;
-  width:1px; height:56px;
+  position:relative; width:1px; height:56px;
   background:linear-gradient(to bottom, transparent, var(--gold-dim));
   overflow:hidden;
 }
@@ -382,25 +349,36 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   background:linear-gradient(to bottom, transparent, var(--cream));
   animation:scrollDrop 2.4s ease-in-out infinite;
 }
-@keyframes scrollDrop {
-  0%   { transform:translateY(0); }
-  100% { transform:translateY(112px); }
+@keyframes scrollDrop { 0%{transform:translateY(0)} 100%{transform:translateY(112px)} }
+
+/* ============================================================
+   MARQUEE
+   ============================================================ */
+.marquee {
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  padding:22px 0; overflow:hidden; position:relative; z-index:2;
 }
+.marquee-track {
+  display:flex; gap:72px; white-space:nowrap;
+  animation:marquee 38s linear infinite;
+  width:max-content;
+}
+.marquee span {
+  font-family:var(--serif); font-style:italic;
+  font-size:clamp(18px,2.4vw,30px);
+  color:rgba(246,241,232,0.5);
+  letter-spacing:0.01em;
+}
+.marquee .dot { font-style:normal; color:var(--gold); align-self:center; }
+@keyframes marquee { to { transform:translateX(-50%); } }
 
 /* ============================================================
    STATS
    ============================================================ */
-.stats {
-  padding:90px clamp(20px, 4vw, 48px);
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-  position:relative; z-index:2;
-}
+.stats { padding:90px clamp(20px, 4vw, 48px); position:relative; z-index:2; }
 .stats-grid {
   max-width:1280px; margin:0 auto;
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:48px 0;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:48px 0;
 }
 @media (min-width:768px){
   .stats-grid { grid-template-columns:repeat(4,1fr); gap:0; }
@@ -411,10 +389,8 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 .stat-val {
   font-family:var(--serif); font-weight:200;
   font-size:clamp(40px, 5vw, 64px);
-  line-height:1;
-  letter-spacing:-0.015em;
-  color:var(--cream);
-  margin-bottom:14px;
+  line-height:1; letter-spacing:-0.015em;
+  color:var(--cream); margin-bottom:14px;
 }
 .stat-lbl {
   font-size:10px; letter-spacing:0.3em; text-transform:uppercase;
@@ -422,12 +398,10 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 }
 
 /* ============================================================
-   FEATURES — BENTO
+   FEATURES BENTO
    ============================================================ */
 .features-head {
-  display:flex; flex-direction:column;
-  gap:32px;
-  margin-bottom:64px;
+  display:flex; flex-direction:column; gap:32px; margin-bottom:64px;
 }
 @media (min-width:880px){
   .features-head { flex-direction:row; align-items:flex-end; gap:48px; margin-bottom:80px; }
@@ -435,36 +409,24 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 .features-head h2 {
   font-family:var(--serif); font-weight:200;
   font-size:clamp(36px, 5.6vw, 82px);
-  line-height:1;
-  letter-spacing:-0.012em;
-  max-width:760px;
-  flex:1;
+  line-height:1; letter-spacing:-0.012em;
+  max-width:760px; flex:1;
 }
 .features-head h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
 .features-head p {
   font-size:15px; line-height:1.75;
-  color:rgba(246,241,232,0.55);
-  max-width:340px;
+  color:rgba(246,241,232,0.55); max-width:340px;
 }
-@media (min-width:880px){
-  .features-head p { margin-left:auto; text-align:right; }
-}
+@media (min-width:880px){ .features-head p { margin-left:auto; text-align:right; } }
 
 .bento {
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
+  display:grid; grid-template-columns:1fr; gap:16px;
 }
-@media (min-width:768px){
-  .bento { grid-template-columns:repeat(3,1fr); gap:20px; }
-}
-
+@media (min-width:768px){ .bento { grid-template-columns:repeat(3,1fr); gap:20px; } }
 .bento-card {
   position:relative; overflow:hidden;
-  background:var(--deep);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:36px;
+  background:var(--deep); border:1px solid var(--line);
+  border-radius:18px; padding:36px;
   min-height:280px;
   display:flex; flex-direction:column; justify-content:space-between;
   transition:transform 0.7s var(--ease), border-color 0.7s var(--ease);
@@ -478,87 +440,189 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   content:''; position:absolute; inset:0;
   border-radius:18px; opacity:0;
   box-shadow:inset 0 0 0 1px rgba(200,169,106,0.45), 0 0 80px -20px rgba(200,169,106,0.45);
-  transition:opacity 0.7s var(--ease);
-  pointer-events:none;
+  transition:opacity 0.7s var(--ease); pointer-events:none;
 }
 .bento-card:hover::before { opacity:1; }
 .bento-card::after {
   content:''; position:absolute; top:0; left:0; right:0;
   height:1px; opacity:0;
   background:linear-gradient(90deg, transparent, rgba(200,169,106,0.85), transparent);
-  transition:opacity 0.7s var(--ease);
-  pointer-events:none;
+  transition:opacity 0.7s var(--ease); pointer-events:none;
 }
 .bento-card:hover::after { opacity:1; }
 .bento-num {
   font-family:var(--serif); font-style:italic;
   font-size:14px; color:rgba(200,169,106,0.9);
-  margin-bottom:24px;
-  letter-spacing:0.04em;
+  margin-bottom:24px; letter-spacing:0.04em;
 }
 .bento-card h3 {
   font-family:var(--serif); font-weight:400;
   font-size:clamp(24px, 2.6vw, 30px);
-  line-height:1.08;
-  letter-spacing:-0.005em;
+  line-height:1.08; letter-spacing:-0.005em;
   color:var(--cream);
 }
 .bento-card.large h3 { font-size:clamp(30px, 3.6vw, 44px); }
 .bento-card p {
   margin-top:32px;
   font-size:14px; line-height:1.72;
+  color:rgba(246,241,232,0.55); max-width:420px;
+}
+
+/* ============================================================
+   PROCESS — So entsteht dein Markenmoment
+   ============================================================ */
+.process { background:linear-gradient(180deg, transparent, rgba(11,11,11,0.6), transparent); }
+.process-head {
+  text-align:center; max-width:780px; margin:0 auto 80px;
+}
+.process-head .eyebrow { justify-content:center; margin-bottom:28px; }
+.process-head h2 {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(36px, 5.6vw, 82px);
+  line-height:1.02; letter-spacing:-0.012em;
+  margin-bottom:24px;
+}
+.process-head h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.process-head p {
+  font-size:15px; line-height:1.78;
+  color:rgba(246,241,232,0.6); max-width:560px; margin:0 auto;
+}
+
+.process-steps {
+  display:grid; grid-template-columns:1fr; gap:0;
+  border-top:1px solid var(--line);
+}
+@media (min-width:880px){
+  .process-steps { grid-template-columns:repeat(4,1fr); gap:0; border-top:none; }
+}
+.process-step {
+  position:relative;
+  padding:40px 0;
+  border-bottom:1px solid var(--line);
+}
+@media (min-width:880px){
+  .process-step {
+    padding:0 clamp(20px, 2.5vw, 40px) 0;
+    border-bottom:none;
+    border-left:1px solid var(--line);
+    min-height:300px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .process-step:first-child { border-left:none; padding-left:0; }
+  .process-step:last-child { padding-right:0; }
+}
+.process-num {
+  font-family:var(--serif); font-style:italic;
+  font-size:14px; color:var(--gold);
+  margin-bottom:24px; letter-spacing:0.05em;
+  display:flex; align-items:center; gap:14px;
+}
+.process-num::after {
+  content:''; flex:1; height:1px; background:var(--line);
+  max-width:60px;
+}
+.process-step h3 {
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(22px, 2.4vw, 28px);
+  line-height:1.15; letter-spacing:-0.005em;
+  margin-bottom:18px; color:var(--cream);
+}
+.process-step p {
+  font-size:14px; line-height:1.72;
   color:rgba(246,241,232,0.55);
-  max-width:420px;
+}
+.process-step .when {
+  margin-top:24px;
+  font-size:10px; letter-spacing:0.3em; text-transform:uppercase;
+  color:rgba(200,169,106,0.7);
 }
 
 /* ============================================================
    PACKAGES
    ============================================================ */
 .packages-head {
-  display:grid; grid-template-columns:1fr;
-  gap:24px;
-  margin-bottom:48px;
-  align-items:end;
+  display:grid; grid-template-columns:1fr; gap:24px;
+  margin-bottom:48px; align-items:end;
 }
-@media (min-width:880px){
-  .packages-head { grid-template-columns:1.4fr 1fr; gap:40px; }
-}
+@media (min-width:880px){ .packages-head { grid-template-columns:1.4fr 1fr; gap:40px; } }
 .packages-head h2 {
   font-family:var(--serif); font-weight:200;
   font-size:clamp(36px, 5.4vw, 80px);
-  line-height:1.02;
-  letter-spacing:-0.01em;
+  line-height:1.02; letter-spacing:-0.01em;
 }
 .packages-head h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
 .packages-head p {
   font-size:15px; line-height:1.78;
-  color:rgba(246,241,232,0.6);
-  max-width:420px;
+  color:rgba(246,241,232,0.6); max-width:420px;
 }
 @media (min-width:880px){ .packages-head p { margin-left:auto; } }
 
-.pkg-grid {
-  display:grid; grid-template-columns:1fr;
-  gap:20px;
-}
+.pkg-grid { display:grid; grid-template-columns:1fr; gap:20px; align-items:start; }
 @media (min-width:880px){ .pkg-grid { grid-template-columns:repeat(3,1fr); } }
 
 .pkg {
   position:relative; overflow:hidden;
-  background:var(--deep);
-  border:1px solid var(--line);
+  background:var(--deep); border:1px solid var(--line);
   border-radius:18px;
   padding:40px 36px 36px;
   display:flex; flex-direction:column;
-  cursor:pointer;
-  align-self:start;
+  cursor:pointer; align-self:start;
   transition:transform 0.7s var(--ease), border-color 0.7s var(--ease), box-shadow 0.7s var(--ease);
 }
 .pkg:hover { transform:translateY(-6px); border-color:rgba(200,169,106,0.45); }
 .pkg.open {
-  transform:translateY(-8px);
-  border-color:var(--gold);
+  transform:translateY(-8px); border-color:var(--gold);
   box-shadow:0 50px 100px -40px rgba(0,0,0,0.8), 0 0 80px -30px rgba(200,169,106,0.35);
+}
+@media (min-width:880px){ .pkg { padding:48px 40px 40px; } }
+.pkg-featured {
+  background:linear-gradient(180deg, #1a1612 0%, #0B0B0B 100%);
+  border-color:rgba(200,169,106,0.4);
+}
+.pkg-featured::before {
+  content:''; position:absolute; inset:0; border-radius:18px;
+  box-shadow:0 0 80px -30px rgba(200,169,106,0.55), inset 0 0 0 1px rgba(200,169,106,0.18);
+  pointer-events:none;
+}
+.pkg-num {
+  font-family:var(--serif); font-style:italic;
+  font-size:14px; color:var(--gold);
+  margin-bottom:28px; letter-spacing:0.04em;
+}
+.pkg h3 {
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(28px, 3vw, 40px);
+  line-height:1.08; letter-spacing:-0.005em;
+  margin-bottom:20px; color:var(--cream);
+}
+.pkg h3 .it { font-style:italic; color:var(--gold); }
+.pkg-from {
+  font-family:var(--serif);
+  font-size:18px;
+  color:var(--gold);
+  margin-bottom:20px;
+  font-style:italic;
+  display:inline-flex; align-items:baseline; gap:8px;
+}
+.pkg-from .ab { font-style:normal; font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:rgba(246,241,232,0.5); }
+.pkg-lede {
+  font-size:14.5px; line-height:1.72;
+  color:rgba(246,241,232,0.55);
+  margin-bottom:32px; padding-bottom:28px;
+  border-bottom:1px solid var(--line);
+}
+.pkg-list {
+  list-style:none; flex:1; margin-bottom:36px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.pkg-list li {
+  position:relative; padding-left:24px;
+  font-size:14px; line-height:1.6;
+  color:rgba(246,241,232,0.7);
+}
+.pkg-list li::before {
+  content:''; position:absolute;
+  left:0; top:13px; width:12px; height:1px; background:var(--gold);
 }
 .pkg-toggle-hint {
   margin-top:4px;
@@ -567,50 +631,33 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   display:inline-flex; align-items:center; gap:10px;
   transition:color 0.5s var(--ease);
 }
-.pkg-toggle-hint .chev {
-  display:inline-block;
-  transition:transform 0.6s var(--ease);
-}
+.pkg-toggle-hint .chev { display:inline-block; transition:transform 0.6s var(--ease); }
 .pkg.open .pkg-toggle-hint { color:var(--gold); }
 .pkg.open .pkg-toggle-hint .chev { transform:rotate(180deg); }
 
-/* Expandable inner section using grid-row trick (smooth height anim) */
 .pkg-details {
-  display:grid;
-  grid-template-rows:0fr;
+  display:grid; grid-template-rows:0fr;
   transition:grid-template-rows 0.8s var(--ease), margin 0.8s var(--ease);
   margin-top:0;
 }
-.pkg.open .pkg-details {
-  grid-template-rows:1fr;
-  margin-top:32px;
-}
+.pkg.open .pkg-details { grid-template-rows:1fr; margin-top:32px; }
 .pkg-details-inner {
-  overflow:hidden;
-  min-height:0;
-  padding-top:0;
+  overflow:hidden; min-height:0; padding-top:0;
   border-top:1px solid var(--line);
   opacity:0;
   transition:opacity 0.6s var(--ease) 0.2s, padding-top 0.6s var(--ease);
 }
-.pkg.open .pkg-details-inner {
-  opacity:1;
-  padding-top:28px;
-}
+.pkg.open .pkg-details-inner { opacity:1; padding-top:28px; }
 .pkg-price {
   font-family:var(--serif); font-weight:200;
   font-size:clamp(36px, 4.2vw, 56px);
-  line-height:1;
-  letter-spacing:-0.015em;
-  color:var(--cream);
-  margin-bottom:6px;
+  line-height:1; letter-spacing:-0.015em;
+  color:var(--cream); margin-bottom:6px;
 }
 .pkg-price .ab {
   font-size:14px; font-style:italic;
-  color:var(--gold);
-  margin-right:6px;
-  letter-spacing:0.04em;
-  vertical-align:middle;
+  color:var(--gold); margin-right:6px;
+  letter-spacing:0.04em; vertical-align:middle;
 }
 .pkg-price-note {
   font-size:10.5px; letter-spacing:0.28em; text-transform:uppercase;
@@ -620,84 +667,339 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 .pkg-long {
   font-size:14.5px; line-height:1.78;
   color:rgba(246,241,232,0.7);
-  margin-bottom:24px;
+  margin-bottom:28px;
 }
 .pkg-long p + p { margin-top:14px; }
-.pkg-extra-link {
-  display:inline-flex; align-items:center; gap:12px;
-  font-size:11px; letter-spacing:0.32em; text-transform:uppercase;
-  color:var(--gold);
-  padding:14px 24px;
-  border:1px solid rgba(200,169,106,0.4);
-  border-radius:999px;
-  transition:background 0.5s var(--ease), color 0.5s var(--ease), border-color 0.5s var(--ease);
+.pkg-cta-row {
+  display:flex; flex-direction:column; gap:14px;
   margin-top:8px;
 }
-.pkg-extra-link:hover {
-  background:var(--gold); color:var(--ink); border-color:var(--gold);
-}
-.pkg-extra-link .ar { transition:transform 0.5s var(--ease); display:inline-block; }
-.pkg-extra-link:hover .ar { transform:translateX(4px); }
-@media (min-width:880px){ .pkg { padding:48px 40px 40px; } }
-
-.pkg-featured {
-  background:linear-gradient(180deg, #1a1612 0%, #0B0B0B 100%);
-  border:1px solid rgba(200,169,106,0.4);
-}
-.pkg-featured::before {
-  content:''; position:absolute; inset:0;
-  border-radius:18px;
-  box-shadow:0 0 80px -30px rgba(200,169,106,0.55), inset 0 0 0 1px rgba(200,169,106,0.18);
-  pointer-events:none;
-}
-
-.pkg-num {
-  font-family:var(--serif); font-style:italic;
-  font-size:14px; color:var(--gold);
-  margin-bottom:28px; letter-spacing:0.04em;
-}
-.pkg h3 {
-  font-family:var(--serif); font-weight:400;
-  font-size:clamp(28px, 3vw, 40px);
-  line-height:1.08;
-  letter-spacing:-0.005em;
-  margin-bottom:20px;
-  color:var(--cream);
-}
-.pkg h3 .it { font-style:italic; color:var(--gold); }
-.pkg-lede {
-  font-size:14.5px; line-height:1.72;
-  color:rgba(246,241,232,0.55);
-  margin-bottom:32px;
-  padding-bottom:28px;
-  border-bottom:1px solid var(--line);
-}
-.pkg-list {
-  list-style:none; flex:1;
-  margin-bottom:36px;
-  display:flex; flex-direction:column; gap:10px;
-}
-.pkg-list li {
-  position:relative;
-  padding-left:24px;
-  font-size:14px; line-height:1.6;
-  color:rgba(246,241,232,0.7);
-}
-.pkg-list li::before {
-  content:''; position:absolute;
-  left:0; top:13px;
-  width:12px; height:1px;
-  background:var(--gold);
-}
-.pkg-cta {
-  display:inline-flex; align-items:center; gap:12px;
+.pkg-buy {
+  display:inline-flex; justify-content:center; align-items:center; gap:12px;
   font-size:11px; letter-spacing:0.32em; text-transform:uppercase;
-  color:var(--cream);
-  transition:color 0.5s var(--ease), gap 0.5s var(--ease);
+  color:var(--ink); background:var(--gold);
+  padding:16px 24px; border:1px solid var(--gold); border-radius:999px;
+  transition:background 0.5s var(--ease), color 0.5s var(--ease);
 }
-.pkg-cta .ar { transition:transform 0.5s var(--ease); display:inline-block; }
-.pkg:hover .pkg-cta { color:var(--gold); gap:18px; }
-.pkg:hover .pkg-cta .ar { transform:translateX(4px); }
+.pkg-buy:hover { background:var(--cream); border-color:var(--cream); }
+.pkg-inquire {
+  display:inline-flex; justify-content:center; align-items:center; gap:10px;
+  font-size:11px; letter-spacing:0.32em; text-transform:uppercase;
+  color:rgba(246,241,232,0.7);
+  padding:14px 24px;
+  border:1px solid rgba(200,169,106,0.3); border-radius:999px;
+  transition:border-color 0.5s var(--ease), color 0.5s var(--ease);
+}
+.pkg-inquire:hover { color:var(--gold); border-color:var(--gold); }
+
+/* ============================================================
+   FOUNDER
+   ============================================================ */
+.founder { padding-bottom:clamp(80px, 12vh, 140px); }
+.founder-inner {
+  max-width:1280px; margin:0 auto;
+  display:grid; grid-template-columns:1fr; gap:48px;
+  align-items:center;
+}
+@media (min-width:880px){ .founder-inner { grid-template-columns:0.85fr 1fr; gap:96px; } }
+
+.founder-card {
+  position:relative; aspect-ratio:4/5; max-width:480px;
+  border-radius:6px; overflow:hidden;
+  background:
+    radial-gradient(ellipse at 30% 25%, rgba(255,235,205,0.18), transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(184,149,106,0.28), transparent 60%),
+    linear-gradient(165deg, #1a1612 0%, #0B0B0B 60%, #14110d 100%);
+  display:flex; flex-direction:column;
+  justify-content:space-between;
+  padding:clamp(28px, 3vw, 44px);
+  color:var(--cream);
+}
+.founder-card::before {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)' opacity='0.35'/%3E%3C/svg%3E");
+  opacity:0.4; mix-blend-mode:overlay; pointer-events:none;
+}
+.founder-card .top, .founder-card .mid, .founder-card .bot { position:relative; z-index:2; }
+.founder-card .top {
+  display:flex; justify-content:space-between;
+  font-size:10px; letter-spacing:0.32em; text-transform:uppercase;
+  color:rgba(246,241,232,0.55);
+}
+.founder-card .mid {
+  text-align:center;
+  font-family:var(--serif); font-style:italic; font-weight:300;
+  font-size:clamp(110px, 16vw, 200px);
+  line-height:1;
+  color:var(--cream);
+  margin:auto 0;
+  letter-spacing:-0.02em;
+}
+.founder-card .mid .gold { color:var(--gold); }
+.founder-card .bot {
+  display:flex; justify-content:space-between; align-items:flex-end;
+}
+.founder-card .name {
+  font-family:var(--serif); font-style:italic;
+  font-size:18px; color:var(--cream);
+}
+.founder-card .role {
+  font-size:9px; letter-spacing:0.32em; text-transform:uppercase;
+  color:rgba(246,241,232,0.5); text-align:right;
+}
+
+.founder-text h2 {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(36px, 5.2vw, 76px);
+  line-height:1.04; letter-spacing:-0.01em;
+  margin-bottom:32px;
+}
+.founder-text h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.founder-text p {
+  font-size:clamp(15px, 1.15vw, 17px); line-height:1.85;
+  color:rgba(246,241,232,0.7); margin-bottom:20px;
+  max-width:560px;
+}
+.founder-signature {
+  margin-top:40px; padding-top:24px;
+  border-top:1px solid var(--line);
+  display:flex; align-items:baseline; gap:18px;
+}
+.founder-signature .name {
+  font-family:var(--serif); font-style:italic;
+  font-size:22px; color:var(--gold);
+}
+.founder-signature .role {
+  font-size:10px; letter-spacing:0.32em; text-transform:uppercase;
+  color:rgba(246,241,232,0.5);
+}
+
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
+.testimonials-head { text-align:center; max-width:760px; margin:0 auto 72px; }
+.testimonials-head .eyebrow { justify-content:center; margin-bottom:24px; }
+.testimonials-head h2 {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(36px, 5.4vw, 76px);
+  line-height:1.02; letter-spacing:-0.012em;
+}
+.testimonials-head h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.testimonials-grid {
+  display:grid; grid-template-columns:1fr; gap:24px;
+  max-width:1280px; margin:0 auto;
+}
+@media (min-width:880px){ .testimonials-grid { grid-template-columns:repeat(3,1fr); gap:28px; } }
+.testimonial {
+  position:relative; padding:40px 36px;
+  background:var(--deep); border:1px solid var(--line);
+  border-radius:14px;
+  transition:border-color 0.6s var(--ease), transform 0.6s var(--ease);
+}
+.testimonial:hover { border-color:rgba(200,169,106,0.35); transform:translateY(-4px); }
+.testimonial .quote-mark {
+  font-family:var(--serif); font-style:italic; font-weight:300;
+  font-size:64px; line-height:0.5; color:var(--gold);
+  margin-bottom:16px;
+}
+.testimonial blockquote {
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(17px, 1.4vw, 20px);
+  line-height:1.45; color:var(--cream);
+  margin-bottom:32px; letter-spacing:-0.003em;
+}
+.testimonial cite {
+  display:block; font-style:normal;
+  font-size:13px; color:var(--cream); margin-bottom:4px;
+  font-weight:500;
+}
+.testimonial .who {
+  font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
+  color:rgba(246,241,232,0.5);
+}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.faq-head {
+  display:grid; grid-template-columns:1fr; gap:24px;
+  margin-bottom:56px;
+}
+@media (min-width:880px){ .faq-head { grid-template-columns:1.4fr 1fr; gap:48px; align-items:end; } }
+.faq-head h2 {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(36px, 5.4vw, 78px);
+  line-height:1.02; letter-spacing:-0.01em;
+}
+.faq-head h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.faq-head p {
+  font-size:15px; line-height:1.78;
+  color:rgba(246,241,232,0.6); max-width:380px;
+}
+@media (min-width:880px){ .faq-head p { margin-left:auto; } }
+
+.faq-list { max-width:1000px; margin:0 auto; border-top:1px solid var(--line); }
+.faq-item { border-bottom:1px solid var(--line); }
+.faq-q {
+  width:100%; display:flex; justify-content:space-between; align-items:center; gap:24px;
+  padding:32px 0;
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(20px, 2.2vw, 26px);
+  line-height:1.3; letter-spacing:-0.005em;
+  color:var(--cream); text-align:left;
+  transition:color 0.5s var(--ease);
+}
+.faq-q:hover { color:var(--gold); }
+.faq-q .plus {
+  flex-shrink:0; width:24px; height:24px;
+  position:relative;
+}
+.faq-q .plus::before, .faq-q .plus::after {
+  content:''; position:absolute;
+  background:currentColor;
+  transition:transform 0.6s var(--ease), background 0.4s var(--ease);
+}
+.faq-q .plus::before { top:50%; left:0; right:0; height:1px; transform:translateY(-50%); }
+.faq-q .plus::after { left:50%; top:0; bottom:0; width:1px; transform:translateX(-50%); }
+.faq-item.open .faq-q .plus::after { transform:translateX(-50%) rotate(90deg); }
+.faq-item.open .faq-q { color:var(--gold); }
+.faq-a {
+  display:grid; grid-template-rows:0fr;
+  transition:grid-template-rows 0.7s var(--ease);
+}
+.faq-item.open .faq-a { grid-template-rows:1fr; }
+.faq-a-inner {
+  overflow:hidden; min-height:0;
+  padding-right:48px;
+}
+.faq-a p {
+  font-size:15px; line-height:1.78;
+  color:rgba(246,241,232,0.6);
+  padding-bottom:32px;
+  max-width:760px;
+}
+
+/* ============================================================
+   CONTACT FORM
+   ============================================================ */
+.contact { background:linear-gradient(180deg, transparent, rgba(11,11,11,0.6) 30%, transparent); }
+.contact-inner {
+  max-width:1200px; margin:0 auto;
+  display:grid; grid-template-columns:1fr; gap:64px;
+}
+@media (min-width:980px){ .contact-inner { grid-template-columns:1fr 1.2fr; gap:96px; } }
+
+.contact-text h2 {
+  font-family:var(--serif); font-weight:200;
+  font-size:clamp(36px, 5.4vw, 76px);
+  line-height:1.04; letter-spacing:-0.012em;
+  margin-bottom:32px;
+}
+.contact-text h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
+.contact-text > p {
+  font-size:15px; line-height:1.8;
+  color:rgba(246,241,232,0.65);
+  max-width:480px; margin-bottom:36px;
+}
+.contact-details {
+  display:flex; flex-direction:column; gap:20px;
+  padding-top:32px; border-top:1px solid var(--line);
+}
+.contact-detail { display:flex; flex-direction:column; gap:6px; }
+.contact-detail .label {
+  font-size:10px; letter-spacing:0.3em; text-transform:uppercase;
+  color:var(--gold);
+}
+.contact-detail a, .contact-detail span.val {
+  font-family:var(--serif); font-size:18px;
+  color:var(--cream);
+  transition:color 0.4s ease;
+}
+.contact-detail a:hover { color:var(--gold); }
+
+.form {
+  background:var(--deep); border:1px solid var(--line);
+  border-radius:18px;
+  padding:clamp(36px, 4vw, 56px);
+  display:flex; flex-direction:column; gap:28px;
+}
+.form-row {
+  display:grid; grid-template-columns:1fr; gap:28px;
+}
+@media (min-width:680px){ .form-row.two { grid-template-columns:1fr 1fr; } }
+.field { display:flex; flex-direction:column; gap:10px; }
+.field label {
+  font-size:10px; letter-spacing:0.3em; text-transform:uppercase;
+  color:rgba(246,241,232,0.5); font-weight:500;
+}
+.field input,
+.field textarea,
+.field select {
+  width:100%;
+  background:transparent;
+  border:none;
+  border-bottom:1px solid rgba(200,169,106,0.25);
+  padding:10px 0 14px;
+  font-size:15px;
+  color:var(--cream);
+  font-family:var(--sans);
+  transition:border-color 0.5s var(--ease);
+  border-radius:0;
+}
+.field textarea { resize:vertical; min-height:110px; line-height:1.5; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color:var(--gold); }
+.field input::placeholder, .field textarea::placeholder { color:rgba(246,241,232,0.25); }
+.field select {
+  appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8A96A' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 4px center;
+  background-size:12px;
+  padding-right:24px;
+  cursor:pointer;
+}
+.field select option { background:var(--deep); color:var(--cream); }
+.consent {
+  display:flex; align-items:flex-start; gap:14px;
+  font-size:13px; line-height:1.55;
+  color:rgba(246,241,232,0.6);
+  cursor:pointer;
+}
+.consent input { position:absolute; opacity:0; pointer-events:none; }
+.consent .box {
+  flex-shrink:0; width:18px; height:18px;
+  border:1px solid rgba(200,169,106,0.4); border-radius:3px;
+  position:relative; margin-top:2px;
+  transition:background 0.3s ease, border-color 0.3s ease;
+}
+.consent input:checked + .box {
+  background:var(--gold); border-color:var(--gold);
+}
+.consent input:checked + .box::after {
+  content:''; position:absolute;
+  left:5px; top:1px; width:6px; height:11px;
+  border-right:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink);
+  transform:rotate(45deg);
+}
+.consent a { color:var(--gold); border-bottom:1px solid rgba(200,169,106,0.3); }
+
+.form-actions { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.form button[type="submit"] {
+  display:inline-flex; align-items:center; gap:14px;
+  background:var(--gold); color:var(--ink);
+  padding:18px 32px; border-radius:999px;
+  font-size:11px; letter-spacing:0.32em; text-transform:uppercase; font-weight:500;
+  transition:background 0.5s var(--ease), transform 0.5s var(--ease);
+  cursor:pointer;
+}
+.form button[type="submit"]:hover { background:var(--cream); transform:translateY(-2px); }
+.form button[type="submit"]:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+.form-status {
+  font-size:13px;
+  color:rgba(246,241,232,0.6);
+}
+.form-status.ok { color:#7dc88f; }
+.form-status.err { color:#d68a8a; }
 
 /* ============================================================
    FINAL CTA
@@ -709,10 +1011,8 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 }
 .final::before {
   content:''; position:absolute;
-  left:50%; top:50%;
-  transform:translate(-50%,-50%);
-  width:80vw; max-width:1100px;
-  aspect-ratio:1/1;
+  left:50%; top:50%; transform:translate(-50%,-50%);
+  width:80vw; max-width:1100px; aspect-ratio:1/1;
   border-radius:50%;
   background:radial-gradient(circle, rgba(200,169,106,0.18), transparent 65%);
   pointer-events:none;
@@ -722,16 +1022,14 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 .final h2 {
   font-family:var(--serif); font-weight:200;
   font-size:clamp(42px, 7.5vw, 128px);
-  line-height:1.02;
-  letter-spacing:-0.02em;
+  line-height:1.02; letter-spacing:-0.02em;
   margin-bottom:32px;
 }
 .final h2 .it { font-style:italic; color:var(--gold); font-weight:300; }
 .final p {
   font-size:16px; line-height:1.78;
   color:rgba(246,241,232,0.65);
-  max-width:560px;
-  margin:0 auto 44px;
+  max-width:560px; margin:0 auto 44px;
 }
 
 /* ============================================================
@@ -740,30 +1038,85 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 .footer {
   position:relative; z-index:2;
   border-top:1px solid var(--line);
-  padding:48px clamp(20px, 4vw, 48px);
+  padding:64px clamp(20px, 4vw, 48px) 28px;
+  background:var(--deeper);
 }
-.footer-inner {
+.footer-grid {
   max-width:1280px; margin:0 auto;
-  display:flex; flex-direction:column; gap:20px;
-  align-items:flex-start;
-  font-size:11px; letter-spacing:0.22em; text-transform:uppercase;
-  color:rgba(246,241,232,0.4);
+  display:grid; grid-template-columns:1fr; gap:48px;
+  padding-bottom:48px;
+  border-bottom:1px solid var(--line-soft);
 }
-@media (min-width:768px){
-  .footer-inner { flex-direction:row; align-items:center; justify-content:space-between; }
-}
-.footer-mark {
-  font-family:var(--serif);
-  font-size:24px;
-  letter-spacing:0.08em;
-  color:var(--cream);
-  text-transform:none;
-}
-.footer-links { display:flex; gap:28px; }
-.footer-links a { transition:color 0.5s var(--ease); }
-.footer-links a:hover { color:var(--gold); }
+@media (min-width:768px){ .footer-grid { grid-template-columns:1.4fr 1fr 1fr 1fr; gap:48px; } }
+@media (max-width:480px){ .footer-grid { grid-template-columns:1fr; } }
 
-/* Reduced motion */
+.footer-mark { font-family:var(--serif); font-size:30px; letter-spacing:0.06em; color:var(--cream); margin-bottom:16px; }
+.footer-tag {
+  font-family:var(--serif); font-style:italic;
+  font-size:15px; color:rgba(246,241,232,0.55);
+  max-width:280px; line-height:1.5;
+}
+.footer-col h4 {
+  font-size:10px; letter-spacing:0.32em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:20px; font-weight:500;
+}
+.footer-col ul { list-style:none; display:flex; flex-direction:column; gap:11px; }
+.footer-col a {
+  font-size:13px; color:rgba(246,241,232,0.55);
+  transition:color 0.4s ease;
+}
+.footer-col a:hover { color:var(--gold); }
+.footer-bottom {
+  max-width:1280px; margin:28px auto 0;
+  display:flex; flex-direction:column; gap:14px;
+  font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
+  color:rgba(246,241,232,0.35);
+}
+@media (min-width:768px){ .footer-bottom { flex-direction:row; justify-content:space-between; align-items:center; } }
+.footer-bottom-links { display:flex; gap:24px; flex-wrap:wrap; }
+.footer-bottom-links a { transition:color 0.4s ease; }
+.footer-bottom-links a:hover { color:var(--gold); }
+
+/* ============================================================
+   COOKIE BANNER
+   ============================================================ */
+.cookie {
+  position:fixed; bottom:20px; left:20px; right:20px;
+  z-index:70; max-width:680px;
+  margin:0 auto;
+  background:rgba(11,11,11,0.92);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:20px 24px;
+  display:flex; flex-direction:column; gap:14px;
+  align-items:flex-start;
+  transform:translateY(120%);
+  opacity:0;
+  transition:transform 0.8s var(--ease), opacity 0.8s var(--ease);
+  font-size:13px; line-height:1.6;
+  color:rgba(246,241,232,0.75);
+}
+.cookie.show { transform:translateY(0); opacity:1; }
+@media (min-width:680px){
+  .cookie { flex-direction:row; align-items:center; gap:24px; padding:18px 24px; }
+}
+.cookie p { flex:1; }
+.cookie a { color:var(--gold); border-bottom:1px solid rgba(200,169,106,0.3); }
+.cookie button {
+  flex-shrink:0;
+  padding:10px 22px;
+  font-size:10.5px; letter-spacing:0.3em; text-transform:uppercase;
+  background:var(--gold); color:var(--ink);
+  border-radius:999px; font-weight:500;
+  transition:background 0.4s ease;
+}
+.cookie button:hover { background:var(--cream); }
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after {
     animation-duration:0.01ms !important;
@@ -774,6 +1127,44 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 </style>
 </head>
 <body>
+
+<!-- ============================================================
+     SETUP-CHECKLIST (für Ivana, vor dem Live-Schalten):
+
+     1. PREISE prüfen — Suche im HTML nach "ab 1.490 €" / "ab 3.490 €"
+        / "ab 7.490 €". Ersetze mit deinen tatsächlichen Preisen.
+
+     2. STRIPE PAYMENT LINKS einsetzen:
+        - Stripe Dashboard → Payment Links → Neuen Link erstellen
+          (einer pro Paket, EUR, Einmalzahlung)
+        - URL kopieren
+        - Hier im HTML suchen nach data-stripe-link="" und einsetzen.
+          z.B. data-stripe-link="https://buy.stripe.com/abc123"
+        - Falls kein Stripe-Link → "Jetzt kaufen"-Button verschwindet
+          automatisch, nur Anfrage bleibt.
+
+     3. KONTAKT-FORMULAR aktivieren (Web3Forms, kostenlos, 30 Sek):
+        - https://web3forms.com → E-Mail eingeben → Access Key kopieren
+        - Im HTML suchen nach "YOUR_WEB3FORMS_ACCESS_KEY" → ersetzen.
+        - Anfragen kommen ab dann direkt an deine E-Mail.
+
+     4. KONTAKT-DATEN im Footer und Form anpassen
+        (E-Mail, Instagram-Link).
+
+     5. RECHTLICHE PFLICHT — diese Dateien müssen mit hochgeladen
+        werden und sind im Footer verlinkt:
+        impressum.html, datenschutz.html, agb.html, widerruf.html
+        → Öffne die Dateien und ersetze [BITTE EINTRAGEN: ...].
+
+     6. ECHTE TESTIMONIALS einsetzen — Suche nach "BEISPIEL-ZITAT"
+        und ersetze durch echte Kundenstimmen. Falls noch keine
+        vorhanden: ganze Testimonials-Section löschen (Block
+        zwischen <!-- TESTIMONIALS --> und Ende der section).
+
+     7. OG-IMAGE (für Social-Media-Vorschau): erstelle ein 1200×630px
+        Bild mit Mindéa-Branding, lade als og-image.jpg ins gleiche
+        Verzeichnis hoch.
+     ============================================================ -->
 
 <!-- OVERLAYS -->
 <div class="grain" aria-hidden="true"></div>
@@ -786,12 +1177,13 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
     <a href="#" class="nav-logo">Mindéa</a>
     <ul class="nav-menu">
       <li><a href="#studio">Studio</a></li>
-      <li><a href="#leistungen">Leistungen</a></li>
-      <li><a href="#wirkung">Wirkung</a></li>
+      <li><a href="#prozess">Prozess</a></li>
       <li><a href="#pakete">Pakete</a></li>
-      <li><a href="#anfrage">Anfrage</a></li>
+      <li><a href="#founder">Founder</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
     </ul>
-    <a href="#anfrage" class="nav-cta">Projekt anfragen</a>
+    <a href="#kontakt" class="nav-cta">Projekt anfragen</a>
     <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen">
       <span></span><span></span>
     </button>
@@ -801,11 +1193,12 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 <div class="mobile-menu" id="mobileMenu">
   <button class="close" id="navClose">Schließen ✕</button>
   <a href="#studio">Studio</a>
-  <a href="#leistungen">Leistungen</a>
-  <a href="#wirkung">Wirkung</a>
+  <a href="#prozess">Prozess</a>
   <a href="#pakete">Pakete</a>
-  <a href="#anfrage">Anfrage</a>
-  <a href="#anfrage" class="mob-cta">Projekt anfragen</a>
+  <a href="#founder">Founder</a>
+  <a href="#faq">FAQ</a>
+  <a href="#kontakt">Kontakt</a>
+  <a href="#kontakt" class="mob-cta">Projekt anfragen</a>
 </div>
 
 <!-- HERO -->
@@ -824,11 +1217,9 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
           <stop offset="100%" stop-color="#C8A96A" stop-opacity="0"/>
         </linearGradient>
       </defs>
-
       <circle cx="400" cy="400" r="320" fill="url(#core)">
         <animate attributeName="r" values="300;340;300" dur="10s" repeatCount="indefinite"/>
       </circle>
-
       <circle cx="400" cy="400" r="260" fill="none" stroke="url(#ring)" stroke-width="0.9" opacity="0.55">
         <animateTransform attributeName="transform" type="rotate" from="0 400 400" to="360 400 400" dur="30s" repeatCount="indefinite"/>
       </circle>
@@ -838,7 +1229,6 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
       <circle cx="400" cy="400" r="380" fill="none" stroke="url(#ring)" stroke-width="0.9" opacity="0.31">
         <animateTransform attributeName="transform" type="rotate" from="0 400 400" to="360 400 400" dur="48s" repeatCount="indefinite"/>
       </circle>
-
       <g id="wave" transform="translate(140 400)" opacity="0.55"></g>
       <g id="particles" opacity="0.7"></g>
     </svg>
@@ -860,10 +1250,10 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
         erklärst.
       </p>
       <div class="hero-actions">
-        <a href="#anfrage" class="btn btn-primary">
-          <span>Brand Video anfragen</span><span class="arrow"></span>
+        <a href="#pakete" class="btn btn-primary">
+          <span>Pakete &amp; Preise</span><span class="arrow"></span>
         </a>
-        <a href="#pakete" class="text-link">Pakete ansehen <span class="ar">→</span></a>
+        <a href="#kontakt" class="text-link">Erstgespräch buchen <span class="ar">→</span></a>
       </div>
     </div>
   </div>
@@ -874,25 +1264,29 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   </div>
 </section>
 
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Cinematic</span><span class="dot">◆</span>
+    <span>Editorial</span><span class="dot">◆</span>
+    <span>AI-Crafted</span><span class="dot">◆</span>
+    <span>Curated</span><span class="dot">◆</span>
+    <span>Quiet Luxury</span><span class="dot">◆</span>
+    <span>Cinematic</span><span class="dot">◆</span>
+    <span>Editorial</span><span class="dot">◆</span>
+    <span>AI-Crafted</span><span class="dot">◆</span>
+    <span>Curated</span><span class="dot">◆</span>
+    <span>Quiet Luxury</span><span class="dot">◆</span>
+  </div>
+</div>
+
 <!-- STATS -->
 <section class="stats" id="wirkung">
   <div class="stats-grid">
-    <div class="reveal">
-      <div class="stat-val">3 Sek.</div>
-      <div class="stat-lbl">für den ersten Eindruck</div>
-    </div>
-    <div class="reveal r-d1">
-      <div class="stat-val">100%</div>
-      <div class="stat-lbl">remote umsetzbar</div>
-    </div>
-    <div class="reveal r-d2">
-      <div class="stat-val">0</div>
-      <div class="stat-lbl">Kamerateam nötig</div>
-    </div>
-    <div class="reveal r-d3">
-      <div class="stat-val">1</div>
-      <div class="stat-lbl">Markenmoment, der bleibt</div>
-    </div>
+    <div class="reveal"><div class="stat-val">3 Sek.</div><div class="stat-lbl">für den ersten Eindruck</div></div>
+    <div class="reveal r-d1"><div class="stat-val">100%</div><div class="stat-lbl">remote umsetzbar</div></div>
+    <div class="reveal r-d2"><div class="stat-val">0</div><div class="stat-lbl">Kamerateam nötig</div></div>
+    <div class="reveal r-d3"><div class="stat-val">1</div><div class="stat-lbl">Markenmoment, der bleibt</div></div>
   </div>
 </section>
 
@@ -908,47 +1302,56 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
     </div>
 
     <div class="bento">
-      <div class="bento-card large reveal">
+      <div class="bento-card large reveal"><div><div class="bento-num">— 01</div><h3>Brand Presence</h3></div><p>Ein cineastischer erster Eindruck für deine Marke.</p></div>
+      <div class="bento-card reveal r-d1"><div><div class="bento-num">— 02</div><h3>Brand Story</h3></div><p>Eine emotionale Markenstory aus Stimme, Bildern und Persönlichkeit.</p></div>
+      <div class="bento-card reveal r-d2"><div><div class="bento-num">— 03</div><h3>Brand Impact</h3></div><p>Eine intensive Markeninszenierung für Website, Instagram und Launch-Momente.</p></div>
+      <div class="bento-card large reveal r-d3"><div><div class="bento-num">— 04</div><h3>KI-gestützte Produktion</h3></div><p>Modern, effizient und trotzdem persönlich.</p></div>
+      <div class="bento-card reveal r-d4"><div><div class="bento-num">— 05</div><h3>Ohne Drehtag</h3></div><p>Du brauchst kein Kamerateam, kein Studio und keine perfekte Vorbereitung.</p></div>
+      <div class="bento-card reveal r-d5"><div><div class="bento-num">— 06</div><h3>Premium Markenwirkung</h3></div><p>Für Selbstständige, die sichtbar werden wollen, ohne laut zu werden.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section process" id="prozess">
+  <div class="container">
+    <div class="process-head">
+      <div class="eyebrow reveal">Der Mindéa-Prozess</div>
+      <h2 class="reveal r-d1">So entsteht dein <span class="it">Markenmoment.</span></h2>
+      <p class="reveal r-d2">Vier ruhige Schritte vom ersten Gespräch bis zum fertigen Brand Film — kuratiert, persönlich, transparent.</p>
+    </div>
+    <div class="process-steps">
+      <div class="process-step reveal">
         <div>
-          <div class="bento-num">— 01</div>
-          <h3>Brand Presence</h3>
+          <div class="process-num">— 01</div>
+          <h3>Anfrage &amp; Vision-Call</h3>
+          <p>Du buchst dein Erstgespräch. Wir hören zu, verstehen deine Marke und prüfen, ob es passt.</p>
         </div>
-        <p>Ein cineastischer erster Eindruck für deine Marke.</p>
+        <div class="when">Tag 1 · 30 Min</div>
       </div>
-      <div class="bento-card reveal r-d1">
+      <div class="process-step reveal r-d1">
         <div>
-          <div class="bento-num">— 02</div>
-          <h3>Brand Story</h3>
+          <div class="process-num">— 02</div>
+          <h3>Brand Brief &amp; Direction</h3>
+          <p>Wir verdichten Stimme, Bildwelt und Botschaft in eine cineastische Vision — dein eigenes Drehbuch.</p>
         </div>
-        <p>Eine emotionale Markenstory aus Stimme, Bildern und Persönlichkeit.</p>
+        <div class="when">Woche 1</div>
       </div>
-      <div class="bento-card reveal r-d2">
+      <div class="process-step reveal r-d2">
         <div>
-          <div class="bento-num">— 03</div>
-          <h3>Brand Impact</h3>
+          <div class="process-num">— 03</div>
+          <h3>Cinematic Production</h3>
+          <p>Unsere KI-Pipeline inszeniert deine Marke Frame für Frame — mit Color Grading, Sound Design und Tempo.</p>
         </div>
-        <p>Eine intensive Markeninszenierung für Website, Instagram und Launch-Momente.</p>
+        <div class="when">Woche 2–3</div>
       </div>
-      <div class="bento-card large reveal r-d3">
+      <div class="process-step reveal r-d3">
         <div>
-          <div class="bento-num">— 04</div>
-          <h3>KI-gestützte Produktion</h3>
+          <div class="process-num">— 04</div>
+          <h3>Review &amp; Delivery</h3>
+          <p>Du erhältst alle Films, Frames und Social Cuts. Eine Korrekturschleife inklusive — danach: dein Launch.</p>
         </div>
-        <p>Modern, effizient und trotzdem persönlich.</p>
-      </div>
-      <div class="bento-card reveal r-d4">
-        <div>
-          <div class="bento-num">— 05</div>
-          <h3>Ohne Drehtag</h3>
-        </div>
-        <p>Du brauchst kein Kamerateam, kein Studio und keine perfekte Vorbereitung.</p>
-      </div>
-      <div class="bento-card reveal r-d5">
-        <div>
-          <div class="bento-num">— 06</div>
-          <h3>Premium Markenwirkung</h3>
-        </div>
-        <p>Für Selbstständige, die sichtbar werden wollen, ohne laut zu werden.</p>
+        <div class="when">Woche 3–4</div>
       </div>
     </div>
   </div>
@@ -959,24 +1362,25 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   <div class="container">
     <div class="packages-head">
       <h2>
-        <span class="line-mask reveal-line"><span>Drei <span class="it">Inszenierungen.</span></span></span>
-        <span class="line-mask reveal-line l-d1"><span>Ein Studio.</span></span>
+        <span class="line-mask reveal"><span>Drei <span class="it">Inszenierungen.</span></span></span>
+        <span class="line-mask reveal r-d1"><span>Ein Studio.</span></span>
       </h2>
       <p class="reveal r-d2">
         Jedes Mindéa-Programm ist ein eigenes Kapitel — kuratiert für die Phase,
-        in der sich deine Marke gerade befindet.
+        in der sich deine Marke gerade befindet. Klick auf eine Karte für Preis &amp; Details.
       </p>
     </div>
 
     <div class="pkg-grid">
 
-      <!-- ============================================================
+      <!-- =========================================================
            PAKET 1 · BRAND PRESENCE
-           >>> ERSETZE: data-price · data-link · .pkg-long · .pkg-list
-           ============================================================ -->
+           >>> ANPASSEN: Preis · data-stripe-link · Beschreibung
+           ========================================================= -->
       <div class="pkg reveal" data-pkg>
         <div class="pkg-num">— 01</div>
         <h3>Brand <span class="it">Presence</span></h3>
+        <div class="pkg-from"><span class="ab">ab</span>1.490 €</div>
         <p class="pkg-lede">
           Der erste cineastische Auftritt. Für Gründerinnen, die bereit sind,
           gesehen zu werden — leise, präzise, edel.
@@ -987,32 +1391,39 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
           <li>Mindéa Color &amp; Sound Grading</li>
           <li>Strategischer Brand-Tonality Call</li>
         </ul>
-        <span class="pkg-toggle-hint">Details ansehen <span class="chev">▾</span></span>
+        <span class="pkg-toggle-hint">Details &amp; Preis <span class="chev">▾</span></span>
 
         <div class="pkg-details">
           <div class="pkg-details-inner">
-            <div class="pkg-price"><span class="ab">ab</span>PREIS EINTRAGEN €</div>
-            <div class="pkg-price-note">zzgl. USt · einmalige Investition</div>
+            <div class="pkg-price"><span class="ab">ab</span>1.490 €</div>
+            <div class="pkg-price-note">zzgl. USt · einmalige Investition · Lieferung 2–3 Wochen</div>
             <div class="pkg-long">
               <p>
-                <!-- ECHTEN LANGEN BESCHREIBUNGSTEXT VON
-                     mindea-studio.de/service-und-preise HIER EINFÜGEN -->
-                Platzhalter — lange Beschreibung zu Brand Presence einfügen.
+                Dein erstes cineastisches Statement. Ein kurzer Brand Film, der
+                deine Marke in 60 bis 90 Sekunden so erzählt, dass sie nicht
+                mehr übersehen wird. Ideal für Selbstständige, die ihre Website,
+                ihren Pitch oder ihren Launch heben wollen.
+              </p>
+              <p>
+                Du bekommst nicht nur einen Film — du bekommst eine visuelle
+                Sprache, die ab sofort zu dir gehört.
               </p>
             </div>
-            <a href="#" class="pkg-extra-link">
-              Jetzt buchen <span class="ar">→</span>
-            </a>
+            <div class="pkg-cta-row">
+              <a href="#kontakt" class="pkg-buy" data-stripe-link="" data-pkg-name="Brand Presence">Jetzt buchen <span>→</span></a>
+              <a href="#kontakt" class="pkg-inquire">Erstgespräch anfragen</a>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- ============================================================
+      <!-- =========================================================
            PAKET 2 · BRAND STORY (SIGNATURE)
-           ============================================================ -->
+           ========================================================= -->
       <div class="pkg pkg-featured reveal r-d1" data-pkg>
         <div class="pkg-num">— 02 · Signature</div>
         <h3>Brand <span class="it">Story</span></h3>
+        <div class="pkg-from"><span class="ab">ab</span>3.490 €</div>
         <p class="pkg-lede">
           Ein vollständiges Markenkapitel. Ein Film, der ein Gefühl trägt —
           eine visuelle Identität, die international wirkt.
@@ -1024,28 +1435,40 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
           <li>Brand Sound Design &amp; Voice Layer</li>
           <li>Mindéa Strategy Session</li>
         </ul>
-        <span class="pkg-toggle-hint">Details ansehen <span class="chev">▾</span></span>
+        <span class="pkg-toggle-hint">Details &amp; Preis <span class="chev">▾</span></span>
 
         <div class="pkg-details">
           <div class="pkg-details-inner">
-            <div class="pkg-price"><span class="ab">ab</span>PREIS EINTRAGEN €</div>
-            <div class="pkg-price-note">zzgl. USt · einmalige Investition</div>
+            <div class="pkg-price"><span class="ab">ab</span>3.490 €</div>
+            <div class="pkg-price-note">zzgl. USt · einmalige Investition · Lieferung 3–4 Wochen</div>
             <div class="pkg-long">
-              <p>Platzhalter — lange Beschreibung zu Brand Story einfügen.</p>
+              <p>
+                Das Herzstück von Mindéa. Eine vollständige cineastische
+                Inszenierung deiner Marke — ein Hero Film, der trägt, fünf
+                Editorial Frames für Web und Print, drei Social Cuts und ein
+                vollständig komponiertes Sound Design mit deiner eigenen Stimme.
+              </p>
+              <p>
+                Für Marken, die nicht nur Sichtbarkeit, sondern Klangfarbe
+                möchten. Mit persönlicher Strategie-Session und einem
+                vollständigen Brand-Tonality-Profil.
+              </p>
             </div>
-            <a href="#" class="pkg-extra-link">
-              Jetzt buchen <span class="ar">→</span>
-            </a>
+            <div class="pkg-cta-row">
+              <a href="#kontakt" class="pkg-buy" data-stripe-link="" data-pkg-name="Brand Story">Jetzt buchen <span>→</span></a>
+              <a href="#kontakt" class="pkg-inquire">Erstgespräch anfragen</a>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- ============================================================
+      <!-- =========================================================
            PAKET 3 · BRAND IMPACT
-           ============================================================ -->
+           ========================================================= -->
       <div class="pkg reveal r-d2" data-pkg>
         <div class="pkg-num">— 03</div>
         <h3>Brand <span class="it">Impact</span></h3>
+        <div class="pkg-from"><span class="ab">ab</span>7.490 €</div>
         <p class="pkg-lede">
           Eine vollständige cineastische Kampagne. Für Marken, die in eine neue
           Dimension wechseln — und das auch fühlen sollen.
@@ -1057,18 +1480,29 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
           <li>Kampagnen-Choreografie &amp; Rollout</li>
           <li>6 Monate kuratierte Begleitung</li>
         </ul>
-        <span class="pkg-toggle-hint">Details ansehen <span class="chev">▾</span></span>
+        <span class="pkg-toggle-hint">Details &amp; Preis <span class="chev">▾</span></span>
 
         <div class="pkg-details">
           <div class="pkg-details-inner">
-            <div class="pkg-price"><span class="ab">ab</span>PREIS EINTRAGEN €</div>
-            <div class="pkg-price-note">zzgl. USt · einmalige Investition</div>
+            <div class="pkg-price"><span class="ab">ab</span>7.490 €</div>
+            <div class="pkg-price-note">zzgl. USt · ratenweise zahlbar · Laufzeit 6 Monate</div>
             <div class="pkg-long">
-              <p>Platzhalter — lange Beschreibung zu Brand Impact einfügen.</p>
+              <p>
+                Wenn du eine ganze Markenwelt aufbauen willst. Drei
+                aufeinander abgestimmte Brand Films als Kapitel-Story, zehn
+                Editorial Still Frames in voller Editorial-Qualität, eine
+                komplette Social Suite und eine sechsmonatige Begleitung mit
+                Strategy Sessions, Content-Choreografie und Roll-out-Plan.
+              </p>
+              <p>
+                Für Marken, die international wirken wollen — und für die
+                Sichtbarkeit nicht das Ziel ist, sondern Selbstverständlichkeit.
+              </p>
             </div>
-            <a href="#" class="pkg-extra-link">
-              Jetzt buchen <span class="ar">→</span>
-            </a>
+            <div class="pkg-cta-row">
+              <a href="#kontakt" class="pkg-buy" data-stripe-link="" data-pkg-name="Brand Impact">Anzahlung &amp; Buchen <span>→</span></a>
+              <a href="#kontakt" class="pkg-inquire">Erstgespräch anfragen</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1076,19 +1510,277 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
   </div>
 </section>
 
+<!-- FOUNDER -->
+<section class="section founder" id="founder">
+  <div class="container">
+    <div class="founder-inner">
+      <div class="founder-card reveal">
+        <div class="top">
+          <span>Mindéa · MMXXVI</span>
+          <span>Berlin</span>
+        </div>
+        <div class="mid">I<span class="gold">Đ</span></div>
+        <div class="bot">
+          <span class="name">Ivana Đorđević</span>
+          <span class="role">Founder<br>Creative Direction</span>
+        </div>
+      </div>
+      <div class="founder-text">
+        <div class="eyebrow reveal">Founder</div>
+        <h2 class="reveal r-d1">Hinter Mindéa steht <span class="it">eine ruhige Hand.</span></h2>
+        <p class="reveal r-d2">
+          Ich habe Mindéa gegründet, weil ich nicht mehr glaube, dass Marken
+          lauter werden müssen, um wahrgenommen zu werden. Ich glaube an
+          Inszenierung. An Stille. An Bilder, die etwas sagen, bevor sie
+          gesprochen werden.
+        </p>
+        <p class="reveal r-d3">
+          Mindéa ist meine Antwort auf einen Markt, der den Geschmack
+          verloren hat. Ein Atelier, das dem Detail Raum gibt, das Gefühl
+          liest und Marken inszeniert, statt sie nur sichtbar zu machen.
+        </p>
+        <div class="founder-signature reveal r-d4">
+          <span class="name">Ivana Đorđević</span>
+          <span class="role">Founder · Creative Direction</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TESTIMONIALS  >>> echte Zitate eintragen oder ganze Section löschen
+     ============================================================ -->
+<section class="section" id="stimmen">
+  <div class="container">
+    <div class="testimonials-head">
+      <div class="eyebrow reveal">Was Marken sagen</div>
+      <h2 class="reveal r-d1">Stimmen aus dem <span class="it">Atelier.</span></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial reveal">
+        <div class="quote-mark">"</div>
+        <blockquote>
+          [BEISPIEL-ZITAT — bitte durch echtes Kundenzitat ersetzen, etwa drei bis
+          fünf Sätze, idealerweise mit einer konkreten Wirkung oder Veränderung
+          nach dem Mindéa-Projekt.]
+        </blockquote>
+        <cite>Vorname Nachname</cite>
+        <div class="who">Gründerin · Marke</div>
+      </div>
+      <div class="testimonial reveal r-d1">
+        <div class="quote-mark">"</div>
+        <blockquote>
+          [BEISPIEL-ZITAT — was sich für die Kundin verändert hat, wie sich
+          die Zusammenarbeit angefühlt hat, was an Mindéa besonders war.]
+        </blockquote>
+        <cite>Vorname Nachname</cite>
+        <div class="who">CEO · Brand</div>
+      </div>
+      <div class="testimonial reveal r-d2">
+        <div class="quote-mark">"</div>
+        <blockquote>
+          [BEISPIEL-ZITAT — warum sie Mindéa gewählt hat, was an der
+          cineastischen Inszenierung besonders war, welchen Effekt es hatte.]
+        </blockquote>
+        <cite>Vorname Nachname</cite>
+        <div class="who">Founder · Studio</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq" style="border-top:1px solid var(--line-soft);">
+  <div class="container">
+    <div class="faq-head">
+      <h2>
+        <span class="line-mask reveal"><span>Häufige <span class="it">Fragen.</span></span></span>
+      </h2>
+      <p class="reveal r-d1">Alles, was vor einer Anfrage geklärt sein darf. Findest du deine Antwort nicht? Schreib uns einfach.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Wie lange dauert ein Mindéa-Projekt?</span><span class="plus"></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner"><p>
+          Je nach Paket zwischen zwei und vier Wochen ab Bestätigung deines
+          Briefs. Brand Presence liefern wir in der Regel in 2–3 Wochen,
+          Brand Story in 3–4 Wochen. Brand Impact ist als sechsmonatige
+          Begleitung angelegt.
+        </p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Brauche ich eigene Fotos oder ein Studio?</span><span class="plus"></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner"><p>
+          Nein. Für die meisten Projekte reichen ein paar einfache Selbstaufnahmen
+          und eine Sprachaufnahme deiner Stimme. Unsere KI-Pipeline arbeitet
+          mit dem, was du hast, und veredelt es zu cineastischer Qualität.
+          Du brauchst kein Equipment, kein Make-up-Team, keinen Drehtag.
+        </p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Was unterscheidet euch von einer klassischen Agentur?</span><span class="plus"></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner"><p>
+          Mindéa ist kein Content Studio. Wir produzieren keine Reels in
+          Schichtarbeit. Wir inszenieren Marken wie einen Film — mit Haltung,
+          Geschmack, Stille. Die KI ist Werkzeug, nicht Stil. Was du bekommst,
+          könntest du an keinen Stock-Marktplatz übergeben.
+        </p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Wird KI in der Kommunikation offen genannt?</span><span class="plus"></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner"><p>
+          Wir arbeiten nach den Transparenz-Standards des EU AI Act. Wenn ein
+          Brand Film vollständig KI-generiert ist, wird er entsprechend
+          gekennzeichnet. Du entscheidest, wie offen du das nach außen
+          kommunizierst — wir beraten dich dabei.
+        </p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Welche Ausgabeformate erhalte ich?</span><span class="plus"></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner"><p>
+          Du bekommst alle Films in 16:9 (Website / YouTube), 9:16
+          (Stories / Reels) und 1:1 (Feed). Still Frames in 3:2 und 4:5,
+          jeweils in Web- und Print-Auflösung. Alles in Mindéa-Color-Grading
+          und mit unserem Sound Design.
+        </p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Wie läuft die Bezahlung?</span><span class="plus"></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner"><p>
+          Brand Presence und Brand Story zahlst du komplett bei Buchung —
+          die Karte oder Apple Pay öffnet sich direkt über Stripe. Brand
+          Impact läuft über eine Anzahlung (30%) und drei Folgeraten.
+          Alle Preise sind Nettopreise zzgl. der gesetzlichen USt.
+        </p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Gibt es eine Korrekturschleife?</span><span class="plus"></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner"><p>
+          Ja. Jedes Paket beinhaltet eine vollständige Feedback-Runde nach
+          dem ersten Cut. Größere Änderungen am Konzept sind danach gegen
+          Aufpreis möglich — kommen aber selten vor, weil wir vorher gemeinsam
+          den Brand Brief entwickeln.
+        </p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT FORM -->
+<section class="section contact" id="kontakt">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="contact-text">
+        <div class="eyebrow reveal">Anfrage</div>
+        <h2 class="reveal r-d1">Lass uns über deine <span class="it">Marke sprechen.</span></h2>
+        <p class="reveal r-d2">
+          Sag uns, wer du bist und was du im Kopf hast. Wir melden uns innerhalb
+          von 24 Stunden mit einer ersten Einschätzung und einem Vorschlag für
+          ein Erstgespräch.
+        </p>
+        <div class="contact-details reveal r-d3">
+          <div class="contact-detail">
+            <span class="label">Direkt</span>
+            <a href="mailto:hello@mindea-studio.de">hello@mindea-studio.de</a>
+          </div>
+          <div class="contact-detail">
+            <span class="label">Studio</span>
+            <span class="val">Berlin · Internationale Projekte</span>
+          </div>
+          <div class="contact-detail">
+            <span class="label">Antwort</span>
+            <span class="val">In der Regel innerhalb 24h</span>
+          </div>
+        </div>
+      </div>
+
+      <form class="form reveal r-d1" id="contactForm">
+        <!-- Web3Forms — kostenlos, kein Backend nötig
+             >>> ANPASSEN: Access Key auf web3forms.com holen und unten einsetzen -->
+        <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+        <input type="hidden" name="subject" value="Neue Mindéa-Anfrage">
+        <input type="hidden" name="from_name" value="Mindéa Studio">
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+
+        <div class="form-row two">
+          <div class="field">
+            <label for="f-name">Name</label>
+            <input id="f-name" type="text" name="name" required autocomplete="name" placeholder="Vor- und Nachname">
+          </div>
+          <div class="field">
+            <label for="f-email">E-Mail</label>
+            <input id="f-email" type="email" name="email" required autocomplete="email" placeholder="du@deine-marke.de">
+          </div>
+        </div>
+
+        <div class="form-row two">
+          <div class="field">
+            <label for="f-brand">Marke / Website</label>
+            <input id="f-brand" type="text" name="brand" autocomplete="organization" placeholder="z.B. maison-aurelle.com">
+          </div>
+          <div class="field">
+            <label for="f-pkg">Interesse</label>
+            <select id="f-pkg" name="package">
+              <option value="">Bitte auswählen</option>
+              <option value="Brand Presence">Brand Presence · ab 1.490 €</option>
+              <option value="Brand Story">Brand Story · ab 3.490 €</option>
+              <option value="Brand Impact">Brand Impact · ab 7.490 €</option>
+              <option value="Erstgespräch">Erstmal nur Erstgespräch</option>
+              <option value="Sonstiges">Etwas anderes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-msg">Worum geht es?</label>
+          <textarea id="f-msg" name="message" rows="4" placeholder="Erzähl uns kurz, was du planst — eine Webseite, ein Launch, eine neue Markenrichtung. Drei Sätze reichen."></textarea>
+        </div>
+
+        <label class="consent">
+          <input type="checkbox" name="consent" required>
+          <span class="box"></span>
+          <span>Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen und stimme der Kontaktaufnahme zu. Die Daten werden nur für die Beantwortung meiner Anfrage verwendet.</span>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" id="formSubmit">
+            <span>Anfrage senden</span><span class="arrow"></span>
+          </button>
+          <span class="form-status" id="formStatus"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
 <!-- FINAL CTA -->
-<section class="final" id="anfrage">
+<section class="final">
   <div class="final-inner">
     <div class="eyebrow reveal">Beginne dein Kapitel</div>
     <h2>
-      <span class="line-mask reveal-line"><span>Wenn deine Marke</span></span>
-      <span class="line-mask reveal-line l-d1"><span>bereit ist, <span class="it">gefühlt zu werden.</span></span></span>
+      <span class="line-mask reveal"><span>Wenn deine Marke</span></span>
+      <span class="line-mask reveal r-d1"><span>bereit ist, <span class="it">gefühlt zu werden.</span></span></span>
     </h2>
     <p class="reveal r-d2">
       Mindéa arbeitet pro Saison mit einer kleinen, kuratierten Anzahl von Marken.
       Jedes Projekt beginnt mit einem persönlichen Gespräch.
     </p>
-    <a href="mailto:hello@mindea-studio.de" class="btn btn-filled reveal r-d3">
+    <a href="#kontakt" class="btn btn-filled reveal r-d3">
       <span>Projekt anfragen</span><span class="arrow"></span>
     </a>
   </div>
@@ -1096,31 +1788,71 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
 
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-mark">Mindéa</div>
-    <div>© 2026 · A Studio of Quiet Cinema · Berlin</div>
-    <div class="footer-links">
-      <a href="#">Impressum</a>
-      <a href="#">Datenschutz</a>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-mark">Mindéa</div>
+      <p class="footer-tag">A studio of quiet cinema.<br>Brand storytelling, reimagined.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Studio</h4>
+      <ul>
+        <li><a href="#studio">Philosophie</a></li>
+        <li><a href="#prozess">Prozess</a></li>
+        <li><a href="#founder">Founder</a></li>
+        <li><a href="#stimmen">Stimmen</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#pakete">Brand Presence</a></li>
+        <li><a href="#pakete">Brand Story</a></li>
+        <li><a href="#pakete">Brand Impact</a></li>
+        <li><a href="#kontakt">Anfrage</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <ul>
+        <li><a href="mailto:hello@mindea-studio.de">hello@mindea-studio.de</a></li>
+        <li><a href="https://instagram.com/mindea.studio" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 Mindéa Studio · Berlin</div>
+    <div class="footer-bottom-links">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="agb.html">AGB</a>
+      <a href="widerruf.html">Widerruf</a>
     </div>
   </div>
 </footer>
 
+<!-- COOKIE BANNER -->
+<div class="cookie" id="cookieBanner" role="dialog" aria-label="Cookie-Hinweis">
+  <p>
+    Wir verwenden ausschließlich technisch notwendige Cookies und keine
+    Tracking-Tools. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.
+  </p>
+  <button id="cookieOk">Verstanden</button>
+</div>
+
 <script>
 (() => {
-  // ---------- Build SVG waveform + particles (so hero feels alive) ----------
   const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  /* Hero waveform & particles */
   const wave = document.getElementById('wave');
   const particles = document.getElementById('particles');
-
   if (wave) {
     for (let i = 0; i < 60; i++) {
       const h = 8 + 38 * Math.abs(Math.sin(i * 0.42));
       const r = document.createElementNS(SVG_NS, 'rect');
-      r.setAttribute('x', i * 9);
-      r.setAttribute('y', -h / 2);
-      r.setAttribute('width', '1.4');
-      r.setAttribute('height', h);
+      r.setAttribute('x', i * 9); r.setAttribute('y', -h / 2);
+      r.setAttribute('width', '1.4'); r.setAttribute('height', h);
       r.setAttribute('fill', '#C8A96A');
       r.setAttribute('opacity', (0.4 + 0.6 * Math.abs(Math.cos(i * 0.3))).toFixed(2));
       const a1 = document.createElementNS(SVG_NS, 'animate');
@@ -1137,7 +1869,6 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
       wave.appendChild(r);
     }
   }
-
   if (particles) {
     for (let i = 0; i < 28; i++) {
       const x = 120 + (i * 53) % 560;
@@ -1147,76 +1878,65 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
       c.setAttribute('r', '1.4'); c.setAttribute('fill', '#C8A96A');
       c.setAttribute('opacity', '0.55');
       const a1 = document.createElementNS(SVG_NS, 'animate');
-      a1.setAttribute('attributeName', 'opacity');
-      a1.setAttribute('values', '0.15;0.85;0.15');
-      a1.setAttribute('dur', (4 + (i % 6)) + 's');
-      a1.setAttribute('repeatCount', 'indefinite');
+      a1.setAttribute('attributeName', 'opacity'); a1.setAttribute('values', '0.15;0.85;0.15');
+      a1.setAttribute('dur', (4 + (i % 6)) + 's'); a1.setAttribute('repeatCount', 'indefinite');
       const a2 = document.createElementNS(SVG_NS, 'animate');
-      a2.setAttribute('attributeName', 'r');
-      a2.setAttribute('values', '0.8;2.4;0.8');
-      a2.setAttribute('dur', (5 + (i % 4)) + 's');
-      a2.setAttribute('repeatCount', 'indefinite');
+      a2.setAttribute('attributeName', 'r'); a2.setAttribute('values', '0.8;2.4;0.8');
+      a2.setAttribute('dur', (5 + (i % 4)) + 's'); a2.setAttribute('repeatCount', 'indefinite');
       c.appendChild(a1); c.appendChild(a2);
       particles.appendChild(c);
     }
   }
 
-  // ---------- Trigger hero line-mask reveals on load ----------
+  /* Hero line reveals on load */
   requestAnimationFrame(() => {
     document.querySelectorAll('.hero h1 .line-mask').forEach(el => el.classList.add('in'));
   });
 
-  // ---------- Mouse glow follows cursor ----------
+  /* Mouse glow */
   window.addEventListener('mousemove', (e) => {
     document.documentElement.style.setProperty('--mx', e.clientX + 'px');
     document.documentElement.style.setProperty('--my', e.clientY + 'px');
   }, { passive: true });
 
-  // ---------- Nav scroll state ----------
+  /* Nav scroll state */
   const nav = document.getElementById('nav');
   const updateNav = () => nav.classList.toggle('scrolled', window.scrollY > 40);
   window.addEventListener('scroll', updateNav, { passive: true });
   updateNav();
 
-  // ---------- Mobile menu ----------
+  /* Mobile menu */
   const toggle = document.getElementById('navToggle');
   const menu   = document.getElementById('mobileMenu');
   const close  = document.getElementById('navClose');
   if (toggle && menu) {
     toggle.addEventListener('click', () => menu.classList.add('open'));
     close && close.addEventListener('click', () => menu.classList.remove('open'));
-    menu.querySelectorAll('a').forEach(a =>
-      a.addEventListener('click', () => menu.classList.remove('open'))
-    );
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.remove('open')));
   }
 
-  // ---------- Reveal on scroll (IntersectionObserver) ----------
+  /* Reveal on scroll */
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('in');
-        // Also reveal inner line-masks if any
         entry.target.querySelectorAll('.line-mask').forEach(el => el.classList.add('in'));
         io.unobserve(entry.target);
       }
     });
   }, { threshold: 0.14, rootMargin: '0px 0px -60px 0px' });
-
-  document.querySelectorAll('.reveal, .reveal-line').forEach(el => io.observe(el));
-  // Stand-alone line-masks (not wrapped by .reveal)
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   document.querySelectorAll('.line-mask').forEach(el => io.observe(el));
 
-  // ---------- Package cards: click to expand (only one open at a time) ----------
+  /* Package cards expand */
   const pkgs = document.querySelectorAll('[data-pkg]');
   pkgs.forEach(card => {
     card.addEventListener('click', (e) => {
-      // Don't toggle if user clicked an inner link (booking CTA, etc.)
-      if (e.target.closest('a')) return;
+      if (e.target.closest('a, button')) return;
       const wasOpen = card.classList.contains('open');
       pkgs.forEach(c => c.classList.remove('open'));
       if (!wasOpen) {
         card.classList.add('open');
-        // Smooth scroll the expanded card into view so the price is visible
         setTimeout(() => {
           const rect = card.getBoundingClientRect();
           if (rect.bottom > window.innerHeight - 40) {
@@ -1225,15 +1945,90 @@ button { font:inherit; color:inherit; background:none; border:none; cursor:point
         }, 250);
       }
     });
-    // Keyboard accessibility
     card.setAttribute('tabindex', '0');
     card.setAttribute('role', 'button');
     card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+    });
+  });
+
+  /* Stripe link routing for "Jetzt buchen" buttons */
+  document.querySelectorAll('.pkg-buy').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const link = btn.getAttribute('data-stripe-link');
+      if (link && link.trim() && link.startsWith('http')) {
         e.preventDefault();
-        card.click();
+        window.open(link, '_blank', 'noopener');
+      } else {
+        // No Stripe link set → pre-fill contact form with package name
+        const name = btn.getAttribute('data-pkg-name');
+        const select = document.getElementById('f-pkg');
+        if (select && name) {
+          for (const opt of select.options) {
+            if (opt.value === name) { select.value = name; break; }
+          }
+        }
       }
     });
+  });
+
+  /* FAQ accordion */
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    q.addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  /* Contact form submit (Web3Forms) */
+  const form = document.getElementById('contactForm');
+  const status = document.getElementById('formStatus');
+  const submitBtn = document.getElementById('formSubmit');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const accessKey = form.querySelector('[name="access_key"]').value;
+      if (!accessKey || accessKey === 'YOUR_WEB3FORMS_ACCESS_KEY') {
+        status.textContent = 'Formular noch nicht aktiviert — bitte E-Mail direkt an hello@mindea-studio.de';
+        status.className = 'form-status err';
+        return;
+      }
+      submitBtn.disabled = true;
+      status.textContent = 'Wird gesendet …';
+      status.className = 'form-status';
+      try {
+        const data = new FormData(form);
+        const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: data });
+        const json = await res.json();
+        if (json.success) {
+          status.textContent = 'Danke. Wir melden uns innerhalb von 24h.';
+          status.className = 'form-status ok';
+          form.reset();
+        } else {
+          status.textContent = 'Fehler beim Senden. Bitte direkt per E-Mail.';
+          status.className = 'form-status err';
+        }
+      } catch (err) {
+        status.textContent = 'Verbindungsfehler. Bitte direkt per E-Mail.';
+        status.className = 'form-status err';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  }
+
+  /* Cookie banner */
+  const banner = document.getElementById('cookieBanner');
+  const cookieOk = document.getElementById('cookieOk');
+  if (banner && !localStorage.getItem('mindea-cookie-ok')) {
+    setTimeout(() => banner.classList.add('show'), 1600);
+  }
+  cookieOk && cookieOk.addEventListener('click', () => {
+    localStorage.setItem('mindea-cookie-ok', '1');
+    banner.classList.remove('show');
   });
 })();
 </script>
