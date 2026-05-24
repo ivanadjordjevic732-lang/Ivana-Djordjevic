@@ -1,91 +1,4 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
-<title>Mindéa — Cinematic Brand Studio</title>
-<meta name="description" content="Mindéa — Ein KI-gestütztes Brand Studio für cineastische Markeninszenierungen. Marken, die man nicht nur sieht. Sondern fühlt.">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-
-<!-- Tailwind Play CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          mindea: {
-            ink:   '#000000',
-            deep:  '#0B0B0B',
-            cream: '#F6F1E8',
-            gold:  '#C8A96A',
-            taupe: '#A68F72',
-          },
-        },
-        fontFamily: {
-          serif: ['"Cormorant Garamond"', 'Times New Roman', 'serif'],
-          sans:  ['Inter', 'ui-sans-serif', 'system-ui'],
-        },
-      },
-    },
-  };
-</script>
-
-<style>
-  html, body { background: #000; }
-  body { font-family: 'Inter', system-ui, sans-serif; }
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #000; }
-  ::-webkit-scrollbar-thumb { background: rgba(200,169,106,0.4); border-radius: 4px; }
-  @keyframes mindeaGrain {
-    0%   { transform: translate(0, 0); }
-    20%  { transform: translate(-5%, 3%); }
-    40%  { transform: translate(4%, -2%); }
-    60%  { transform: translate(-3%, 4%); }
-    80%  { transform: translate(2%, -3%); }
-    100% { transform: translate(0, 0); }
-  }
-  /* Pre-paint splash while React boots */
-  #root:empty::before {
-    content: 'Mindéa';
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(40px, 7vw, 88px);
-    letter-spacing: 0.04em;
-    color: #F6F1E8;
-    background: #000;
-    z-index: 10000;
-  }
-</style>
-
-<!-- React + Framer Motion via importmap -->
-<script type="importmap">
-{
-  "imports": {
-    "react":            "https://esm.sh/react@18.3.1",
-    "react/":           "https://esm.sh/react@18.3.1/",
-    "react-dom":        "https://esm.sh/react-dom@18.3.1?deps=react@18.3.1",
-    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1",
-    "framer-motion":    "https://esm.sh/framer-motion@11.11.17?deps=react@18.3.1,react-dom@18.3.1&external=react"
-  }
-}
-</script>
-
-<!-- Babel for in-browser JSX (preview only — production uses Vite/Next.js) -->
-<script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
-</head>
-<body class="bg-black text-[#F6F1E8]">
-
-<div id="root"></div>
-
-<script type="text/babel" data-type="module" data-presets="react">
 import React, { useEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import {
   motion,
   AnimatePresence,
@@ -93,9 +6,11 @@ import {
   useTransform,
 } from 'framer-motion';
 
-/* ==================================================================
-   MINDÉA — Cinematic Brand Studio (live preview)
-   ================================================================== */
+/* ------------------------------------------------------------------
+   MINDÉA — Cinematic Brand Studio
+   Dark Luxury landing — React + Tailwind + Framer Motion
+   Drop into Next.js or Vite as a single component.
+   ------------------------------------------------------------------ */
 
 const NAV = [
   { href: '#studio',     label: 'Studio' },
@@ -113,17 +28,17 @@ const STATS = [
 ];
 
 const FEATURES = [
-  { title: 'Brand Presence',          desc: 'Ein cineastischer erster Eindruck für deine Marke.', large: true },
-  { title: 'Brand Story',             desc: 'Eine emotionale Markenstory aus Stimme, Bildern und Persönlichkeit.' },
-  { title: 'Brand Impact',            desc: 'Eine intensive Markeninszenierung für Website, Instagram und Launch-Momente.' },
+  { title: 'Brand Presence',        desc: 'Ein cineastischer erster Eindruck für deine Marke.', large: true },
+  { title: 'Brand Story',           desc: 'Eine emotionale Markenstory aus Stimme, Bildern und Persönlichkeit.' },
+  { title: 'Brand Impact',          desc: 'Eine intensive Markeninszenierung für Website, Instagram und Launch-Momente.' },
   { title: 'KI-gestützte Produktion', desc: 'Modern, effizient und trotzdem persönlich.', large: true },
-  { title: 'Ohne Drehtag',            desc: 'Du brauchst kein Kamerateam, kein Studio und keine perfekte Vorbereitung.' },
-  { title: 'Premium Markenwirkung',   desc: 'Für Selbstständige, die sichtbar werden wollen, ohne laut zu werden.' },
+  { title: 'Ohne Drehtag',          desc: 'Du brauchst kein Kamerateam, kein Studio und keine perfekte Vorbereitung.' },
+  { title: 'Premium Markenwirkung', desc: 'Für Selbstständige, die sichtbar werden wollen, ohne laut zu werden.' },
 ];
 
 const EASE = [0.16, 1, 0.3, 1];
 
-function App() {
+export default function MindeaLanding() {
   const [scrolled, setScrolled]     = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const heroRef = useRef(null);
@@ -159,13 +74,16 @@ function App() {
       <Navbar scrolled={scrolled} onOpenMenu={() => setMobileOpen(true)} />
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
-      {/* HERO */}
+      {/* HERO ----------------------------------------------------------- */}
       <section
         ref={heroRef}
         id="studio"
         className="relative min-h-screen flex items-center px-6 md:px-16 pt-40 pb-32 overflow-hidden"
       >
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 pointer-events-none">
+        <motion.div
+          style={{ y: heroY, opacity: heroOpacity }}
+          className="absolute inset-0 pointer-events-none"
+        >
           <HeroVisual />
         </motion.div>
 
@@ -184,7 +102,9 @@ function App() {
             <h1 className="font-serif font-extralight tracking-[-0.02em] leading-[0.95] text-[clamp(46px,8.6vw,148px)] text-[#F6F1E8]">
               <RevealLine delay={0.45}>Marken, die man</RevealLine>
               <RevealLine delay={0.6}>nicht nur sieht.</RevealLine>
-              <RevealLine delay={0.75}><span className="italic text-[#C8A96A]">Sondern fühlt.</span></RevealLine>
+              <RevealLine delay={0.75}>
+                <span className="italic text-[#C8A96A]">Sondern fühlt.</span>
+              </RevealLine>
             </h1>
           </div>
 
@@ -221,7 +141,7 @@ function App() {
         <ScrollCue />
       </section>
 
-      {/* STATS */}
+      {/* STATS ---------------------------------------------------------- */}
       <section id="wirkung" className="relative px-6 md:px-16 py-24 md:py-28 border-y border-[#C8A96A]/15">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-y-14 md:gap-y-0 md:gap-x-0 md:divide-x divide-[#C8A96A]/15">
           {STATS.map((s, i) => (
@@ -236,19 +156,23 @@ function App() {
               <div className="font-serif font-extralight text-[44px] md:text-[64px] leading-none tracking-tight text-[#F6F1E8] mb-4">
                 {s.value}
               </div>
-              <div className="text-[10.5px] tracking-[0.3em] uppercase text-[#F6F1E8]/55">{s.label}</div>
+              <div className="text-[10.5px] tracking-[0.3em] uppercase text-[#F6F1E8]/55">
+                {s.label}
+              </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* FEATURES — BENTO */}
+      {/* FEATURES BENTO ------------------------------------------------- */}
       <section id="leistungen" className="relative px-6 md:px-16 py-32 md:py-48">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end gap-10 mb-20 md:mb-24">
             <h2 className="font-serif font-extralight text-[clamp(36px,5.6vw,82px)] leading-[1] tracking-[-0.012em] max-w-3xl">
               <RevealLine>Eine Marke ist</RevealLine>
-              <RevealLine delay={0.1}><span className="italic text-[#C8A96A]">kein Posting.</span></RevealLine>
+              <RevealLine delay={0.1}>
+                <span className="italic text-[#C8A96A]">kein Posting.</span>
+              </RevealLine>
             </h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -257,7 +181,8 @@ function App() {
               transition={{ duration: 1.1, delay: 0.25, ease: EASE }}
               className="text-[15px] text-[#F6F1E8]/55 max-w-sm md:ml-auto md:text-right leading-[1.75]"
             >
-              Sechs Bausteine, die ein Mindéa-Projekt zu einem cineastischen Markenmoment machen.
+              Sechs Bausteine, die ein Mindéa-Projekt zu einem cineastischen
+              Markenmoment machen.
             </motion.p>
           </div>
 
@@ -269,7 +194,7 @@ function App() {
         </div>
       </section>
 
-      {/* PACKAGES */}
+      {/* PACKAGES TEASE / SECTION ANCHOR -------------------------------- */}
       <section id="pakete" className="relative px-6 md:px-16 py-32 md:py-44 border-t border-[#C8A96A]/10">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-12 gap-10 items-end mb-16">
@@ -284,8 +209,8 @@ function App() {
               transition={{ duration: 1.1, delay: 0.2, ease: EASE }}
               className="md:col-span-5 text-[15px] leading-[1.78] text-[#F6F1E8]/60 max-w-md md:ml-auto"
             >
-              Jedes Mindéa-Programm ist ein eigenes Kapitel — kuratiert für die Phase,
-              in der sich deine Marke gerade befindet.
+              Jedes Mindéa-Programm ist ein eigenes Kapitel — kuratiert für die
+              Phase, in der sich deine Marke gerade befindet.
             </motion.p>
           </div>
 
@@ -331,7 +256,7 @@ function App() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
+      {/* FINAL CTA ------------------------------------------------------ */}
       <section id="anfrage" className="relative px-6 md:px-16 py-40 md:py-52 text-center overflow-hidden">
         <div aria-hidden className="absolute inset-0 pointer-events-none">
           <div
@@ -354,7 +279,9 @@ function App() {
 
           <h2 className="font-serif font-extralight text-[clamp(42px,7.5vw,128px)] leading-[1.02] tracking-[-0.02em] mb-10">
             <RevealLine>Wenn deine Marke</RevealLine>
-            <RevealLine delay={0.12}>bereit ist, <span className="italic text-[#C8A96A]">gefühlt zu werden.</span></RevealLine>
+            <RevealLine delay={0.12}>
+              bereit ist, <span className="italic text-[#C8A96A]">gefühlt zu werden.</span>
+            </RevealLine>
           </h2>
 
           <motion.p
@@ -364,15 +291,17 @@ function App() {
             transition={{ duration: 1.1, delay: 0.3, ease: EASE }}
             className="text-[#F6F1E8]/65 max-w-xl mx-auto mb-12 leading-[1.78]"
           >
-            Mindéa arbeitet pro Saison mit einer kleinen, kuratierten Anzahl von Marken.
-            Jedes Projekt beginnt mit einem persönlichen Gespräch.
+            Mindéa arbeitet pro Saison mit einer kleinen, kuratierten Anzahl
+            von Marken. Jedes Projekt beginnt mit einem persönlichen Gespräch.
           </motion.p>
 
-          <GoldButton href="mailto:hello@mindea-studio.de" filled>Projekt anfragen</GoldButton>
+          <GoldButton href="mailto:hello@mindea-studio.de" filled>
+            Projekt anfragen
+          </GoldButton>
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* FOOTER --------------------------------------------------------- */}
       <footer className="relative border-t border-[#C8A96A]/15 px-6 md:px-16 py-12">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 text-[11px] tracking-[0.22em] uppercase text-[#F6F1E8]/40">
           <div className="font-serif text-2xl tracking-[0.08em] text-[#F6F1E8] normal-case">Mindéa</div>
@@ -387,7 +316,9 @@ function App() {
   );
 }
 
-/* ===================== Sub-components ===================== */
+/* ==================================================================
+   SUB-COMPONENTS
+   ================================================================== */
 
 function FilmGrain() {
   return (
@@ -435,12 +366,11 @@ function GridBackdrop() {
 function Navbar({ scrolled, onOpenMenu }) {
   return (
     <nav
-      className={
-        'fixed top-0 left-0 right-0 z-50 px-6 md:px-12 transition-all duration-700 ease-out ' +
-        (scrolled
+      className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 transition-all duration-700 ease-out ${
+        scrolled
           ? 'py-3 bg-black/65 backdrop-blur-xl border-b border-[#C8A96A]/10'
-          : 'py-6 border-b border-transparent')
-      }
+          : 'py-6 border-b border-transparent'
+      }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <a href="#" className="font-serif text-2xl tracking-[0.08em] text-[#F6F1E8]">Mindéa</a>
@@ -466,11 +396,18 @@ function Navbar({ scrolled, onOpenMenu }) {
           <span className="relative z-10">Projekt anfragen</span>
           <span
             className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-            style={{ boxShadow: '0 0 50px rgba(200,169,106,0.4), inset 0 0 16px rgba(200,169,106,0.16)' }}
+            style={{
+              boxShadow:
+                '0 0 50px rgba(200,169,106,0.4), inset 0 0 16px rgba(200,169,106,0.16)',
+            }}
           />
         </a>
 
-        <button onClick={onOpenMenu} className="md:hidden flex flex-col items-end gap-[6px]" aria-label="Menü öffnen">
+        <button
+          onClick={onOpenMenu}
+          className="md:hidden flex flex-col items-end gap-[6px]"
+          aria-label="Menü öffnen"
+        >
           <span className="block w-7 h-px bg-[#F6F1E8]" />
           <span className="block w-5 h-px bg-[#F6F1E8]" />
         </button>
@@ -490,7 +427,10 @@ function MobileMenu({ open, onClose }) {
           transition={{ duration: 0.8, ease: EASE }}
           className="fixed inset-0 z-[80] bg-black flex flex-col items-center justify-center gap-8 px-6"
         >
-          <button onClick={onClose} className="absolute top-8 right-8 text-[10px] tracking-[0.34em] uppercase text-[#F6F1E8]/70 hover:text-[#C8A96A] transition-colors">
+          <button
+            onClick={onClose}
+            className="absolute top-8 right-8 text-[10px] tracking-[0.34em] uppercase text-[#F6F1E8]/70 hover:text-[#C8A96A] transition-colors"
+          >
             Schließen ✕
           </button>
 
@@ -525,9 +465,6 @@ function MobileMenu({ open, onClose }) {
 }
 
 function HeroVisual() {
-  const rings = [260, 320, 380];
-  const particles = Array.from({ length: 28 });
-  const waves = Array.from({ length: 60 });
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <motion.div
@@ -549,40 +486,71 @@ function HeroVisual() {
             </linearGradient>
           </defs>
 
+          {/* Soft golden core */}
           <circle cx="400" cy="400" r="320" fill="url(#mindeaCore)">
             <animate attributeName="r" values="300;340;300" dur="10s" repeatCount="indefinite" />
           </circle>
 
-          {rings.map((r, i) => (
-            <circle key={r} cx="400" cy="400" r={r} fill="none" stroke="url(#mindeaRing)" strokeWidth="0.9" opacity={0.55 - i * 0.12}>
+          {/* Orbital rings */}
+          {[260, 320, 380].map((r, i) => (
+            <circle
+              key={r}
+              cx="400" cy="400" r={r}
+              fill="none"
+              stroke="url(#mindeaRing)"
+              strokeWidth="0.9"
+              opacity={0.55 - i * 0.12}
+            >
               <animateTransform
-                attributeName="transform" type="rotate"
-                from="0 400 400" to={(i % 2 ? -360 : 360) + ' 400 400'}
-                dur={(30 + i * 9) + 's'} repeatCount="indefinite"
+                attributeName="transform"
+                type="rotate"
+                from={`0 400 400`}
+                to={`${i % 2 ? -360 : 360} 400 400`}
+                dur={`${30 + i * 9}s`}
+                repeatCount="indefinite"
               />
             </circle>
           ))}
 
+          {/* AI Waveform */}
           <g transform="translate(140 400)" opacity="0.55">
-            {waves.map((_, i) => {
+            {Array.from({ length: 60 }).map((_, i) => {
               const h = 8 + 38 * Math.abs(Math.sin(i * 0.42));
               return (
-                <rect key={i} x={i * 9} y={-h / 2} width="1.4" height={h} fill="#C8A96A"
-                  opacity={0.4 + 0.6 * Math.abs(Math.cos(i * 0.3))}>
-                  <animate attributeName="height" values={h + ';' + (h * 0.35) + ';' + h} dur={(3 + (i % 5)) + 's'} repeatCount="indefinite" />
-                  <animate attributeName="y"      values={(-h / 2) + ';' + (-h * 0.18) + ';' + (-h / 2)} dur={(3 + (i % 5)) + 's'} repeatCount="indefinite" />
+                <rect
+                  key={i}
+                  x={i * 9}
+                  y={-h / 2}
+                  width="1.4"
+                  height={h}
+                  fill="#C8A96A"
+                  opacity={0.4 + 0.6 * Math.abs(Math.cos(i * 0.3))}
+                >
+                  <animate
+                    attributeName="height"
+                    values={`${h};${h * 0.35};${h}`}
+                    dur={`${3 + (i % 5)}s`}
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="y"
+                    values={`${-h / 2};${-h * 0.18};${-h / 2}`}
+                    dur={`${3 + (i % 5)}s`}
+                    repeatCount="indefinite"
+                  />
                 </rect>
               );
             })}
           </g>
 
-          {particles.map((_, i) => {
+          {/* Floating particles */}
+          {Array.from({ length: 28 }).map((_, i) => {
             const x = 120 + (i * 53) % 560;
             const y = 120 + (i * 91) % 560;
             return (
               <circle key={i} cx={x} cy={y} r="1.4" fill="#C8A96A" opacity="0.55">
-                <animate attributeName="opacity" values="0.15;0.85;0.15" dur={(4 + (i % 6)) + 's'} repeatCount="indefinite" />
-                <animate attributeName="r"       values="0.8;2.4;0.8"    dur={(5 + (i % 4)) + 's'} repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.15;0.85;0.15" dur={`${4 + (i % 6)}s`} repeatCount="indefinite" />
+                <animate attributeName="r"       values="0.8;2.4;0.8"    dur={`${5 + (i % 4)}s`} repeatCount="indefinite" />
               </circle>
             );
           })}
@@ -629,14 +597,21 @@ function RevealLine({ children, delay = 0 }) {
 }
 
 function GoldButton({ href, children, primary = false, filled = false }) {
-  const base = 'group relative inline-flex items-center gap-4 px-8 py-4 rounded-full text-[11px] tracking-[0.32em] uppercase font-medium transition-all duration-500 ease-out';
+  const base =
+    'group relative inline-flex items-center gap-4 px-8 py-4 rounded-full text-[11px] tracking-[0.32em] uppercase font-medium transition-all duration-500 ease-out';
   const variant = filled
     ? 'bg-[#C8A96A] text-black hover:bg-[#F6F1E8]'
     : primary
       ? 'text-[#F6F1E8] border border-[#C8A96A]/60 hover:border-[#C8A96A]'
       : 'text-[#F6F1E8] border border-[#F6F1E8]/30 hover:border-[#C8A96A]';
+
   return (
-    <motion.a href={href} whileHover={{ y: -2 }} transition={{ duration: 0.4, ease: EASE }} className={base + ' ' + variant}>
+    <motion.a
+      href={href}
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.4, ease: EASE }}
+      className={`${base} ${variant}`}
+    >
       <span className="relative z-10">{children}</span>
       <span className="relative z-10 inline-flex items-center">
         <span className="block w-4 h-px bg-current transition-all duration-500 group-hover:w-6" />
@@ -646,7 +621,10 @@ function GoldButton({ href, children, primary = false, filled = false }) {
         <span
           aria-hidden
           className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          style={{ boxShadow: '0 0 50px rgba(200,169,106,0.45), inset 0 0 18px rgba(200,169,106,0.18)' }}
+          style={{
+            boxShadow:
+              '0 0 50px rgba(200,169,106,0.45), inset 0 0 18px rgba(200,169,106,0.18)',
+          }}
         />
       )}
     </motion.a>
@@ -661,25 +639,43 @@ function FeatureCard({ title, desc, index, large = false }) {
       viewport={{ once: true, margin: '-10% 0px' }}
       transition={{ duration: 1.2, delay: index * 0.06, ease: EASE }}
       whileHover={{ y: -6 }}
-      className={'group relative overflow-hidden rounded-2xl border border-[#C8A96A]/15 bg-[#0B0B0B] p-8 md:p-10 flex flex-col justify-between min-h-[280px] ' + (large ? 'md:col-span-2' : '')}
+      className={`group relative overflow-hidden rounded-2xl border border-[#C8A96A]/15 bg-[#0B0B0B] p-8 md:p-10 flex flex-col justify-between min-h-[280px] ${
+        large ? 'md:col-span-2' : ''
+      }`}
     >
       <span
         aria-hidden
         className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(200,169,106,0.45), 0 0 80px -20px rgba(200,169,106,0.45)' }}
+        style={{
+          boxShadow:
+            'inset 0 0 0 1px rgba(200,169,106,0.45), 0 0 80px -20px rgba(200,169,106,0.45)',
+        }}
       />
       <span
         aria-hidden
         className="absolute -top-px left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(200,169,106,0.8), transparent)' }}
+        style={{
+          background:
+            'linear-gradient(90deg, transparent, rgba(200,169,106,0.8), transparent)',
+        }}
       />
+
       <div className="relative">
-        <div className="font-serif italic text-sm text-[#C8A96A]/90 mb-6">— {String(index + 1).padStart(2, '0')}</div>
-        <h3 className={'font-serif font-normal tracking-[-0.005em] leading-[1.08] text-[#F6F1E8] ' + (large ? 'text-3xl md:text-[44px]' : 'text-2xl md:text-3xl')}>
+        <div className="font-serif italic text-sm text-[#C8A96A]/90 mb-6">
+          — {String(index + 1).padStart(2, '0')}
+        </div>
+        <h3
+          className={`font-serif font-normal tracking-[-0.005em] leading-[1.08] text-[#F6F1E8] ${
+            large ? 'text-3xl md:text-[44px]' : 'text-2xl md:text-3xl'
+          }`}
+        >
           {title}
         </h3>
       </div>
-      <p className="relative mt-10 text-[14px] leading-[1.72] text-[#F6F1E8]/55 max-w-md">{desc}</p>
+
+      <p className="relative mt-10 text-[14px] leading-[1.72] text-[#F6F1E8]/55 max-w-md">
+        {desc}
+      </p>
     </motion.div>
   );
 }
@@ -692,33 +688,51 @@ function PackageCard({ index, title, lede, items, featured = false, tag }) {
       viewport={{ once: true, margin: '-10% 0px' }}
       transition={{ duration: 1.2, delay: (index - 1) * 0.08, ease: EASE }}
       whileHover={{ y: -6 }}
-      className={'group relative overflow-hidden rounded-2xl p-10 md:p-12 flex flex-col transition-colors duration-700 ' + (
+      className={`group relative overflow-hidden rounded-2xl p-10 md:p-12 flex flex-col transition-colors duration-700 ${
         featured
           ? 'bg-gradient-to-b from-[#1a1612] to-[#0B0B0B] border border-[#C8A96A]/40'
           : 'bg-[#0B0B0B] border border-[#C8A96A]/15 hover:border-[#C8A96A]/45'
-      )}
+      }`}
     >
       {featured && (
         <span
           aria-hidden
           className="absolute inset-0 rounded-2xl pointer-events-none"
-          style={{ boxShadow: '0 0 80px -30px rgba(200,169,106,0.55), inset 0 0 0 1px rgba(200,169,106,0.18)' }}
+          style={{
+            boxShadow:
+              '0 0 80px -30px rgba(200,169,106,0.55), inset 0 0 0 1px rgba(200,169,106,0.18)',
+          }}
         />
       )}
+
       <div className="relative font-serif italic text-sm text-[#C8A96A] mb-8 tracking-[0.04em]">
-        — {String(index).padStart(2, '0')}{tag ? ' · ' + tag : ''}
+        — {String(index).padStart(2, '0')}{tag ? ` · ${tag}` : ''}
       </div>
-      <h3 className="relative font-serif font-normal text-3xl md:text-[40px] leading-[1.08] tracking-[-0.005em] text-[#F6F1E8] mb-5">{title}</h3>
-      <p className="relative text-[14.5px] leading-[1.72] text-[#F6F1E8]/55 mb-8 pb-7 border-b border-[#C8A96A]/15">{lede}</p>
+
+      <h3 className="relative font-serif font-normal text-3xl md:text-[40px] leading-[1.08] tracking-[-0.005em] text-[#F6F1E8] mb-5">
+        {title}
+      </h3>
+
+      <p className="relative text-[14.5px] leading-[1.72] text-[#F6F1E8]/55 mb-8 pb-7 border-b border-[#C8A96A]/15">
+        {lede}
+      </p>
+
       <ul className="relative flex-1 space-y-2.5 mb-10">
         {items.map((it) => (
-          <li key={it} className="relative pl-6 text-[14px] leading-[1.6] text-[#F6F1E8]/70">
+          <li
+            key={it}
+            className="relative pl-6 text-[14px] leading-[1.6] text-[#F6F1E8]/70"
+          >
             <span className="absolute left-0 top-[13px] w-3 h-px bg-[#C8A96A]" />
             {it}
           </li>
         ))}
       </ul>
-      <a href="#anfrage" className="relative inline-flex items-center gap-3 text-[11px] tracking-[0.32em] uppercase text-[#F6F1E8] group-hover:text-[#C8A96A] transition-all duration-500">
+
+      <a
+        href="#anfrage"
+        className="relative inline-flex items-center gap-3 text-[11px] tracking-[0.32em] uppercase text-[#F6F1E8] group-hover:text-[#C8A96A] transition-all duration-500"
+      >
         Anfrage stellen
         <span className="inline-block transition-transform duration-500 group-hover:translate-x-1.5">→</span>
       </a>
@@ -726,8 +740,35 @@ function PackageCard({ index, title, lede, items, featured = false, tag }) {
   );
 }
 
-createRoot(document.getElementById('root')).render(<App />);
-</script>
+/* ------------------------------------------------------------------
+   Required global keyframes — add this once to your global CSS
+   (or inject via <style jsx global> in Next.js):
 
-</body>
-</html>
+   @keyframes mindeaGrain {
+     0%   { transform: translate(0, 0); }
+     20%  { transform: translate(-5%, 3%); }
+     40%  { transform: translate(4%, -2%); }
+     60%  { transform: translate(-3%, 4%); }
+     80%  { transform: translate(2%, -3%); }
+     100% { transform: translate(0, 0); }
+   }
+
+   Recommended Tailwind config additions:
+   theme: {
+     extend: {
+       colors: {
+         mindea: {
+           ink:    '#000000',
+           deep:   '#0B0B0B',
+           cream:  '#F6F1E8',
+           gold:   '#C8A96A',
+           taupe:  '#A68F72',
+         },
+       },
+       fontFamily: {
+         serif: ['"Cormorant Garamond"', 'Times New Roman', 'serif'],
+         sans:  ['Inter', 'ui-sans-serif', 'system-ui'],
+       },
+     },
+   }
+   ------------------------------------------------------------------ */
