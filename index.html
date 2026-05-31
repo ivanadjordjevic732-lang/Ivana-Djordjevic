@@ -26901,4 +26901,139 @@ console.log('✓ MINDÉA Operator-Layer v4.4 geladen (Heute Auto-Load mit Profil
 </script>
 
 </body>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     MINDÉA · LUXURY THEME ENGINE
+     Zwei vollwertige Looks + persistenter Hell/Dunkel-Umschalter.
+     Lädt als letzte Schicht und definiert die Design-Tokens neu —
+     dadurch ziehen auch alle Inline-Styles (var(--bg), var(--tc) …) mit.
+     ════════════════════════════════════════════════════════════════════ -->
+<style id="mc-lux-themes">
+
+/* ─── UMSCHALT-BUTTON ────────────────────────────────────────────────── */
+#lux-toggle{
+  position:fixed; left:14px;
+  bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  z-index:9999; display:flex; align-items:center; gap:7px;
+  padding:9px 15px; border-radius:999px; cursor:pointer;
+  font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; letter-spacing:.3px;
+  border:1px solid var(--mc-gold,#C9A660);
+  background:linear-gradient(135deg, rgba(216,180,104,.22), rgba(216,180,104,.06));
+  color:var(--mc-ink,#1C1611);
+  box-shadow:0 8px 22px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.28);
+  backdrop-filter:blur(14px) saturate(1.5); -webkit-backdrop-filter:blur(14px) saturate(1.5);
+  transition:transform .32s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease, background .3s ease;
+}
+#lux-toggle:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.35); }
+#lux-toggle:active{ transform:scale(.93); }
+#lux-toggle .lux-ic{ font-size:14px; line-height:1; }
+
+/* ═══════════════════════ DUNKLER LUXUS ═══════════════════════════════ */
+body.lux-dark{
+  --mc-bg-base:#13100B; --mc-bg-elevated:#1E1913; --mc-bg-deep:#0B0906; --mc-bg-deep-2:#1A140F;
+  --mc-ink:#F2E8D2; --mc-ink-muted:#C2B393; --mc-ink-soft:#8E7E63;
+  --mc-line:rgba(242,232,210,.12); --mc-line-strong:rgba(242,232,210,.22); --mc-line-hair:rgba(242,232,210,.06);
+  --mc-gold:#D8B468; --mc-gold-deep:#B68F44; --mc-gold-soft:rgba(216,180,104,.15);
+  --mc-shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --mc-shadow-md:0 2px 6px rgba(0,0,0,.4), 0 14px 34px rgba(0,0,0,.5);
+  --mc-shadow-lg:0 8px 24px rgba(0,0,0,.5), 0 30px 60px rgba(0,0,0,.55);
+  --mc-shadow-glow-gold:0 0 0 1px rgba(216,180,104,.35), 0 4px 24px rgba(216,180,104,.22);
+  --mc-edge-lit:inset 0 1px 0 rgba(242,232,210,.06);
+  /* legacy tokens (von Inline-Styles genutzt) */
+  --bg:#13100B; --bc:#1E1913; --bi:#241E16;
+  --bd:rgba(242,232,210,.12); --gbg:rgba(216,180,104,.10); --gba:rgba(216,180,104,.20);
+  --tc:#F2E8D2; --ts:#C2B393; --tm:#8E7E63;
+  --g:#D8B468; --gl:#B68F44; --b:#6FA0BC; --p:#9A86C4;
+  --gg:linear-gradient(135deg,#D8B468 0%,#A8813F 100%);
+  --sh:0 1px 2px rgba(0,0,0,.4); --sm:0 2px 8px rgba(0,0,0,.45);
+  --green:#4FB58A; --red:#E0743A;
+  /* mögliche cream-2 Variablen der älteren Schicht überschreiben */
+  --cream:#13100B; --cream-2:#13100B; --ink:#F2E8D2; --gold:#D8B468; --gold-deep:#B68F44;
+  background:radial-gradient(ellipse 90% 55% at 50% -8%, rgba(216,180,104,.12), transparent 60%), #13100B !important;
+  color:#F2E8D2 !important;
+}
+body.lux-dark::before{ mix-blend-mode:screen; opacity:.05; }
+#lux-toggle{ /* dark default look */ }
+body.lux-dark #lux-toggle{ color:#F2E8D2; }
+@media(min-width:768px){
+  body.lux-dark{ background:radial-gradient(ellipse 80% 50% at 50% -6%, rgba(216,180,104,.10), transparent 60%), #0E0B07 !important; }
+  body.lux-dark #sidebar{ background:#0E0B07 !important; border-right:1px solid rgba(242,232,210,.10) !important; }
+  body.lux-dark #main-panel{ background:#13100B !important; border-left:1px solid rgba(242,232,210,.06) !important; }
+}
+body.lux-dark #app-header, body.lux-dark #detail-header{
+  background:rgba(19,16,11,.82) !important; border-bottom:1px solid rgba(242,232,210,.10) !important; }
+body.lux-dark .chat-msgs, body.lux-dark .chat-input-wrap{ background:#1E1913 !important; }
+body.lux-dark .field-input, body.lux-dark .chat-input-row,
+body.lux-dark textarea, body.lux-dark input, body.lux-dark select{
+  background:#241E16 !important; color:#F2E8D2 !important; }
+body.lux-dark .msg-wrap.ai .msg-bubble{ background:#241E16 !important; }
+
+/* ═══════════════════════ HELLER EDITORIAL-LUXUS ══════════════════════ */
+body.lux-light{
+  --mc-bg-base:#F3EAD6; --mc-bg-elevated:#FCF8EE; --mc-bg-deep:#1C1611; --mc-bg-deep-2:#2A1F18;
+  --mc-ink:#241B10; --mc-ink-muted:#6B5A45; --mc-ink-soft:#9C8A70;
+  --mc-line:rgba(28,22,17,.10); --mc-line-strong:rgba(28,22,17,.18); --mc-line-hair:rgba(28,22,17,.05);
+  --mc-gold:#C49A4E; --mc-gold-deep:#A37E37; --mc-gold-soft:rgba(196,154,78,.12);
+  --mc-shadow-sm:0 1px 2px rgba(28,22,17,.05), 0 1px 3px rgba(28,22,17,.05);
+  --mc-shadow-md:0 2px 6px rgba(28,22,17,.06), 0 12px 26px rgba(28,22,17,.08);
+  --mc-shadow-lg:0 6px 14px rgba(28,22,17,.07), 0 26px 52px rgba(28,22,17,.12);
+  --mc-shadow-glow-gold:0 0 0 1px rgba(196,154,78,.30), 0 4px 22px rgba(196,154,78,.18);
+  --mc-edge-lit:inset 0 1px 0 rgba(255,255,255,.6);
+  --bg:#F3EAD6; --bc:#FCF8EE; --bi:#FFFEF9;
+  --bd:rgba(28,22,17,.10); --gbg:rgba(196,154,78,.08); --gba:rgba(196,154,78,.18);
+  --tc:#241B10; --ts:#6B5A45; --tm:#9C8A70;
+  --g:#C49A4E; --gl:#A37E37; --b:#4A6E82; --p:#6B5A8E;
+  --gg:linear-gradient(135deg,#C49A4E 0%,#9E7A35 100%);
+  --sh:0 1px 2px rgba(28,22,17,.05); --sm:0 2px 8px rgba(28,22,17,.07);
+  --green:#2E7D5E; --red:#B8490A;
+  --cream:#F3EAD6; --cream-2:#EBDFC4; --ink:#241B10; --gold:#C49A4E; --gold-deep:#A37E37;
+  background:radial-gradient(ellipse 90% 55% at 50% -8%, rgba(196,154,78,.10), transparent 60%), #F3EAD6 !important;
+  color:#241B10 !important;
+}
+@media(min-width:768px){
+  body.lux-light{ background:radial-gradient(ellipse 80% 50% at 50% -6%, rgba(196,154,78,.09), transparent 60%), #EBDFC4 !important; }
+  body.lux-light #sidebar{ background:#EBDFC4 !important; }
+  body.lux-light #main-panel{ background:#F3EAD6 !important; }
+}
+
+/* ─── EDITORIAL-UPGRADE (beide Themes, sichtbar im Ruhezustand) ──────── */
+.hdr-title{ letter-spacing:3.4px !important; }
+.hero-motiv p{ font-family:'Cormorant Garamond',serif !important; font-size:17px !important; line-height:1.5 !important; }
+.section-title{ letter-spacing:2.8px !important; }
+.stat-val, .rev-amount, .clock-val{ font-feature-settings:'tnum' 1; }
+
+</style>
+
+<button id="lux-toggle" onclick="mcToggleLux()" aria-label="Hell-/Dunkel-Modus umschalten" title="Hell / Dunkel">
+  <span class="lux-ic">🌙</span><span class="lux-lbl">Dunkel</span>
+</button>
+
+<script>
+(function(){
+  function apply(mode){
+    var b=document.body; if(!b) return;
+    b.classList.remove('lux-dark','lux-light');
+    b.classList.add(mode==='light'?'lux-light':'lux-dark');
+    var btn=document.getElementById('lux-toggle');
+    if(btn){
+      var ic=btn.querySelector('.lux-ic'), lb=btn.querySelector('.lux-lbl');
+      if(mode==='light'){ if(ic)ic.textContent='☀️'; if(lb)lb.textContent='Hell'; }
+      else{ if(ic)ic.textContent='🌙'; if(lb)lb.textContent='Dunkel'; }
+    }
+    try{ localStorage.setItem('mc-lux-mode', mode); }catch(e){}
+  }
+  window.mcToggleLux=function(){
+    var cur=document.body.classList.contains('lux-light')?'light':'dark';
+    apply(cur==='light'?'dark':'light');
+  };
+  function init(){
+    var saved='dark';
+    try{ saved=localStorage.getItem('mc-lux-mode')||'dark'; }catch(e){}
+    apply(saved);
+  }
+  if(document.body) init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
 </html>
