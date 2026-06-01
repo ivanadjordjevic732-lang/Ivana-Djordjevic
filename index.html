@@ -2028,7 +2028,7 @@ body[data-theme="tabular"] { --mc-bg-base: #ECE0C2; --mc-bg-elevated: #F6ECCF; }
 
 /* ─── DEIN FOKUS · Drei Aufgaben heute, Schritt für Schritt ──────────── */
 .mc-fokus {
-  background: linear-gradient(180deg, #faf6ec 0%, #f4ecd8 100%);
+  background: linear-gradient(180deg, var(--mc-bg-elevated) 0%, color-mix(in srgb, var(--mc-gold) 5%, var(--mc-bg-elevated)) 100%);
   border-radius: 20px;
   padding: 22px 22px 18px;
   margin-top: 14px;
@@ -26947,11 +26947,13 @@ body.lux-dark{
   --gg:linear-gradient(135deg,#D8B468 0%,#A8813F 100%);
   --sh:0 1px 2px rgba(0,0,0,.4); --sm:0 2px 8px rgba(0,0,0,.45);
   --green:#4FB58A; --red:#E0743A;
-  /* mögliche cream-2 Variablen der älteren Schicht überschreiben */
-  --cream:#13100B; --cream-2:#13100B; --ink:#F2E8D2; --gold:#D8B468; --gold-deep:#B68F44;
+  /* Ältere Schicht: --ink/--cream sind OBERFLÄCHEN-Farben (nicht Text!).
+     Im Dunkelmodus dunkel halten, sonst werden Karten hell. */
+  --cream:#13100B; --cream-2:#0E0B07; --ink:#1E1913; --ink-2:#241E16; --gold:#D8B468; --gold-deep:#B68F44;
   background:radial-gradient(ellipse 90% 55% at 50% -8%, rgba(216,180,104,.12), transparent 60%), #13100B !important;
   color:#F2E8D2 !important;
 }
+html:has(body.lux-dark){ background:#0E0B07 !important; }
 body.lux-dark::before{ mix-blend-mode:screen; opacity:.05; }
 #lux-toggle{ /* dark default look */ }
 body.lux-dark #lux-toggle{ color:#F2E8D2; }
@@ -26990,6 +26992,7 @@ body.lux-light{
   background:radial-gradient(ellipse 90% 55% at 50% -8%, rgba(196,154,78,.10), transparent 60%), #F3EAD6 !important;
   color:#241B10 !important;
 }
+html:has(body.lux-light){ background:#EBDFC4 !important; }
 @media(min-width:768px){
   body.lux-light{ background:radial-gradient(ellipse 80% 50% at 50% -6%, rgba(196,154,78,.09), transparent 60%), #EBDFC4 !important; }
   body.lux-light #sidebar{ background:#EBDFC4 !important; }
