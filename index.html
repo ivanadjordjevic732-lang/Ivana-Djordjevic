@@ -26995,8 +26995,17 @@ body.lux-light{
 html:has(body.lux-light){ background:#EBDFC4 !important; }
 @media(min-width:768px){
   body.lux-light{ background:radial-gradient(ellipse 80% 50% at 50% -6%, rgba(196,154,78,.09), transparent 60%), #EBDFC4 !important; }
-  body.lux-light #sidebar{ background:#EBDFC4 !important; }
+  /* Sidebar bleibt dunkel (Boutique-Look: dunkle Navigation, helle Buehne).
+     Loest das Hell-Modus-Problem, bei dem cremefarbene Schrift auf hellem
+     Grund unsichtbar war (alte !important-Regeln erzwingen helle Schrift). */
+  body.lux-light #sidebar{ background:#1E1913 !important; border-right:1px solid rgba(242,232,210,.10) !important; }
   body.lux-light #main-panel{ background:#F3EAD6 !important; }
+}
+/* Mobiler Drawer im Hell-Modus: ebenfalls dunkel + helle, lesbare Schrift */
+@media(max-width:767px){
+  body.lux-light.sidebar-open #sidebar{ background:#1E1913 !important; }
+  body.lux-light.sidebar-open #sidebar .sb-item{ color:rgba(242,230,204,.82) !important; }
+  body.lux-light.sidebar-open #sidebar .sb-item.active{ color:#E9D5A6 !important; }
 }
 
 /* ─── EDITORIAL-UPGRADE (beide Themes, sichtbar im Ruhezustand) ──────── */
@@ -27139,6 +27148,104 @@ body.lux-dark .gbtn:hover{ box-shadow:0 10px 32px rgba(216,180,104,.34), inset 0
   }
   if(document.body) init();
   else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   VERSCHIEBBARE BUTTONS · Co-Pilot (🤝) und Hell/Dunkel-Umschalter
+   Ziehen zum Verschieben (Maus + Touch). Position wird pro Button
+   gespeichert. Ein Klick bleibt ein Klick (Drag erst ab Bewegung).
+   ════════════════════════════════════════════════════════════════════ */
+(function(){
+  var THRESH = 6; // px Bewegung, ab der es als Ziehen gilt
+
+  function makeDraggable(el, key){
+    if(!el || el.dataset.mcDraggable) return;
+    el.dataset.mcDraggable = '1';
+    el.style.touchAction = 'none';
+    el.style.cursor = 'grab';
+
+    // gespeicherte Position wiederherstellen
+    try{
+      var saved = JSON.parse(localStorage.getItem(key) || 'null');
+      if(saved && typeof saved.x==='number'){
+        place(el, saved.x, saved.y);
+      }
+    }catch(e){}
+
+    var startX, startY, originLeft, originTop, dragging=false, moved=false;
+
+    function onDown(e){
+      var pt = e.touches ? e.touches[0] : e;
+      var r = el.getBoundingClientRect();
+      originLeft = r.left; originTop = r.top;
+      startX = pt.clientX; startY = pt.clientY;
+      dragging = true; moved = false;
+      el.style.cursor = 'grabbing';
+      el.style.transition = 'none';
+      document.addEventListener('mousemove', onMove, {passive:false});
+      document.addEventListener('touchmove', onMove, {passive:false});
+      document.addEventListener('mouseup', onUp);
+      document.addEventListener('touchend', onUp);
+    }
+    function onMove(e){
+      if(!dragging) return;
+      var pt = e.touches ? e.touches[0] : e;
+      var dx = pt.clientX - startX, dy = pt.clientY - startY;
+      if(!moved && Math.hypot(dx,dy) < THRESH) return;
+      moved = true;
+      if(e.cancelable) e.preventDefault();
+      place(el, originLeft + dx, originTop + dy);
+    }
+    function onUp(e){
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchend', onUp);
+      el.style.cursor = 'grab';
+      el.style.transition = '';
+      if(moved){
+        // diesen Klick unterdrücken (es war ein Ziehen)
+        var r = el.getBoundingClientRect();
+        try{ localStorage.setItem(key, JSON.stringify({x:r.left, y:r.top})); }catch(_){}
+        var kill = function(ev){ ev.stopPropagation(); ev.preventDefault(); el.removeEventListener('click', kill, true); };
+        el.addEventListener('click', kill, true);
+        setTimeout(function(){ el.removeEventListener('click', kill, true); }, 50);
+      }
+      dragging = false;
+    }
+    el.addEventListener('mousedown', onDown);
+    el.addEventListener('touchstart', onDown, {passive:true});
+  }
+
+  function place(el, x, y){
+    var w = el.offsetWidth, h = el.offsetHeight;
+    var maxX = window.innerWidth - w - 4, maxY = window.innerHeight - h - 4;
+    x = Math.max(4, Math.min(x, maxX));
+    y = Math.max(4, Math.min(y, maxY));
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+    el.style.position = 'fixed';
+  }
+
+  function wire(){
+    makeDraggable(document.getElementById('lux-toggle'), 'mc-pos-lux');
+    makeDraggable(document.getElementById('copilot-fab'), 'mc-pos-copilot');
+  }
+  // Erst-Verkabelung + Nachzügler (Co-Pilot-FAB wird per JS erzeugt)
+  function loop(n){ wire(); if(n>0) setTimeout(function(){loop(n-1);}, 400); }
+  if(document.body) loop(8); else document.addEventListener('DOMContentLoaded', function(){loop(8);});
+
+  // bei Größenänderung in den sichtbaren Bereich zurückholen
+  window.addEventListener('resize', function(){
+    ['lux-toggle','copilot-fab'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el && el.dataset.mcDraggable){ var r=el.getBoundingClientRect(); place(el, r.left, r.top); }
+    });
+  });
 })();
 </script>
 
