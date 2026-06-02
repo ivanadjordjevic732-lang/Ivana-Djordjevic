@@ -29,6 +29,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 
+<!-- Three.js (ES module) via importmap + GSAP for scroll-driven 3D camera -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
 <!-- JSON-LD Schema for SEO -->
 <script type="application/ld+json">
 {
@@ -1093,6 +1104,12 @@ input, textarea, select { font:inherit; color:inherit; background:none; border:n
     radial-gradient(ellipse at center, #0a0a14 0%, #000 75%);
   perspective:1600px;
 }
+.cinematic-canvas {
+  position:absolute; inset:0; z-index:2;
+  width:100%; height:100%; pointer-events:none;
+  opacity:0; transition:opacity 1.8s var(--ease);
+}
+.cinematic-canvas.ready { opacity:1; }
 .cinematic-stars { position:absolute; inset:0; z-index:1; pointer-events:none; }
 .cinematic-stars span {
   position:absolute; width:2px; height:2px;
@@ -1479,6 +1496,7 @@ input, textarea, select { font:inherit; color:inherit; background:none; border:n
 <section class="cinematic" id="showcase">
   <div class="cinematic-stars" id="cinematicStars" aria-hidden="true"></div>
   <div class="cinematic-particles" id="cinematicParticles" aria-hidden="true"></div>
+  <canvas class="cinematic-canvas" id="cinematicCanvas" aria-hidden="true"></canvas>
 
   <div class="cinematic-head">
     <div class="eyebrow reveal">Cinematic Showcase</div>
@@ -2322,6 +2340,176 @@ input, textarea, select { font:inherit; color:inherit; background:none; border:n
     banner.classList.remove('show');
   });
 })();
+</script>
+
+<!-- ============================================================
+     CINEMATIC SHOWCASE — Three.js WebGL scene with GSAP ScrollTrigger
+     Real GPU-rendered 3D: torus knot, icosahedron wireframe, octahedron,
+     particle field, mouse parallax, scroll-driven camera + rotation.
+     Lazy-init via IntersectionObserver. Respects prefers-reduced-motion.
+     ============================================================ -->
+<script type="module">
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canvas = document.getElementById('cinematicCanvas');
+const showcase = document.getElementById('showcase');
+
+if (!reduced && canvas && showcase) {
+  let started = false;
+  const start = () => {
+    if (started) return;
+    started = true;
+    init().catch(err => console.warn('[Mindéa 3D] init failed:', err));
+  };
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { io.disconnect(); start(); }
+    }, { rootMargin: '400px 0px' });
+    io.observe(showcase);
+  } else {
+    start();
+  }
+
+  async function init() {
+    const THREE = await import('three');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+    camera.position.set(0, 0, 9);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const resize = () => {
+      const r = showcase.getBoundingClientRect();
+      const w = Math.max(1, r.width);
+      const h = Math.max(1, r.height);
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    // Lighting — cinematic gold key + violet rim
+    scene.add(new THREE.AmbientLight(0xffffff, 0.28));
+    const key = new THREE.DirectionalLight(0xC8A96A, 1.7);
+    key.position.set(5, 4, 6);
+    scene.add(key);
+    const rim = new THREE.PointLight(0x7858c8, 1.4, 22);
+    rim.position.set(-5, -2, 3);
+    scene.add(rim);
+    const fill = new THREE.PointLight(0xF6F1E8, 0.5, 18);
+    fill.position.set(0, 3, 5);
+    scene.add(fill);
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // — Torus knot (gold metallic)
+    const torus = new THREE.Mesh(
+      new THREE.TorusKnotGeometry(0.95, 0.3, 160, 20),
+      new THREE.MeshStandardMaterial({
+        color: 0xC8A96A, metalness: 0.92, roughness: 0.18,
+        transparent: true, opacity: 0.92
+      })
+    );
+    torus.position.set(-2.6, 0.4, -0.4);
+    group.add(torus);
+
+    // — Icosahedron wireframe
+    const ico = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(1.25, 0)),
+      new THREE.LineBasicMaterial({ color: 0xC8A96A, transparent: true, opacity: 0.55 })
+    );
+    ico.position.set(2.5, -0.2, 0.8);
+    group.add(ico);
+
+    // — Octahedron (frosted gold)
+    const oct = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.78, 0),
+      new THREE.MeshStandardMaterial({
+        color: 0xF6F1E8, metalness: 0.4, roughness: 0.35,
+        transparent: true, opacity: 0.42, flatShading: true
+      })
+    );
+    oct.position.set(0.1, -0.8, 1.6);
+    group.add(oct);
+
+    // — Particle field
+    const partCount = 1400;
+    const positions = new Float32Array(partCount * 3);
+    for (let i = 0; i < partCount; i++) {
+      positions[i*3]     = (Math.random() - 0.5) * 26;
+      positions[i*3 + 1] = (Math.random() - 0.5) * 16;
+      positions[i*3 + 2] = (Math.random() - 0.5) * 20 - 4;
+    }
+    const partGeo = new THREE.BufferGeometry();
+    partGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particles = new THREE.Points(
+      partGeo,
+      new THREE.PointsMaterial({
+        color: 0xC8A96A, size: 0.028,
+        transparent: true, opacity: 0.7,
+        sizeAttenuation: true, depthWrite: false
+      })
+    );
+    scene.add(particles);
+
+    // — Mouse parallax
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+    window.addEventListener('mousemove', (e) => {
+      mouse.tx = (e.clientX / innerWidth - 0.5) * 2;
+      mouse.ty = (e.clientY / innerHeight - 0.5) * 2;
+    }, { passive: true });
+
+    // — GSAP ScrollTrigger choreography
+    if (window.gsap && window.ScrollTrigger) {
+      gsap.registerPlugin(ScrollTrigger);
+      const st = { trigger: showcase, start: 'top bottom', end: 'bottom top', scrub: 1.4 };
+      gsap.to(group.rotation, { y: Math.PI * 0.9, x: Math.PI * 0.18, scrollTrigger: st });
+      gsap.fromTo(camera.position,
+        { z: 11 },
+        { z: 6.5, scrollTrigger: { ...st, scrub: 1.8 } }
+      );
+      gsap.to(particles.rotation, { y: Math.PI * 0.5, scrollTrigger: { ...st, scrub: 2.2 } });
+      gsap.to(torus.material, { opacity: 1, scrollTrigger: { ...st, scrub: 1 } });
+    }
+
+    // — Render loop, paused when section is off-screen
+    let visible = true;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+      }, { rootMargin: '200px 0px' }).observe(showcase);
+    }
+
+    const clock = new THREE.Clock();
+    const tick = () => {
+      requestAnimationFrame(tick);
+      if (!visible) return;
+      const t = clock.getElapsedTime();
+
+      mouse.x += (mouse.tx - mouse.x) * 0.05;
+      mouse.y += (mouse.ty - mouse.y) * 0.05;
+      camera.position.x = mouse.x * 0.7;
+      camera.position.y = -mouse.y * 0.5;
+      camera.lookAt(0, 0, 0);
+
+      torus.rotation.x = t * 0.22;
+      torus.rotation.y = t * 0.16;
+      ico.rotation.x = -t * 0.18;
+      ico.rotation.y = t * 0.24;
+      oct.rotation.y = t * 0.28;
+      oct.rotation.z = Math.sin(t * 0.4) * 0.3;
+
+      renderer.render(scene, camera);
+    };
+    tick();
+    requestAnimationFrame(() => canvas.classList.add('ready'));
+  }
+}
 </script>
 
 </body>
