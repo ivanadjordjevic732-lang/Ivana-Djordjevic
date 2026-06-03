@@ -13,24 +13,23 @@
     font-family:'DM Sans',system-ui,sans-serif; color:var(--ink);
     background-color:#f1e4cf;
     background-image:
-      radial-gradient(60% 50% at 50% 12%, rgba(216,184,120,.35) 0%, rgba(216,184,120,0) 60%),
+      radial-gradient(60% 50% at 50% 12%, rgba(216,184,120,.30) 0%, rgba(216,184,120,0) 60%),
       radial-gradient(45% 45% at 82% 30%, rgba(247,239,226,.9) 0%, rgba(247,239,226,0) 55%),
       radial-gradient(55% 55% at 15% 70%, rgba(253,250,245,.85) 0%, rgba(253,250,245,0) 55%),
       linear-gradient(180deg,#f7efe2 0%, #f1e4cf 55%, #ecdfca 100%);
     background-attachment:fixed; -webkit-font-smoothing:antialiased;
   }
-  /* Fixed full-page canvas behind the content */
   #c { position:fixed; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; }
   .content { position:relative; z-index:2; }
 
   .hero { height:100svh; min-height:640px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; padding:0 24px; }
-  .wordmark { margin-top:30vh; font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(56px,12vw,128px); letter-spacing:.18em; line-height:1;
+  .wordmark { margin-top:46vh; font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(52px,11vw,120px); letter-spacing:.18em; line-height:1;
     opacity:0; transform:translateY(18px); animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .1s forwards; }
   .wordmark .acc { color:var(--gold); }
-  .sub { display:flex; align-items:center; gap:16px; margin-top:18px; opacity:0; transform:translateY(18px); animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .35s forwards; }
+  .sub { display:flex; align-items:center; gap:16px; margin-top:16px; opacity:0; transform:translateY(18px); animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .35s forwards; }
   .sub span.line { width:40px; height:1px; background:rgba(184,144,74,.5); }
   .sub span.txt { font-size:.7rem; font-weight:500; text-transform:uppercase; letter-spacing:.32em; color:var(--muted); }
-  .lead { margin-top:32px; max-width:30rem; font-weight:300; font-size:clamp(15px,2.2vw,18px); line-height:1.7; color:rgba(44,31,14,.7);
+  .lead { margin-top:28px; max-width:30rem; font-weight:300; font-size:clamp(15px,2.2vw,18px); line-height:1.7; color:rgba(44,31,14,.7);
     opacity:0; transform:translateY(18px); animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .6s forwards; }
   .cue { position:absolute; bottom:32px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px;
     opacity:0; animation:fadeUp 1s ease .9s forwards; }
@@ -130,82 +129,204 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, p
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.12;
+renderer.toneMappingExposure = 1.0;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(34, window.innerWidth/window.innerHeight, 0.1, 100);
 camera.position.set(0, 0, 6);
 
-// In-memory studio environment → metallic gold reflections, no HDR fetch.
+// Soft studio reflections for the gold (in-memory, no HDR fetch)
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-// Warm, soft lighting
-scene.add(new THREE.AmbientLight(0xfff4e0, 0.65));
-const key = new THREE.DirectionalLight(0xfff1d6, 1.5); key.position.set(2.5,4,3); scene.add(key);
-const fill = new THREE.DirectionalLight(0xffd9a0, 0.5); fill.position.set(-3,1,2); scene.add(fill);
-const rim = new THREE.PointLight(0xffe9c2, 0.4); rim.position.set(0,-2,3); scene.add(rim);
+scene.add(new THREE.AmbientLight(0xfff4e0, 0.7));
+const key = new THREE.DirectionalLight(0xfff1d6, 1.3); key.position.set(2.5,4,3); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffd9a0, 0.45); fill.position.set(-3,1,2); scene.add(fill);
 
-// ── Butterfly wing silhouette (bézier), mirrored from the Mindéa logo ──
-function wingShape(){
-  const s = new THREE.Shape();
-  s.moveTo(0.06, 0.92);
-  s.bezierCurveTo(0.72, 1.62, 1.78, 1.5, 1.74, 0.58);
-  s.bezierCurveTo(1.72, 0.22, 1.42, 0.05, 0.92, 0.04);
-  s.bezierCurveTo(1.18, -0.12, 1.46, -0.5, 1.34, -1.02);
-  s.bezierCurveTo(1.18, -1.5, 0.6, -1.56, 0.32, -1.12);
-  s.bezierCurveTo(0.2, -0.92, 0.12, -0.62, 0.16, -0.18);
-  s.bezierCurveTo(0.08, 0.1, 0.05, 0.5, 0.06, 0.92);
-  return s;
+/* ───────────────────────────────────────────────────────────────────────────
+   The butterfly is painted to canvas textures (gold gradient + veins + soft
+   edges) so it reads like the Mindéa logo, then mapped onto thin planes:
+   two flapping wing halves + a static body. Far more logo-faithful than bare
+   extruded gold.
+   ─────────────────────────────────────────────────────────────────────────── */
+const TEX = 1024;
+
+function makeWingTexture() {
+  const cv = document.createElement('canvas'); cv.width = cv.height = TEX;
+  const g = cv.getContext('2d');
+  const cx = TEX/2, cy = TEX/2;
+
+  function wing(side) {
+    g.save();
+    g.translate(cx, cy);
+    g.scale(side, 1);
+
+    // ── Forewing (upper) ──
+    g.beginPath();
+    g.moveTo(14, -96);
+    g.bezierCurveTo(70, -250, 240, -300, 322, -198);
+    g.bezierCurveTo(356, -150, 350, -70, 284, -34);
+    g.bezierCurveTo(214, -6, 110, -4, 58, -30);
+    g.bezierCurveTo(30, -46, 18, -66, 14, -96);
+    g.closePath();
+    let f = g.createLinearGradient(20, -110, 330, -40);
+    f.addColorStop(0.0, '#f3da93');
+    f.addColorStop(0.5, '#ca9c3f');
+    f.addColorStop(1.0, '#90691f');
+    g.fillStyle = f; g.fill();
+    g.lineWidth = 3; g.strokeStyle = 'rgba(78,52,16,0.55)'; g.stroke();
+
+    // ── Hindwing (lower) ──
+    g.beginPath();
+    g.moveTo(34, -6);
+    g.bezierCurveTo(168, -6, 286, 70, 248, 186);
+    g.bezierCurveTo(224, 262, 150, 286, 96, 250);
+    g.bezierCurveTo(60, 224, 40, 138, 34, -6);
+    g.closePath();
+    let h = g.createLinearGradient(34, 0, 250, 250);
+    h.addColorStop(0.0, '#eccb78');
+    h.addColorStop(0.55, '#bf9438');
+    h.addColorStop(1.0, '#87631d');
+    g.fillStyle = h; g.fill();
+    g.lineWidth = 3; g.strokeStyle = 'rgba(78,52,16,0.55)'; g.stroke();
+
+    // ── Veins fanning from the body ──
+    g.lineWidth = 2.4; g.strokeStyle = 'rgba(96,64,22,0.38)';
+    const tips = [[300,-205],[345,-120],[270,-40],[245,180],[150,278],[88,244]];
+    tips.forEach(([tx,ty]) => {
+      g.beginPath(); g.moveTo(26, -12);
+      g.quadraticCurveTo(tx*0.5, ty*0.5 - 14, tx, ty);
+      g.stroke();
+    });
+
+    // ── Soft inner highlight near the body ──
+    let hi = g.createRadialGradient(40, -40, 4, 40, -40, 150);
+    hi.addColorStop(0, 'rgba(255,245,210,0.45)');
+    hi.addColorStop(1, 'rgba(255,245,210,0)');
+    g.fillStyle = hi;
+    g.beginPath(); g.arc(40, -40, 150, 0, Math.PI*2); g.fill();
+
+    g.restore();
+  }
+  wing(1); wing(-1);
+
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
 }
-const depth = 0.05;
-const wingGeo = new THREE.ExtrudeGeometry(wingShape(), { depth, bevelEnabled:true, bevelThickness:0.04, bevelSize:0.04, bevelSegments:4, curveSegments:48 });
-wingGeo.translate(0, 0, -depth/2);
-wingGeo.computeVertexNormals();
 
-const gold = new THREE.MeshStandardMaterial({ color:0xc9a13f, metalness:0.95, roughness:0.28, emissive:0x5a4012, emissiveIntensity:0.32, envMapIntensity:1.15, side:THREE.DoubleSide });
-const bodyMat = new THREE.MeshStandardMaterial({ color:0x8b6432, metalness:0.9, roughness:0.38, emissive:0x3a2a0e, emissiveIntensity:0.3, envMapIntensity:1.0 });
+function makeBodyTexture() {
+  const cv = document.createElement('canvas'); cv.width = cv.height = TEX;
+  const g = cv.getContext('2d');
+  const cx = TEX/2, cy = TEX/2;
 
-const root = new THREE.Group(); root.scale.setScalar(0.62); scene.add(root);
+  // Body: slim, tapered, with a cylindrical sheen
+  const bodyTop = cy - 150, bodyBot = cy + 250, w = 15;
+  let bg = g.createLinearGradient(cx - w, 0, cx + w, 0);
+  bg.addColorStop(0.0, '#6a4c1d');
+  bg.addColorStop(0.5, '#d4ab55');
+  bg.addColorStop(1.0, '#6a4c1d');
+  g.fillStyle = bg;
+  g.beginPath();
+  g.moveTo(cx, bodyTop);
+  g.bezierCurveTo(cx + w, bodyTop + 40, cx + w, bodyBot - 70, cx, bodyBot);
+  g.bezierCurveTo(cx - w, bodyBot - 70, cx - w, bodyTop + 40, cx, bodyTop);
+  g.closePath(); g.fill();
 
-const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 1.5, 8, 18), bodyMat); root.add(body);
-function antenna(mirror){
-  const d = mirror ? -1 : 1;
-  const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(d*0.04,0.82,0), new THREE.Vector3(d*0.32,1.18,0.04), new THREE.Vector3(d*0.46,1.4,0.02));
-  return new THREE.Mesh(new THREE.TubeGeometry(curve,16,0.012,6,false), bodyMat);
+  // Head
+  g.beginPath(); g.fillStyle = '#7a5a26';
+  g.ellipse(cx, bodyTop - 6, 13, 16, 0, 0, Math.PI*2); g.fill();
+
+  // Antennae with club tips
+  g.lineWidth = 4; g.strokeStyle = 'rgba(70,48,18,0.9)'; g.lineCap = 'round';
+  [-1, 1].forEach(s => {
+    g.beginPath();
+    g.moveTo(cx + s*4, bodyTop - 14);
+    g.quadraticCurveTo(cx + s*70, bodyTop - 120, cx + s*96, bodyTop - 188);
+    g.stroke();
+    g.beginPath(); g.fillStyle = '#5e3f15';
+    g.ellipse(cx + s*96, bodyTop - 188, 7, 9, 0, 0, Math.PI*2); g.fill();
+  });
+
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
 }
-root.add(antenna(false)); root.add(antenna(true));
 
-const rightWing = new THREE.Group(); rightWing.add(new THREE.Mesh(wingGeo, gold)); root.add(rightWing);
-const leftWing = new THREE.Group(); leftWing.scale.x = -1; leftWing.add(new THREE.Mesh(wingGeo, gold)); root.add(leftWing);
+const wingTexBase = makeWingTexture();
+const bodyTex = makeBodyTexture();
 
-// ── GPU golden light-dust trail ──
+// Two halves of the same wing texture, for left/right flapping planes
+const texL = wingTexBase.clone(); texL.needsUpdate = true;
+texL.wrapS = THREE.ClampToEdgeWrapping; texL.repeat.set(0.5, 1); texL.offset.set(0, 0);
+const texR = wingTexBase.clone(); texR.needsUpdate = true;
+texR.wrapS = THREE.ClampToEdgeWrapping; texR.repeat.set(0.5, 1); texR.offset.set(0.5, 0);
+
+function wingMaterial(map) {
+  return new THREE.MeshStandardMaterial({
+    map, transparent: true, alphaTest: 0.18, side: THREE.DoubleSide,
+    metalness: 0.55, roughness: 0.42, envMapIntensity: 1.0,
+    emissive: 0xffffff, emissiveMap: map, emissiveIntensity: 0.1,
+  });
+}
+
+const WP = 2.3;             // overall wing-plane span (world units)
+const root = new THREE.Group();
+root.scale.setScalar(0.62);
+scene.add(root);
+
+// Right wing half
+const rightWing = new THREE.Group();
+const rGeo = new THREE.PlaneGeometry(WP/2, WP); rGeo.translate(WP/4, 0, 0);
+rightWing.add(new THREE.Mesh(rGeo, wingMaterial(texR)));
+root.add(rightWing);
+
+// Left wing half
+const leftWing = new THREE.Group();
+const lGeo = new THREE.PlaneGeometry(WP/2, WP); lGeo.translate(-WP/4, 0, 0);
+leftWing.add(new THREE.Mesh(lGeo, wingMaterial(texL)));
+root.add(leftWing);
+
+// Static body slightly in front so wings flap behind it
+const bodyMesh = new THREE.Mesh(
+  new THREE.PlaneGeometry(WP, WP),
+  new THREE.MeshStandardMaterial({
+    map: bodyTex, transparent: true, alphaTest: 0.2, side: THREE.DoubleSide,
+    metalness: 0.6, roughness: 0.4, envMapIntensity: 1.0,
+  })
+);
+bodyMesh.position.z = 0.03;
+root.add(bodyMesh);
+
+/* ── Subtle golden light-dust trail (tuned to shimmer, never blow out) ── */
 const isMobile = window.matchMedia('(max-width:768px)').matches;
-const COUNT = isMobile ? 220 : 480;
-const LIFESPAN = 1.7;
+const COUNT = isMobile ? 160 : 340;
+const LIFESPAN = 1.6;
 const positions = new Float32Array(COUNT*3);
 const aLife = new Float32Array(COUNT);
 const aSize = new Float32Array(COUNT);
 const vels = new Float32Array(COUNT*3);
-for(let i=0;i<COUNT;i++){ positions[i*3+1] = -9999; aSize[i] = 9 + Math.random()*16; }
+for (let i=0;i<COUNT;i++){ positions[i*3+1] = -9999; aSize[i] = 5 + Math.random()*10; }
 const pGeo = new THREE.BufferGeometry();
 pGeo.setAttribute('position', new THREE.BufferAttribute(positions,3));
 pGeo.setAttribute('aLife', new THREE.BufferAttribute(aLife,1));
 pGeo.setAttribute('aSize', new THREE.BufferAttribute(aSize,1));
 const pMat = new THREE.ShaderMaterial({
   transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
-  uniforms:{ uColorWarm:{value:new THREE.Color(0xf2d493)}, uColorDeep:{value:new THREE.Color(0xc9962f)} },
+  uniforms:{ uColorWarm:{value:new THREE.Color(0xf0d28e)}, uColorDeep:{value:new THREE.Color(0xc4922c)} },
   vertexShader:`attribute float aLife; attribute float aSize; varying float vLife;
-    void main(){ vLife=aLife; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_PointSize=aSize*aLife*(300.0/-mv.z); gl_Position=projectionMatrix*mv; }`,
+    void main(){ vLife=aLife; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_PointSize=aSize*aLife*(200.0/-mv.z); gl_Position=projectionMatrix*mv; }`,
   fragmentShader:`varying float vLife; uniform vec3 uColorWarm; uniform vec3 uColorDeep;
     void main(){ vec2 c=gl_PointCoord-0.5; float d=length(c); if(d>0.5) discard; float core=smoothstep(0.5,0.0,d);
-    vec3 col=mix(uColorDeep,uColorWarm,core); gl_FragColor=vec4(col, core*vLife); }`
+    vec3 col=mix(uColorDeep,uColorWarm,core); gl_FragColor=vec4(col, core*vLife*0.5); }`
 });
 const points = new THREE.Points(pGeo, pMat); points.frustumCulled = false; scene.add(points);
 
-let head=0; const lastPos=new THREE.Vector3(); const curPos=new THREE.Vector3(); let inited=false; const tmpVel=new THREE.Vector3();
+let head=0, frame=0; const lastPos=new THREE.Vector3(); const curPos=new THREE.Vector3(); let inited=false; const tmpVel=new THREE.Vector3();
 
-// ── Interaction state ──
+// ── Interaction ──
 let scrollProgress = 0;
 function updateScroll(){
   const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -217,52 +338,54 @@ const pointer = { x:0, y:0 };
 window.addEventListener('pointermove', (e)=>{ pointer.x = (e.clientX/window.innerWidth)*2-1; pointer.y = -((e.clientY/window.innerHeight)*2-1); });
 const MAX_TILT = THREE.MathUtils.degToRad(9);
 const tilt = { x:0, y:0 };
-const eased = { x:0, y:0, z:0, rotY:0 };
+
+const BASE_Y = 1.02;        // float the butterfly ABOVE the wordmark
+const eased = { x:0, y:BASE_Y, z:0, rotY:0 };
 
 const clock = new THREE.Clock();
 function animate(){
   requestAnimationFrame(animate);
+  frame++;
   const delta = Math.min(clock.getDelta(), 1/30);
   const t = clock.elapsedTime;
 
-  // Wing flap — slow, elegant, slight resting dihedral
-  const flap = -0.18 + Math.sin(t*1.6)*0.55;
+  // Wing flap — slow, elegant; planes tilt around the body line
+  const flap = -0.12 + Math.sin(t*1.6)*0.5;
   leftWing.rotation.y = flap; rightWing.rotation.y = -flap;
 
-  // Idle float
-  const bob = Math.sin(t*0.6)*0.12;
-  const sway = Math.sin(t*0.4)*0.05;
+  const bob = Math.sin(t*0.6)*0.1;
+  const sway = Math.sin(t*0.4)*0.045;
 
-  // Scroll choreography
-  const tx = Math.sin(scrollProgress*Math.PI*1.5)*1.45;
-  const ty = 0.15 - scrollProgress*1.25;
+  // Scroll choreography — weave left↔right, descend, drift, turn
+  const tx = Math.sin(scrollProgress*Math.PI*1.5)*1.35;
+  const ty = BASE_Y - scrollProgress*1.7;
   const tz = Math.sin(scrollProgress*Math.PI)*-0.6;
-  const trY = scrollProgress*0.9;
+  const trY = scrollProgress*0.8;
   const s = 1 - Math.exp(-3*delta);
   eased.x += (tx-eased.x)*s; eased.y += (ty-eased.y)*s; eased.z += (tz-eased.z)*s; eased.rotY += (trY-eased.rotY)*s;
 
-  // Cursor tilt (damped, clamped)
   const ct = 1 - Math.exp(-2.6*delta);
   tilt.x += (-pointer.y*MAX_TILT - tilt.x)*ct;
   tilt.y += ( pointer.x*MAX_TILT - tilt.y)*ct;
 
   root.position.set(eased.x, eased.y + bob, eased.z);
-  root.rotation.set(tilt.x + sway*0.4, eased.rotY + tilt.y, sway);
+  root.rotation.set(tilt.x + sway*0.35, eased.rotY + tilt.y, sway);
   root.getWorldPosition(curPos);
 
-  // Trail emission + aging
+  // Trail: emit mostly when moving, sparse shimmer at rest
   if(!inited){ lastPos.copy(curPos); inited=true; }
   const vel = tmpVel.copy(curPos).sub(lastPos);
   const speed = vel.length();
-  const emit = Math.min(6, 1 + Math.floor(speed*140));
+  let emit = Math.min(3, Math.floor(speed*90));
+  if (emit === 0 && frame % 5 === 0) emit = 1;     // gentle ambient sparkle
   for(let e=0;e<emit;e++){
     const i=head; head=(head+1)%COUNT; const i3=i*3;
-    positions[i3]   = curPos.x - vel.x*Math.random()*6 + (Math.random()-0.5)*0.22;
-    positions[i3+1] = curPos.y - vel.y*Math.random()*6 + (Math.random()-0.5)*0.22;
-    positions[i3+2] = curPos.z - vel.z*Math.random()*6 + (Math.random()-0.5)*0.22;
-    vels[i3]   = -vel.x*2 + (Math.random()-0.5)*0.06;
-    vels[i3+1] = 0.05 + Math.random()*0.08;
-    vels[i3+2] = -vel.z*2 + (Math.random()-0.5)*0.06;
+    positions[i3]   = curPos.x - vel.x*Math.random()*5 + (Math.random()-0.5)*0.28;
+    positions[i3+1] = curPos.y - vel.y*Math.random()*5 + (Math.random()-0.5)*0.34;
+    positions[i3+2] = curPos.z - vel.z*Math.random()*5 + (Math.random()-0.5)*0.22;
+    vels[i3]   = -vel.x*1.6 + (Math.random()-0.5)*0.05;
+    vels[i3+1] = 0.04 + Math.random()*0.07;
+    vels[i3+2] = -vel.z*1.6 + (Math.random()-0.5)*0.05;
     aLife[i]=1;
   }
   for(let i=0;i<COUNT;i++){
@@ -270,7 +393,7 @@ function animate(){
     aLife[i] -= delta/LIFESPAN; if(aLife[i]<0) aLife[i]=0;
     const i3=i*3;
     positions[i3]+=vels[i3]*delta; positions[i3+1]+=vels[i3+1]*delta; positions[i3+2]+=vels[i3+2]*delta;
-    vels[i3]*=0.94; vels[i3+2]*=0.94;
+    vels[i3]*=0.93; vels[i3+2]*=0.93;
   }
   lastPos.copy(curPos);
   pGeo.attributes.position.needsUpdate = true;
@@ -285,7 +408,6 @@ window.addEventListener('resize', ()=>{
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Section reveals
 const io = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('in'); }); }, { threshold:0.15 });
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>

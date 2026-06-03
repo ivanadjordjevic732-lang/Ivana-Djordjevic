@@ -1,96 +1,151 @@
 import * as THREE from 'three';
 
 /**
- * Geometry + material factory for the Mindéa butterfly.
+ * The Mindéa butterfly is painted to canvas textures — gold gradient, radiating
+ * veins and soft edges — so it reads like the logo, then mapped onto thin planes
+ * (two flapping wing halves + a static body). This is far more logo-faithful
+ * than bare extruded gold, while staying lightweight and GPU-friendly.
  *
- * The shape is hand-authored from bézier curves to mirror the golden butterfly
- * in the Mindéa logo: a large, gently rounded upper fore-wing and a smaller,
- * tapered hind-wing, joined at a slim body. It is extruded with a soft bevel so
- * the gold catches light like the polished metal in the logo.
+ * These builders run on the client only (the 3D bundle is loaded with
+ * `ssr: false`), so `document` is always available here.
  */
 
-/** Right-hand half of the wing silhouette (mirror it for the left side). */
-export function createWingShape(): THREE.Shape {
-  const s = new THREE.Shape();
+const TEX = 1024;
 
-  // Inner top, right beside the body / head.
-  s.moveTo(0.06, 0.92);
+/** Full butterfly wing pair (left + right) painted onto one square canvas. */
+export function makeWingTexture(): THREE.CanvasTexture {
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = TEX;
+  const g = cv.getContext('2d')!;
+  const cx = TEX / 2;
+  const cy = TEX / 2;
 
-  // Upper fore-wing: sweep up and out to a broad, rounded outer edge.
-  s.bezierCurveTo(0.72, 1.62, 1.78, 1.5, 1.74, 0.58);
-  s.bezierCurveTo(1.72, 0.22, 1.42, 0.05, 0.92, 0.04);
+  const drawWing = (side: 1 | -1) => {
+    g.save();
+    g.translate(cx, cy);
+    g.scale(side, 1);
 
-  // Subtle notch between fore- and hind-wing.
-  s.bezierCurveTo(1.18, -0.12, 1.46, -0.5, 1.34, -1.02);
+    // Forewing (upper)
+    g.beginPath();
+    g.moveTo(14, -96);
+    g.bezierCurveTo(70, -250, 240, -300, 322, -198);
+    g.bezierCurveTo(356, -150, 350, -70, 284, -34);
+    g.bezierCurveTo(214, -6, 110, -4, 58, -30);
+    g.bezierCurveTo(30, -46, 18, -66, 14, -96);
+    g.closePath();
+    const f = g.createLinearGradient(20, -110, 330, -40);
+    f.addColorStop(0.0, '#f3da93');
+    f.addColorStop(0.5, '#ca9c3f');
+    f.addColorStop(1.0, '#90691f');
+    g.fillStyle = f;
+    g.fill();
+    g.lineWidth = 3;
+    g.strokeStyle = 'rgba(78,52,16,0.55)';
+    g.stroke();
 
-  // Lower hind-wing: tapered, softly pointed tail.
-  s.bezierCurveTo(1.18, -1.5, 0.6, -1.56, 0.32, -1.12);
-  s.bezierCurveTo(0.2, -0.92, 0.12, -0.62, 0.16, -0.18);
+    // Hindwing (lower)
+    g.beginPath();
+    g.moveTo(34, -6);
+    g.bezierCurveTo(168, -6, 286, 70, 248, 186);
+    g.bezierCurveTo(224, 262, 150, 286, 96, 250);
+    g.bezierCurveTo(60, 224, 40, 138, 34, -6);
+    g.closePath();
+    const h = g.createLinearGradient(34, 0, 250, 250);
+    h.addColorStop(0.0, '#eccb78');
+    h.addColorStop(0.55, '#bf9438');
+    h.addColorStop(1.0, '#87631d');
+    g.fillStyle = h;
+    g.fill();
+    g.lineWidth = 3;
+    g.strokeStyle = 'rgba(78,52,16,0.55)';
+    g.stroke();
 
-  // Inner edge back up to the head.
-  s.bezierCurveTo(0.08, 0.1, 0.05, 0.5, 0.06, 0.92);
+    // Veins fanning out from the body
+    g.lineWidth = 2.4;
+    g.strokeStyle = 'rgba(96,64,22,0.38)';
+    const tips: [number, number][] = [
+      [300, -205],
+      [345, -120],
+      [270, -40],
+      [245, 180],
+      [150, 278],
+      [88, 244],
+    ];
+    tips.forEach(([tx, ty]) => {
+      g.beginPath();
+      g.moveTo(26, -12);
+      g.quadraticCurveTo(tx * 0.5, ty * 0.5 - 14, tx, ty);
+      g.stroke();
+    });
 
-  return s;
+    // Soft inner highlight near the body
+    const hi = g.createRadialGradient(40, -40, 4, 40, -40, 150);
+    hi.addColorStop(0, 'rgba(255,245,210,0.45)');
+    hi.addColorStop(1, 'rgba(255,245,210,0)');
+    g.fillStyle = hi;
+    g.beginPath();
+    g.arc(40, -40, 150, 0, Math.PI * 2);
+    g.fill();
+
+    g.restore();
+  };
+
+  drawWing(1);
+  drawWing(-1);
+
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
 }
 
-/** Extruded, bevelled wing geometry shared by both sides. */
-export function createWingGeometry(): THREE.ExtrudeGeometry {
-  const shape = createWingShape();
-  const depth = 0.05;
-  const geo = new THREE.ExtrudeGeometry(shape, {
-    depth,
-    bevelEnabled: true,
-    bevelThickness: 0.04,
-    bevelSize: 0.04,
-    bevelSegments: 4,
-    curveSegments: 48,
+/** Slim body + antennae painted onto its own canvas. */
+export function makeBodyTexture(): THREE.CanvasTexture {
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = TEX;
+  const g = cv.getContext('2d')!;
+  const cx = TEX / 2;
+  const cy = TEX / 2;
+
+  const bodyTop = cy - 150;
+  const bodyBot = cy + 250;
+  const w = 15;
+
+  const bg = g.createLinearGradient(cx - w, 0, cx + w, 0);
+  bg.addColorStop(0.0, '#6a4c1d');
+  bg.addColorStop(0.5, '#d4ab55');
+  bg.addColorStop(1.0, '#6a4c1d');
+  g.fillStyle = bg;
+  g.beginPath();
+  g.moveTo(cx, bodyTop);
+  g.bezierCurveTo(cx + w, bodyTop + 40, cx + w, bodyBot - 70, cx, bodyBot);
+  g.bezierCurveTo(cx - w, bodyBot - 70, cx - w, bodyTop + 40, cx, bodyTop);
+  g.closePath();
+  g.fill();
+
+  // Head
+  g.beginPath();
+  g.fillStyle = '#7a5a26';
+  g.ellipse(cx, bodyTop - 6, 13, 16, 0, 0, Math.PI * 2);
+  g.fill();
+
+  // Antennae with club tips
+  g.lineWidth = 4;
+  g.strokeStyle = 'rgba(70,48,18,0.9)';
+  g.lineCap = 'round';
+  ([-1, 1] as const).forEach((s) => {
+    g.beginPath();
+    g.moveTo(cx + s * 4, bodyTop - 14);
+    g.quadraticCurveTo(cx + s * 70, bodyTop - 120, cx + s * 96, bodyTop - 188);
+    g.stroke();
+    g.beginPath();
+    g.fillStyle = '#5e3f15';
+    g.ellipse(cx + s * 96, bodyTop - 188, 7, 9, 0, 0, Math.PI * 2);
+    g.fill();
   });
-  // The shape already lives in +X with its inner edge at the body (x ≈ 0), so the
-  // wing naturally flaps around the body line. Only centre it through its own
-  // thickness so the membrane sits on z = 0.
-  geo.translate(0, 0, -depth / 2);
-  geo.computeVertexNormals();
-  return geo;
-}
 
-/** Slim body: an elongated, slightly tapered capsule along the vertical axis. */
-export function createBodyGeometry(): THREE.CapsuleGeometry {
-  const geo = new THREE.CapsuleGeometry(0.11, 1.5, 8, 18);
-  return geo;
-}
-
-/** Warm, polished gold material matching the logo's metallic surface. */
-export function createGoldMaterial(): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#c9a13f'),
-    metalness: 0.95,
-    roughness: 0.28,
-    emissive: new THREE.Color('#5a4012'),
-    emissiveIntensity: 0.32,
-    envMapIntensity: 1.15,
-    side: THREE.DoubleSide,
-  });
-}
-
-/** Slightly deeper, darker gold for the body so it reads against the wings. */
-export function createBodyMaterial(): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#8b6432'),
-    metalness: 0.9,
-    roughness: 0.38,
-    emissive: new THREE.Color('#3a2a0e'),
-    emissiveIntensity: 0.3,
-    envMapIntensity: 1.0,
-  });
-}
-
-/** A single antenna as a thin tube along a curving path, with a tiny club tip. */
-export function createAntenna(mirror: boolean): THREE.BufferGeometry {
-  const dir = mirror ? -1 : 1;
-  const curve = new THREE.QuadraticBezierCurve3(
-    new THREE.Vector3(dir * 0.04, 0.82, 0),
-    new THREE.Vector3(dir * 0.32, 1.18, 0.04),
-    new THREE.Vector3(dir * 0.46, 1.4, 0.02)
-  );
-  return new THREE.TubeGeometry(curve, 16, 0.012, 6, false);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
 }

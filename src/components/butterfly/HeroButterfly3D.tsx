@@ -25,7 +25,7 @@ function useDeviceProfile() {
     return {
       isMobile,
       reducedMotion,
-      particles: isMobile ? 220 : 480,
+      particles: isMobile ? 160 : 340,
       dpr: (isMobile ? [1, 1.6] : [1, 2]) as [number, number],
     };
   }, []);

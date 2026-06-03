@@ -29,7 +29,7 @@ export function Hero() {
       <HeroButterfly3D scroll={scroll} />
 
       {/* Brand wordmark, echoing the logo's typography and gold rules */}
-      <div className="pointer-events-none relative z-10 mt-[26vh] flex flex-col items-center px-6 text-center">
+      <div className="pointer-events-none relative z-10 mt-[46vh] flex flex-col items-center px-6 text-center">
         <h1
           className="animate-fadeUp font-serif text-6xl font-bold tracking-[0.18em] text-ink sm:text-7xl md:text-8xl"
           style={{ animationDelay: '0.1s', opacity: 0 }}
