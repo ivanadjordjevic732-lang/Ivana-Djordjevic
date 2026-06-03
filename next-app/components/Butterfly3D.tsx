@@ -40,20 +40,22 @@ type Props = {
 const extrudeSettings: THREE.ExtrudeGeometryOptions = {
   depth: 4,
   bevelEnabled: true,
-  bevelThickness: 1,
-  bevelSize: 0.8,
-  bevelSegments: 4,
-  curveSegments: 18,
+  bevelThickness: 1.2,
+  bevelSize: 0.9,
+  bevelSegments: 6,
+  curveSegments: 24,
 };
 
 function makeBodyGeometry() {
   const s = new THREE.Shape();
-  s.moveTo(-0.7, 22);
-  s.bezierCurveTo(-1.1, 10, -1.0, -10, -0.4, -22);
-  s.lineTo(0.4, -22);
-  s.bezierCurveTo(1.0, -10, 1.1, 10, 0.7, 22);
+  s.moveTo(-0.5, 23);
+  s.bezierCurveTo(-1.1, 22, -1.3, 16, -1.2, 8);
+  s.bezierCurveTo(-1.1, 0, -1.0, -10, -0.5, -22);
+  s.lineTo(0.5, -22);
+  s.bezierCurveTo(1.0, -10, 1.1, 0, 1.2, 8);
+  s.bezierCurveTo(1.3, 16, 1.1, 22, 0.5, 23);
   s.closePath();
-  const g = new THREE.ExtrudeGeometry(s, { ...extrudeSettings, depth: 5 });
+  const g = new THREE.ExtrudeGeometry(s, { ...extrudeSettings, depth: 5.5 });
   g.center();
   return g;
 }
@@ -61,21 +63,35 @@ function makeBodyGeometry() {
 function makeWingUpper(mirror: 1 | -1) {
   const m = mirror;
   const s = new THREE.Shape();
-  s.moveTo(2 * m, 3);
-  s.bezierCurveTo(15 * m, 22, 38 * m, 20, 45 * m, 5);
-  s.bezierCurveTo(47 * m, -8, 32 * m, -14, 18 * m, -10);
-  s.bezierCurveTo(8 * m, -7, 4 * m, -2, 2 * m, 3);
+  s.moveTo(2 * m, 5);
+  s.bezierCurveTo(7 * m, 16, 14 * m, 23, 24 * m, 24);
+  s.bezierCurveTo(36 * m, 25, 45 * m, 18, 48 * m, 8);
+  s.bezierCurveTo(50 * m, 0, 46 * m, -8, 38 * m, -11);
+  s.bezierCurveTo(28 * m, -13, 16 * m, -10, 8 * m, -6);
+  s.bezierCurveTo(4 * m, -3, 2 * m, 1, 2 * m, 5);
   return new THREE.ExtrudeGeometry(s, extrudeSettings);
 }
 
 function makeWingLower(mirror: 1 | -1) {
   const m = mirror;
   const s = new THREE.Shape();
-  s.moveTo(2 * m, -5);
-  s.bezierCurveTo(14 * m, -12, 32 * m, -22, 34 * m, -34);
-  s.bezierCurveTo(35 * m, -42, 24 * m, -40, 12 * m, -32);
-  s.bezierCurveTo(6 * m, -26, 2 * m, -14, 2 * m, -5);
+  s.moveTo(2 * m, -7);
+  s.bezierCurveTo(11 * m, -12, 20 * m, -19, 26 * m, -28);
+  s.bezierCurveTo(30 * m, -36, 28 * m, -44, 22 * m, -43);
+  s.bezierCurveTo(18 * m, -42, 14 * m, -36, 11 * m, -30);
+  s.bezierCurveTo(8 * m, -22, 4 * m, -14, 2 * m, -7);
   return new THREE.ExtrudeGeometry(s, extrudeSettings);
+}
+
+function makeAntennaGeometry(mirror: 1 | -1) {
+  const m = mirror;
+  const curve = new THREE.CubicBezierCurve3(
+    new THREE.Vector3(0.3 * m, 22, 0),
+    new THREE.Vector3(1.5 * m, 27, 0),
+    new THREE.Vector3(3.5 * m, 32, 0),
+    new THREE.Vector3(5.5 * m, 36, 0),
+  );
+  return new THREE.TubeGeometry(curve, 28, 0.18, 8);
 }
 
 /* ---------- Component ---------- */
@@ -115,6 +131,8 @@ export const Butterfly3D = forwardRef<ButterflyHandle, Props>(function Butterfly
       loR: makeWingLower(1),
       upL: makeWingUpper(-1),
       loL: makeWingLower(-1),
+      antR: makeAntennaGeometry(1),
+      antL: makeAntennaGeometry(-1),
     }),
     [],
   );
@@ -196,50 +214,88 @@ export const Butterfly3D = forwardRef<ButterflyHandle, Props>(function Butterfly
     <group ref={rootRef}>
       {/* Geometric butterfly (fallback / always present, hidden if logo PNG loaded) */}
       <group ref={butterflyRef} visible={!showRealLogo}>
+        {/* Body */}
         <mesh geometry={geos.body}>
-          <meshStandardMaterial
-            color={0x8a6e3f}
-            metalness={0.88}
-            roughness={0.34}
-            envMapIntensity={1.2}
+          <meshPhysicalMaterial
+            color={0x9a7e48}
+            metalness={0.90}
+            roughness={0.30}
+            clearcoat={0.55}
+            clearcoatRoughness={0.2}
+            envMapIntensity={1.5}
           />
         </mesh>
+        {/* Right wings */}
         <group ref={wingRRef}>
           <mesh geometry={geos.upR}>
-            <meshStandardMaterial
-              color={0xc8a96a}
-              metalness={0.92}
-              roughness={0.28}
-              envMapIntensity={1.4}
+            <meshPhysicalMaterial
+              color={0xd4b274}
+              metalness={0.95}
+              roughness={0.22}
+              clearcoat={0.7}
+              clearcoatRoughness={0.15}
+              reflectivity={0.55}
+              envMapIntensity={1.8}
             />
           </mesh>
           <mesh geometry={geos.loR}>
-            <meshStandardMaterial
-              color={0xc8a96a}
-              metalness={0.92}
-              roughness={0.28}
-              envMapIntensity={1.4}
+            <meshPhysicalMaterial
+              color={0xd4b274}
+              metalness={0.95}
+              roughness={0.22}
+              clearcoat={0.7}
+              clearcoatRoughness={0.15}
+              reflectivity={0.55}
+              envMapIntensity={1.8}
             />
           </mesh>
         </group>
+        {/* Left wings */}
         <group ref={wingLRef}>
           <mesh geometry={geos.upL}>
-            <meshStandardMaterial
-              color={0xc8a96a}
-              metalness={0.92}
-              roughness={0.28}
-              envMapIntensity={1.4}
+            <meshPhysicalMaterial
+              color={0xd4b274}
+              metalness={0.95}
+              roughness={0.22}
+              clearcoat={0.7}
+              clearcoatRoughness={0.15}
+              reflectivity={0.55}
+              envMapIntensity={1.8}
             />
           </mesh>
           <mesh geometry={geos.loL}>
-            <meshStandardMaterial
-              color={0xc8a96a}
-              metalness={0.92}
-              roughness={0.28}
-              envMapIntensity={1.4}
+            <meshPhysicalMaterial
+              color={0xd4b274}
+              metalness={0.95}
+              roughness={0.22}
+              clearcoat={0.7}
+              clearcoatRoughness={0.15}
+              reflectivity={0.55}
+              envMapIntensity={1.8}
             />
           </mesh>
         </group>
+        {/* Antennae */}
+        <mesh geometry={geos.antR}>
+          <meshPhysicalMaterial color={0xd4b274} metalness={0.95} roughness={0.22} envMapIntensity={1.5} />
+        </mesh>
+        <mesh geometry={geos.antL}>
+          <meshPhysicalMaterial color={0xd4b274} metalness={0.95} roughness={0.22} envMapIntensity={1.5} />
+        </mesh>
+        {/* Antenna light dots */}
+        <mesh position={[5.5, 36, 0]}>
+          <sphereGeometry args={[0.6, 16, 12]} />
+          <meshStandardMaterial color={0xfbf6ec} emissive={0xfbf6ec} emissiveIntensity={2.4} />
+        </mesh>
+        <mesh position={[-5.5, 36, 0]}>
+          <sphereGeometry args={[0.6, 16, 12]} />
+          <meshStandardMaterial color={0xfbf6ec} emissive={0xfbf6ec} emissiveIntensity={2.4} />
+        </mesh>
+        {/* Vertical spark beam above head */}
+        <mesh position={[0, 32, 0]}>
+          <cylinderGeometry args={[0.12, 0.04, 14, 8]} />
+          <meshStandardMaterial color={0xfbf6ec} emissive={0xfbf6ec} emissiveIntensity={2.4} />
+        </mesh>
       </group>
 
       {/* Real logo plane (only visible when /images/mindea-logo.png loaded) */}
