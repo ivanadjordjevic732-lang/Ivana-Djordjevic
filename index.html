@@ -2950,7 +2950,6 @@ const initHero = async () => {
   scene.add(boxGroup);
 
   // Shared box geometry (rounded edges)
-  const boxGeo = new THREE.BoxGeometry(1.05, 1.45, 0.42);
   const boxGeoR = new RoundedBoxGeometry(1.05, 1.45, 0.42, 4, 0.05);
 
   // Helper: build a box with a label
@@ -2985,38 +2984,104 @@ const initHero = async () => {
     return grp;
   };
 
-  // Three boxes: Presence (cream), Story (silver/dark), Impact (deep + gold rim)
   const boxPresence = makeBox(0xE9DDC2, { rough: 0.55, metal: 0.25, rimInt: 0.7, bfOpacity: 0.9 });
   const boxStory    = makeBox(0xB6B0A4, { rough: 0.30, metal: 0.85, rimInt: 1.1, bfOpacity: 1.0 });
   const boxImpact   = makeBox(0x111111, { rough: 0.22, metal: 0.95, emissive: 0x2a1a05, emInt: 0.4, rimInt: 1.6, bfOpacity: 1.0 });
-
-  boxPresence.position.set(-2.05, 0, -0.3);
-  boxPresence.rotation.y = 0.35;
-  boxStory.position.set(2.05, 0.05, -0.3);
-  boxStory.rotation.y = -0.35;
-  boxImpact.position.set(0, 0.18, 0.5);
-  boxImpact.scale.set(1.08, 1.08, 1.08);
-
   boxGroup.add(boxPresence, boxStory, boxImpact);
 
-  /* ---------- FLYING 3D BUTTERFLY above the boxes ---------- */
+  /* ---------- CENTER LOGO (wordmark + filigree) ---------- */
+  // Wait for fonts so the canvas rasterizes the correct typeface
+  try {
+    await document.fonts.load("400 200px 'Cormorant Garamond'");
+    await document.fonts.load("500 42px 'Inter'");
+  } catch(e) {}
+
+  const wmCanvas = document.createElement('canvas');
+  wmCanvas.width = 1024; wmCanvas.height = 512;
+  const wctx = wmCanvas.getContext('2d');
+  wctx.clearRect(0, 0, 1024, 512);
+
+  // MINDÉA wordmark
+  wctx.font = '400 220px "Cormorant Garamond", "Times New Roman", serif';
+  wctx.fillStyle = '#F6F1E8';
+  wctx.textAlign = 'center';
+  wctx.textBaseline = 'middle';
+  wctx.shadowColor = 'rgba(200,169,106,0.55)';
+  wctx.shadowBlur = 40;
+  wctx.fillText('MINDÉA', 512, 200);
+  wctx.shadowBlur = 0;
+
+  // Dividers
+  wctx.strokeStyle = '#C8A96A';
+  wctx.lineWidth = 2;
+  wctx.beginPath();
+  wctx.moveTo(180, 340); wctx.lineTo(380, 340);
+  wctx.moveTo(644, 340); wctx.lineTo(844, 340);
+  wctx.stroke();
+  // Dashed center markers
+  wctx.beginPath();
+  wctx.moveTo(395, 340); wctx.lineTo(415, 340);
+  wctx.moveTo(609, 340); wctx.lineTo(629, 340);
+  wctx.stroke();
+
+  // PRODUCTION subtitle
+  wctx.font = '500 38px "Inter", sans-serif';
+  wctx.fillStyle = 'rgba(246,241,232,0.78)';
+  wctx.fillText('P R O D U C T I O N', 512, 340);
+
+  // Filigree wing-fan below
+  wctx.strokeStyle = '#C8A96A';
+  wctx.lineCap = 'round';
+  const cx = 512, cy = 430;
+  for (let i = -7; i <= 7; i++) {
+    const a = i * 0.13;
+    const len = 110 + Math.abs(Math.cos(a * 1.6)) * 25;
+    wctx.globalAlpha = 0.45 + Math.abs(Math.cos(a)) * 0.45;
+    wctx.lineWidth = 1.6;
+    wctx.beginPath();
+    wctx.moveTo(cx, cy);
+    wctx.quadraticCurveTo(
+      cx + Math.sin(a) * len * 0.55, cy + Math.abs(Math.cos(a)) * 18,
+      cx + Math.sin(a) * len, cy + Math.abs(Math.cos(a)) * 40
+    );
+    wctx.stroke();
+  }
+  wctx.globalAlpha = 1;
+  // Central spark
+  wctx.fillStyle = '#F6F1E8';
+  wctx.beginPath(); wctx.arc(cx, cy, 3, 0, Math.PI * 2); wctx.fill();
+  wctx.shadowColor = '#F6F1E8'; wctx.shadowBlur = 14;
+  wctx.beginPath(); wctx.arc(cx, cy, 1.5, 0, Math.PI * 2); wctx.fill();
+  wctx.shadowBlur = 0;
+
+  const wmTexture = new THREE.CanvasTexture(wmCanvas);
+  wmTexture.colorSpace = THREE.SRGBColorSpace;
+  wmTexture.anisotropy = 8;
+  const wordmark = new THREE.Mesh(
+    new THREE.PlaneGeometry(4.2, 2.1),
+    new THREE.MeshBasicMaterial({ map: wmTexture, transparent: true, depthWrite: false, opacity: 0.95 })
+  );
+  wordmark.position.set(0, -0.45, -1.4);
+  scene.add(wordmark);
+
+  /* ---------- FLYING 3D BUTTERFLY above the wordmark ---------- */
   const bfGrp = new THREE.Group();
   const wingMat = new THREE.MeshBasicMaterial({
     map: bfTexture, transparent: true, alphaTest: 0.05,
     opacity: 0.95, side: THREE.DoubleSide, depthWrite: false,
   });
-  const bfPlane = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.33), wingMat);
+  const bfPlane = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.17), wingMat);
   bfGrp.add(bfPlane);
-  bfGrp.position.set(0, 1.85, 0.6);
+  bfGrp.position.set(0, 1.15, -0.9);
   scene.add(bfGrp);
 
-  // Aura behind the butterfly (additive sprite)
+  // Aura behind the butterfly
   const auraMat = new THREE.MeshBasicMaterial({
-    color: 0xC8A96A, transparent: true, opacity: 0.35,
+    color: 0xC8A96A, transparent: true, opacity: 0.32,
     blending: THREE.AdditiveBlending, depthWrite: false,
   });
-  const aura = new THREE.Mesh(new THREE.CircleGeometry(0.95, 48), auraMat);
-  aura.position.z = -0.05;
+  const aura = new THREE.Mesh(new THREE.CircleGeometry(0.8, 48), auraMat);
+  aura.position.z = -0.1;
   bfGrp.add(aura);
 
   /* ---------- DUST PARTICLES around the scene ---------- */
@@ -3064,9 +3129,10 @@ const initHero = async () => {
     gsap.registerPlugin(ScrollTrigger);
     const st = { trigger: section, start: 'top top', end: 'bottom top', scrub: 1.6 };
     gsap.to(camera.position, { z: 11, y: 1.4, scrollTrigger: st });
-    gsap.to(boxGroup.rotation, { y: 0.4, scrollTrigger: st });
-    gsap.to(bfGrp.position, { y: 3.2, scrollTrigger: st });
-    gsap.to(bloom, { strength: 0.5, scrollTrigger: st });
+    gsap.to(boxGroup.scale, { x: 0.85, y: 0.85, z: 0.85, scrollTrigger: st });
+    gsap.to(bfGrp.position, { y: 3.4, scrollTrigger: st });
+    gsap.to(wordmark.position, { y: -1.8, scrollTrigger: st });
+    gsap.to(bloom, { strength: 0.45, scrollTrigger: st });
   }
 
   let visible = true;
@@ -3076,8 +3142,17 @@ const initHero = async () => {
   }
 
   /* ---------- ANIMATION LOOP ---------- */
+  // Orbital params per box — different radius/speed/phase/Y so they
+  // continuously rearrange: each goes its own direction (left, right,
+  // up, down, around). Together they never repeat the same composition.
+  const orbits = [
+    { box: boxPresence, rX: 2.7, rZ: 1.1, w: 0.32, ph: 0.0,        yAmp: 0.42, yW: 0.55, yPh: 0.0, yBase: -0.15 },
+    { box: boxStory,    rX: 2.9, rZ: 1.3, w: 0.28, ph: Math.PI*0.66, yAmp: 0.48, yW: 0.48, yPh: 1.6, yBase:  0.10 },
+    { box: boxImpact,   rX: 2.4, rZ: 0.95, w: -0.36, ph: Math.PI*1.33, yAmp: 0.55, yW: 0.42, yPh: 2.8, yBase:  0.30 },
+  ];
+  const tmp = new THREE.Vector3();
+
   const clock = new THREE.Clock();
-  const baseY = { p: 0, s: 0.05, i: 0.18 };
   const tick = () => {
     requestAnimationFrame(tick);
     if (!visible) return;
@@ -3086,27 +3161,40 @@ const initHero = async () => {
     mouse.x += (mouse.tx - mouse.x) * 0.04;
     mouse.y += (mouse.ty - mouse.y) * 0.04;
     camera.position.x = mouse.x * 0.6;
-    camera.lookAt(0, 0.3, 0);
+    camera.position.y = 0.6 - mouse.y * 0.3;
+    camera.lookAt(0, 0.1, -0.4);
 
-    // Boxes float at different phases
-    boxPresence.position.y = baseY.p + Math.sin(t * 0.55) * 0.12;
-    boxStory.position.y    = baseY.s + Math.sin(t * 0.6 + 1.4) * 0.13;
-    boxImpact.position.y   = baseY.i + Math.sin(t * 0.5 + 2.8) * 0.10;
+    // Orbital box motion — each box on its own path
+    for (const o of orbits) {
+      const a = t * o.w + o.ph;
+      o.box.position.x = Math.cos(a) * o.rX;
+      o.box.position.z = Math.sin(a) * o.rZ - 0.4;
+      o.box.position.y = o.yBase + Math.sin(t * o.yW + o.yPh) * o.yAmp;
+      // Always face the camera (so butterfly front is visible)
+      tmp.copy(camera.position);
+      tmp.y = o.box.position.y;
+      o.box.lookAt(tmp);
+      // Gentle banking based on motion direction
+      o.box.rotation.z = Math.sin(t * o.w * 2 + o.ph) * 0.08;
+    }
 
-    // Each box rotates slowly around Y
-    boxPresence.rotation.y = 0.35 + Math.sin(t * 0.3) * 0.18;
-    boxStory.rotation.y    = -0.35 + Math.sin(t * 0.32 + 1) * 0.18;
-    boxImpact.rotation.y   = Math.sin(t * 0.28) * 0.22;
+    // Wordmark gentle breathing
+    wordmark.position.y = -0.45 + Math.sin(t * 0.4) * 0.04;
+    wordmark.material.opacity = 0.9 + Math.sin(t * 0.7) * 0.05;
 
-    // Butterfly drift + slow rotation
-    bfGrp.position.y = 1.85 + Math.sin(t * 0.7) * 0.18;
-    bfGrp.position.x = Math.sin(t * 0.4) * 0.35;
-    bfGrp.rotation.z = Math.sin(t * 0.6) * 0.08;
-    bfGrp.rotation.y = Math.sin(t * 0.35) * 0.25;
+    // Butterfly above logo — drifts in 3 axes, soft rotation
+    bfGrp.position.x = Math.sin(t * 0.45) * 0.4;
+    bfGrp.position.y = 1.15 + Math.sin(t * 0.7) * 0.22;
+    bfGrp.position.z = -0.9 + Math.sin(t * 0.35) * 0.25;
+    bfGrp.rotation.z = Math.sin(t * 0.6) * 0.12;
+    bfGrp.rotation.y = Math.sin(t * 0.35) * 0.35;
+    // Wing-flap: scale X of the butterfly plane (subtle perspective flap)
+    const flap = 1 + Math.sin(t * 4.5) * 0.06;
+    bfPlane.scale.set(flap, 1, 1);
     // Aura pulse
-    const pulse = 1 + Math.sin(t * 1.3) * 0.12;
+    const pulse = 1 + Math.sin(t * 1.3) * 0.14;
     aura.scale.set(pulse, pulse, 1);
-    auraMat.opacity = 0.25 + Math.sin(t * 1.0) * 0.12;
+    auraMat.opacity = 0.22 + Math.sin(t * 1.0) * 0.14;
 
     particles.rotation.y = t * 0.04;
     composer.render();
