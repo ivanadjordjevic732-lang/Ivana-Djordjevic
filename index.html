@@ -2902,11 +2902,12 @@ const initHero = async () => {
   const { EffectComposer } = await import('three/addons/postprocessing/EffectComposer.js');
   const { RenderPass } = await import('three/addons/postprocessing/RenderPass.js');
   const { UnrealBloomPass } = await import('three/addons/postprocessing/UnrealBloomPass.js');
-  const { RoundedBoxGeometry } = await import('three/addons/geometries/RoundedBoxGeometry.js');
+  const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
 
+  /* ---------- RENDERER / CAMERA / SCENE / COMPOSER ---------- */
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-  camera.position.set(0, 0.6, 8);
+  camera.position.set(0, 0.4, 9);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -2914,9 +2915,13 @@ const initHero = async () => {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
 
+  // Studio environment map for real PBR reflections on the gold butterfly
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.95, 0.7, 0.0);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.85, 0.6, 0.0);
   composer.addPass(bloom);
 
   const resize = () => {
@@ -2928,135 +2933,80 @@ const initHero = async () => {
   resize();
   window.addEventListener('resize', resize, { passive: true });
 
-  /* ---------- BUTTERFLY TEXTURE (SVG → texture) ---------- */
-  const butterflySVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100">
-    <defs>
-      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#FBE9B3"/>
-        <stop offset="45%" stop-color="#E5C988"/>
-        <stop offset="100%" stop-color="#8A7044"/>
-      </linearGradient>
-    </defs>
-    <ellipse cx="60" cy="50" rx="1.6" ry="22" fill="url(#g)"/>
-    <path d="M60,28 Q55,18 50,11" stroke="#E5C988" stroke-width="0.7" fill="none" opacity="0.95"/>
-    <path d="M60,28 Q65,18 70,11" stroke="#E5C988" stroke-width="0.7" fill="none" opacity="0.95"/>
-    <circle cx="50" cy="11" r="1" fill="#FBE9B3"/>
-    <circle cx="70" cy="11" r="1" fill="#FBE9B3"/>
-    <path d="M58,40 C40,16 14,26 11,44 C9,56 24,60 38,54 C48,50 56,46 58,42 Z" fill="url(#g)"/>
-    <path d="M58,52 C44,60 22,68 20,82 C19,90 34,89 44,82 C52,76 57,64 58,55 Z" fill="url(#g)" opacity="0.92"/>
-    <path d="M62,40 C80,16 106,26 109,44 C111,56 96,60 82,54 C72,50 64,46 62,42 Z" fill="url(#g)"/>
-    <path d="M62,52 C76,60 98,68 100,82 C101,90 86,89 76,82 C68,76 63,64 62,55 Z" fill="url(#g)" opacity="0.92"/>
-    <g stroke="#F6F1E8" stroke-width="0.4" fill="none" opacity="0.55">
-      <path d="M58,42 Q33,28 14,42"/><path d="M58,42 Q36,40 20,50"/>
-      <path d="M58,44 Q40,46 24,58"/><path d="M58,54 Q40,60 26,76"/>
-      <path d="M58,56 Q44,68 34,82"/>
-      <path d="M62,42 Q87,28 106,42"/><path d="M62,42 Q84,40 100,50"/>
-      <path d="M62,44 Q80,46 96,58"/><path d="M62,54 Q80,60 94,76"/>
-      <path d="M62,56 Q76,68 86,82"/>
-    </g>
-  </svg>`;
-  const bfTexture = new THREE.TextureLoader().load(
-    'data:image/svg+xml;utf8,' + encodeURIComponent(butterflySVG)
-  );
-  bfTexture.colorSpace = THREE.SRGBColorSpace;
-  bfTexture.anisotropy = 8;
+  /* ---------- LOGO GROUP (mouse-tilt parent) ---------- */
+  const logoGroup = new THREE.Group();
+  scene.add(logoGroup);
 
-  /* ---------- THREE PACKAGE BOXES ---------- */
-  const boxGroup = new THREE.Group();
-  scene.add(boxGroup);
+  /* ---------- 3D BUTTERFLY (real ExtrudeGeometry, brushed gold PBR) ---------- */
+  const butterflyGroup = new THREE.Group();
+  butterflyGroup.position.set(0, 0.95, 0);
+  logoGroup.add(butterflyGroup);
 
-  // Shared box geometry (rounded edges)
-  const boxGeoR = new RoundedBoxGeometry(1.05, 1.45, 0.42, 4, 0.05);
+  const goldMat = new THREE.MeshStandardMaterial({
+    color: 0xC8A96A, metalness: 0.92, roughness: 0.28,
+    envMapIntensity: 1.4,
+  });
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0x8A6E3F, metalness: 0.88, roughness: 0.34,
+    envMapIntensity: 1.2,
+  });
+  const extrude = (shape, depth = 4) => new THREE.ExtrudeGeometry(shape, {
+    depth, bevelEnabled: true, bevelThickness: 1.0, bevelSize: 0.8,
+    bevelSegments: 4, curveSegments: 16,
+  });
 
-  // Helper: build a box with a label
-  const makeBox = (color, opts = {}) => {
-    const grp = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({
-      color, roughness: opts.rough ?? 0.32, metalness: opts.metal ?? 0.55,
-      emissive: opts.emissive ?? 0x000000, emissiveIntensity: opts.emInt ?? 0,
-    });
-    const mesh = new THREE.Mesh(boxGeoR, mat);
-    grp.add(mesh);
-    // gold seam — thin emissive rim around the front edge
-    const rim = new THREE.Mesh(
-      new THREE.BoxGeometry(1.06, 1.46, 0.005),
-      new THREE.MeshStandardMaterial({
-        color: 0xC8A96A, emissive: 0xC8A96A, emissiveIntensity: opts.rimInt ?? 0.9,
-        metalness: 0.9, roughness: 0.25, transparent: true, opacity: 0.85,
-      })
-    );
-    rim.position.z = 0.211;
-    grp.add(rim);
-    // butterfly emblem on front face
-    const bfPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.62, 0.52),
-      new THREE.MeshBasicMaterial({
-        map: bfTexture, transparent: true, alphaTest: 0.05,
-        opacity: opts.bfOpacity ?? 0.95, depthWrite: false,
-      })
-    );
-    bfPlane.position.set(0, 0.18, 0.215);
-    grp.add(bfPlane);
-    return grp;
+  // BODY — slim vertical drop (Three.js +Y is up)
+  const bodyShape = new THREE.Shape();
+  bodyShape.moveTo(-0.7, 22);
+  bodyShape.bezierCurveTo(-1.1, 10, -1.0, -10, -0.4, -22);
+  bodyShape.lineTo(0.4, -22);
+  bodyShape.bezierCurveTo(1.0, -10, 1.1, 10, 0.7, 22);
+  bodyShape.closePath();
+  const body = new THREE.Mesh(extrude(bodyShape, 5), bodyMat);
+  body.geometry.center();
+  butterflyGroup.add(body);
+
+  // WING SHAPES — right side (mirror = +1), left side (mirror = -1)
+  const wingUpper = (m) => {
+    const s = new THREE.Shape();
+    s.moveTo(2*m, 3);
+    s.bezierCurveTo(15*m, 22, 38*m, 20, 45*m, 5);
+    s.bezierCurveTo(47*m, -8, 32*m, -14, 18*m, -10);
+    s.bezierCurveTo(8*m, -7, 4*m, -2, 2*m, 3);
+    return s;
+  };
+  const wingLower = (m) => {
+    const s = new THREE.Shape();
+    s.moveTo(2*m, -5);
+    s.bezierCurveTo(14*m, -12, 32*m, -22, 34*m, -34);
+    s.bezierCurveTo(35*m, -42, 24*m, -40, 12*m, -32);
+    s.bezierCurveTo(6*m, -26, 2*m, -14, 2*m, -5);
+    return s;
   };
 
-  const boxPresence = makeBox(0xE9DDC2, { rough: 0.55, metal: 0.25, rimInt: 0.7, bfOpacity: 0.9 });
-  const boxStory    = makeBox(0xB6B0A4, { rough: 0.30, metal: 0.85, rimInt: 1.1, bfOpacity: 1.0 });
-  const boxImpact   = makeBox(0x111111, { rough: 0.22, metal: 0.95, emissive: 0x2a1a05, emInt: 0.4, rimInt: 1.6, bfOpacity: 1.0 });
-  boxGroup.add(boxPresence, boxStory, boxImpact);
+  const wingR_grp = new THREE.Group();
+  wingR_grp.add(new THREE.Mesh(extrude(wingUpper(1)), goldMat));
+  wingR_grp.add(new THREE.Mesh(extrude(wingLower(1)), goldMat));
+  butterflyGroup.add(wingR_grp);
 
-  /* ---------- TRY TO LOAD REAL PRODUCT PHOTOS as billboards ---------- */
-  // Drop images/box-{presence,story,impact}.jpg into the repo and they
-  // will replace the 3D geometry above automatically. Aspect ratio is
-  // detected from the image to avoid stretching.
-  const photoLoader = new THREE.TextureLoader();
-  const swapBoxForPhoto = (boxGrp, url, baseW = 1.4) => {
-    photoLoader.load(url, (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.anisotropy = 8;
-      tex.needsUpdate = true;
-      const img = tex.image;
-      const aspect = (img && img.height) ? img.width / img.height : 0.74;
-      const w = baseW;
-      const h = w / aspect;
-      // Hide existing 3D content
-      boxGrp.children.forEach(c => c.visible = false);
-      // Photo plane
-      const photo = new THREE.Mesh(
-        new THREE.PlaneGeometry(w, h),
-        new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide })
-      );
-      // Soft gold rim glow behind the photo
-      const halo = new THREE.Mesh(
-        new THREE.PlaneGeometry(w * 1.4, h * 1.4),
-        new THREE.MeshBasicMaterial({
-          color: 0xC8A96A, transparent: true, opacity: 0.22,
-          blending: THREE.AdditiveBlending, depthWrite: false,
-        })
-      );
-      halo.position.z = -0.02;
-      boxGrp.add(halo);
-      boxGrp.add(photo);
-      boxGrp.userData.photo = true;
-    }, undefined, () => { /* image missing — keep 3D box */ });
-  };
-  swapBoxForPhoto(boxPresence, 'images/box-presence.jpg');
-  swapBoxForPhoto(boxStory,    'images/box-story.jpg');
-  swapBoxForPhoto(boxImpact,   'images/box-impact.jpg', 1.55);
+  const wingL_grp = new THREE.Group();
+  wingL_grp.add(new THREE.Mesh(extrude(wingUpper(-1)), goldMat));
+  wingL_grp.add(new THREE.Mesh(extrude(wingLower(-1)), goldMat));
+  butterflyGroup.add(wingL_grp);
 
-  /* ---------- CENTER LOGO (wordmark + filigree) ---------- */
-  // Wait for fonts so the canvas rasterizes the correct typeface
+  // Scale the whole butterfly down to scene units
+  butterflyGroup.scale.set(0.022, 0.022, 0.022);
+
+  /* ---------- WORDMARK (canvas-rendered MINDÉA + PRODUCTION + fan) ---------- */
   try {
-    await document.fonts.load("400 200px 'Cormorant Garamond'");
+    await document.fonts.load("400 220px 'Cormorant Garamond'");
     await document.fonts.load("500 42px 'Inter'");
   } catch(e) {}
 
   const wmCanvas = document.createElement('canvas');
   wmCanvas.width = 1024; wmCanvas.height = 512;
   const wctx = wmCanvas.getContext('2d');
-  wctx.clearRect(0, 0, 1024, 512);
 
-  // MINDÉA wordmark
   wctx.font = '400 220px "Cormorant Garamond", "Times New Roman", serif';
   wctx.fillStyle = '#F6F1E8';
   wctx.textAlign = 'center';
@@ -3066,47 +3016,40 @@ const initHero = async () => {
   wctx.fillText('MINDÉA', 512, 200);
   wctx.shadowBlur = 0;
 
-  // Dividers
   wctx.strokeStyle = '#C8A96A';
   wctx.lineWidth = 2;
   wctx.beginPath();
   wctx.moveTo(180, 340); wctx.lineTo(380, 340);
   wctx.moveTo(644, 340); wctx.lineTo(844, 340);
-  wctx.stroke();
-  // Dashed center markers
-  wctx.beginPath();
   wctx.moveTo(395, 340); wctx.lineTo(415, 340);
   wctx.moveTo(609, 340); wctx.lineTo(629, 340);
   wctx.stroke();
 
-  // PRODUCTION subtitle
   wctx.font = '500 38px "Inter", sans-serif';
   wctx.fillStyle = 'rgba(246,241,232,0.78)';
   wctx.fillText('P R O D U C T I O N', 512, 340);
 
-  // Filigree wing-fan below
+  // Filigree fan
   wctx.strokeStyle = '#C8A96A';
   wctx.lineCap = 'round';
-  const cx = 512, cy = 430;
   for (let i = -7; i <= 7; i++) {
     const a = i * 0.13;
     const len = 110 + Math.abs(Math.cos(a * 1.6)) * 25;
     wctx.globalAlpha = 0.45 + Math.abs(Math.cos(a)) * 0.45;
     wctx.lineWidth = 1.6;
     wctx.beginPath();
-    wctx.moveTo(cx, cy);
+    wctx.moveTo(512, 430);
     wctx.quadraticCurveTo(
-      cx + Math.sin(a) * len * 0.55, cy + Math.abs(Math.cos(a)) * 18,
-      cx + Math.sin(a) * len, cy + Math.abs(Math.cos(a)) * 40
+      512 + Math.sin(a) * len * 0.55, 430 + Math.abs(Math.cos(a)) * 18,
+      512 + Math.sin(a) * len, 430 + Math.abs(Math.cos(a)) * 40
     );
     wctx.stroke();
   }
   wctx.globalAlpha = 1;
-  // Central spark
   wctx.fillStyle = '#F6F1E8';
-  wctx.beginPath(); wctx.arc(cx, cy, 3, 0, Math.PI * 2); wctx.fill();
+  wctx.beginPath(); wctx.arc(512, 430, 3, 0, Math.PI * 2); wctx.fill();
   wctx.shadowColor = '#F6F1E8'; wctx.shadowBlur = 14;
-  wctx.beginPath(); wctx.arc(cx, cy, 1.5, 0, Math.PI * 2); wctx.fill();
+  wctx.beginPath(); wctx.arc(512, 430, 1.5, 0, Math.PI * 2); wctx.fill();
   wctx.shadowBlur = 0;
 
   const wmTexture = new THREE.CanvasTexture(wmCanvas);
@@ -3114,75 +3057,93 @@ const initHero = async () => {
   wmTexture.anisotropy = 8;
   const wordmark = new THREE.Mesh(
     new THREE.PlaneGeometry(4.2, 2.1),
-    new THREE.MeshBasicMaterial({ map: wmTexture, transparent: true, depthWrite: false, opacity: 0.95 })
+    new THREE.MeshBasicMaterial({ map: wmTexture, transparent: true, depthWrite: false, opacity: 0 })
   );
-  wordmark.position.set(0, -0.45, -1.4);
-  scene.add(wordmark);
+  wordmark.position.set(0, -1.1, 0);
+  logoGroup.add(wordmark);
 
-  // Try to load the real Mindéa logo as a swap for the canvas-rendered wordmark
+  // Try to load real logo PNG (replaces the canvas-rendered wordmark)
+  const photoLoader = new THREE.TextureLoader();
   photoLoader.load('images/mindea-logo.png', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = 8;
     const img = tex.image;
     const aspect = (img && img.height) ? img.width / img.height : 1;
-    const w = 3.6;
+    const w = 5.0;
     const h = w / aspect;
     wordmark.geometry.dispose();
     wordmark.geometry = new THREE.PlaneGeometry(w, h);
     wordmark.material.map = tex;
     wordmark.material.needsUpdate = true;
-  }, undefined, () => { /* logo missing — keep canvas wordmark */ });
+    // Image already contains its own butterfly + wordmark — hide the 3D butterfly
+    butterflyGroup.visible = false;
+  }, undefined, () => { /* keep canvas + 3D butterfly */ });
 
-  /* ---------- FLYING 3D BUTTERFLY above the wordmark ---------- */
-  const bfGrp = new THREE.Group();
-  const wingMat = new THREE.MeshBasicMaterial({
-    map: bfTexture, transparent: true, alphaTest: 0.05,
-    opacity: 0.95, side: THREE.DoubleSide, depthWrite: false,
+  /* ---------- CINEMATIC SHADOW PLANE (below logo) ---------- */
+  const shadowCanvas = document.createElement('canvas');
+  shadowCanvas.width = shadowCanvas.height = 256;
+  const sctx = shadowCanvas.getContext('2d');
+  const grad = sctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+  grad.addColorStop(0, 'rgba(0,0,0,0.65)');
+  grad.addColorStop(0.7, 'rgba(0,0,0,0.10)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  sctx.fillStyle = grad;
+  sctx.fillRect(0, 0, 256, 256);
+  const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+  const shadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(5.5, 2),
+    new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, opacity: 0 })
+  );
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.set(0, -2.4, 0);
+  logoGroup.add(shadow);
+
+  /* ---------- VOLUMETRIC GOLD GOD-RAYS (additive cones) ---------- */
+  const rayGroup = new THREE.Group();
+  scene.add(rayGroup);
+  const rayMat = new THREE.MeshBasicMaterial({
+    color: 0xC8A96A, transparent: true, opacity: 0.045,
+    blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
   });
-  const bfPlane = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.17), wingMat);
-  bfGrp.add(bfPlane);
-  bfGrp.position.set(0, 1.15, -0.9);
-  scene.add(bfGrp);
+  for (let i = 0; i < 6; i++) {
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(2.4 + i * 0.4, 9, 28, 1, true), rayMat);
+    cone.position.set(0, 4.5, -2 - i * 0.3);
+    cone.rotation.x = Math.PI;
+    cone.rotation.z = (i / 6) * Math.PI * 2;
+    rayGroup.add(cone);
+  }
 
-  // Aura behind the butterfly
-  const auraMat = new THREE.MeshBasicMaterial({
-    color: 0xC8A96A, transparent: true, opacity: 0.32,
-    blending: THREE.AdditiveBlending, depthWrite: false,
-  });
-  const aura = new THREE.Mesh(new THREE.CircleGeometry(0.8, 48), auraMat);
-  aura.position.z = -0.1;
-  bfGrp.add(aura);
-
-  /* ---------- DUST PARTICLES around the scene ---------- */
-  const N = 1200;
+  /* ---------- DUST PARTICLES around the logo ---------- */
+  const N = 1400;
   const positions = new Float32Array(N * 3);
   for (let i = 0; i < N; i++) {
-    const r = 2.5 + Math.random() * 4.2;
+    const r = 1.8 + Math.random() * 4.2;
     const t = Math.random() * Math.PI * 2;
     positions[i*3]   = Math.cos(t) * r;
-    positions[i*3+1] = (Math.random() - 0.4) * 4;
+    positions[i*3+1] = (Math.random() - 0.4) * 4.5;
     positions[i*3+2] = Math.sin(t) * r - 1;
   }
   const partGeo = new THREE.BufferGeometry();
   partGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  const particles = new THREE.Points(partGeo, new THREE.PointsMaterial({
-    color: 0xC8A96A, size: 0.028, sizeAttenuation: true,
-    transparent: true, opacity: 0.55, depthWrite: false,
-  }));
+  const partMat = new THREE.PointsMaterial({
+    color: 0xC8A96A, size: 0.03, sizeAttenuation: true,
+    transparent: true, opacity: 0, depthWrite: false,
+  });
+  const particles = new THREE.Points(partGeo, partMat);
   scene.add(particles);
 
-  /* ---------- LIGHTING — studio with gold key ---------- */
-  scene.add(new THREE.AmbientLight(0x1a1410, 0.55));
-  const key = new THREE.DirectionalLight(0xFFE6B8, 2.2);
-  key.position.set(2.5, 4.5, 4);
+  /* ---------- LIGHTING — cinematic studio ---------- */
+  scene.add(new THREE.AmbientLight(0x1a1410, 0.45));
+  const key = new THREE.DirectionalLight(0xFFE6B8, 2.4);
+  key.position.set(2.5, 5, 4);
   scene.add(key);
-  const rim = new THREE.PointLight(0xC8A96A, 2.8, 16);
-  rim.position.set(0, 2, 2);
+  const rim = new THREE.PointLight(0xC8A96A, 2.6, 14);
+  rim.position.set(0, 2.5, 2);
   scene.add(rim);
-  const fill = new THREE.PointLight(0x7858c8, 1.4, 14);
-  fill.position.set(-4, -1, 3);
-  scene.add(fill);
-  const ground = new THREE.PointLight(0xE5C988, 1.2, 8);
+  const fillL = new THREE.PointLight(0x7858c8, 1.0, 12);
+  fillL.position.set(-4, -1, 3);
+  scene.add(fillL);
+  const ground = new THREE.PointLight(0xE5C988, 1.0, 7);
   ground.position.set(0, -2.5, 2);
   scene.add(ground);
 
@@ -3193,15 +3154,39 @@ const initHero = async () => {
     mouse.ty = (e.clientY / innerHeight - 0.5) * 2;
   }, { passive: true });
 
+  /* ---------- LOADING TIMELINE — butterfly first, then wordmark ---------- */
+  // Initial states for the intro
+  butterflyGroup.scale.set(0, 0, 0);
+  wingR_grp.rotation.y = -Math.PI * 0.5;  // folded forward
+  wingL_grp.rotation.y =  Math.PI * 0.5;
+  let introDone = false;
+
+  if (window.gsap) {
+    const tl = gsap.timeline({ delay: 0.5, onComplete: () => { introDone = true; } });
+    tl.to(butterflyGroup.scale, { x: 0.022, y: 0.022, z: 0.022, duration: 1.8, ease: 'expo.out' }, 0);
+    tl.to(wingR_grp.rotation, { y: 0, duration: 2.0, ease: 'expo.out' }, 0.4);
+    tl.to(wingL_grp.rotation, { y: 0, duration: 2.0, ease: 'expo.out' }, 0.4);
+    tl.to(wordmark.material, { opacity: 0.95, duration: 1.4, ease: 'power2.out' }, 1.2);
+    tl.to(shadow.material, { opacity: 0.85, duration: 1.2 }, 0.8);
+    tl.to(partMat, { opacity: 0.55, duration: 1.8 }, 1.0);
+    tl.to(rayMat, { opacity: 0.085, duration: 2.0 }, 1.0);
+  } else {
+    butterflyGroup.scale.setScalar(0.022);
+    wingR_grp.rotation.y = 0; wingL_grp.rotation.y = 0;
+    wordmark.material.opacity = 0.95; shadow.material.opacity = 0.85;
+    partMat.opacity = 0.55; rayMat.opacity = 0.085;
+    introDone = true;
+  }
+
   /* ---------- SCROLL CHOREOGRAPHY ---------- */
   if (window.gsap && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
     const st = { trigger: section, start: 'top top', end: 'bottom top', scrub: 1.6 };
-    gsap.to(camera.position, { z: 11, y: 1.4, scrollTrigger: st });
-    gsap.to(boxGroup.scale, { x: 0.85, y: 0.85, z: 0.85, scrollTrigger: st });
-    gsap.to(bfGrp.position, { y: 3.4, scrollTrigger: st });
-    gsap.to(wordmark.position, { y: -1.8, scrollTrigger: st });
-    gsap.to(bloom, { strength: 0.45, scrollTrigger: st });
+    gsap.to(camera.position, { z: 12, y: 1.2, scrollTrigger: st });
+    gsap.to(logoGroup.scale, { x: 0.7, y: 0.7, z: 0.7, scrollTrigger: st });
+    gsap.to(logoGroup.position, { y: 1.4, scrollTrigger: st });
+    gsap.to(bloom, { strength: 0.35, scrollTrigger: st });
+    gsap.to(rayMat, { opacity: 0.02, scrollTrigger: st });
   }
 
   let visible = true;
@@ -3211,61 +3196,44 @@ const initHero = async () => {
   }
 
   /* ---------- ANIMATION LOOP ---------- */
-  // Orbital params per box — different radius/speed/phase/Y so they
-  // continuously rearrange: each goes its own direction (left, right,
-  // up, down, around). Together they never repeat the same composition.
-  const orbits = [
-    { box: boxPresence, rX: 2.7, rZ: 1.1, w: 0.32, ph: 0.0,        yAmp: 0.42, yW: 0.55, yPh: 0.0, yBase: -0.15 },
-    { box: boxStory,    rX: 2.9, rZ: 1.3, w: 0.28, ph: Math.PI*0.66, yAmp: 0.48, yW: 0.48, yPh: 1.6, yBase:  0.10 },
-    { box: boxImpact,   rX: 2.4, rZ: 0.95, w: -0.36, ph: Math.PI*1.33, yAmp: 0.55, yW: 0.42, yPh: 2.8, yBase:  0.30 },
-  ];
-  const tmp = new THREE.Vector3();
-
   const clock = new THREE.Clock();
   const tick = () => {
     requestAnimationFrame(tick);
     if (!visible) return;
     const t = clock.getElapsedTime();
 
-    mouse.x += (mouse.tx - mouse.x) * 0.04;
-    mouse.y += (mouse.ty - mouse.y) * 0.04;
-    camera.position.x = mouse.x * 0.6;
-    camera.position.y = 0.6 - mouse.y * 0.3;
-    camera.lookAt(0, 0.1, -0.4);
+    // Mouse smoothing
+    mouse.x += (mouse.tx - mouse.x) * 0.045;
+    mouse.y += (mouse.ty - mouse.y) * 0.045;
 
-    // Orbital box motion — each box on its own path
-    for (const o of orbits) {
-      const a = t * o.w + o.ph;
-      o.box.position.x = Math.cos(a) * o.rX;
-      o.box.position.z = Math.sin(a) * o.rZ - 0.4;
-      o.box.position.y = o.yBase + Math.sin(t * o.yW + o.yPh) * o.yAmp;
-      // Always face the camera (so butterfly front is visible)
-      tmp.copy(camera.position);
-      tmp.y = o.box.position.y;
-      o.box.lookAt(tmp);
-      // Gentle banking based on motion direction
-      o.box.rotation.z = Math.sin(t * o.w * 2 + o.ph) * 0.08;
+    // Mouse-driven 2-5° tilt of the whole logo composition (parallax depth)
+    logoGroup.rotation.y = mouse.x * 0.07;   // ~4° max
+    logoGroup.rotation.x = -mouse.y * 0.045; // ~2.5° max
+
+    // Living presence: float left/right, breathing scale, gentle vertical drift
+    butterflyGroup.position.x = Math.sin(t * 0.32) * 0.22;
+    butterflyGroup.position.y = 0.95 + Math.sin(t * 0.55) * 0.10;
+    const breath = 0.022 * (1 + Math.sin(t * 0.45) * 0.04);
+    butterflyGroup.scale.setScalar(introDone ? breath : butterflyGroup.scale.x);
+
+    // Wings: slow open/close cycle + subtle flutter (post-intro)
+    if (introDone) {
+      const flapCycle = Math.sin(t * 0.32) * 0.5 + 0.5; // 0..1
+      const flutter = Math.sin(t * 2.6) * 0.04;
+      wingR_grp.rotation.y = -flapCycle * 0.45 + flutter;
+      wingL_grp.rotation.y =  flapCycle * 0.45 - flutter;
     }
 
     // Wordmark gentle breathing
-    wordmark.position.y = -0.45 + Math.sin(t * 0.4) * 0.04;
-    wordmark.material.opacity = 0.9 + Math.sin(t * 0.7) * 0.05;
+    wordmark.position.x = Math.sin(t * 0.22) * 0.05;
+    wordmark.position.y = -1.1 + Math.sin(t * 0.45) * 0.04;
 
-    // Butterfly above logo — drifts in 3 axes, soft rotation
-    bfGrp.position.x = Math.sin(t * 0.45) * 0.4;
-    bfGrp.position.y = 1.15 + Math.sin(t * 0.7) * 0.22;
-    bfGrp.position.z = -0.9 + Math.sin(t * 0.35) * 0.25;
-    bfGrp.rotation.z = Math.sin(t * 0.6) * 0.12;
-    bfGrp.rotation.y = Math.sin(t * 0.35) * 0.35;
-    // Wing-flap: scale X of the butterfly plane (subtle perspective flap)
-    const flap = 1 + Math.sin(t * 4.5) * 0.06;
-    bfPlane.scale.set(flap, 1, 1);
-    // Aura pulse
-    const pulse = 1 + Math.sin(t * 1.3) * 0.14;
-    aura.scale.set(pulse, pulse, 1);
-    auraMat.opacity = 0.22 + Math.sin(t * 1.0) * 0.14;
+    // God rays slowly rotate around vertical axis
+    rayGroup.rotation.y = t * 0.06;
 
-    particles.rotation.y = t * 0.04;
+    // Particles slow drift
+    particles.rotation.y = t * 0.035;
+
     composer.render();
   };
   tick();
