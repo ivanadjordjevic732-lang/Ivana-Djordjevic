@@ -2886,20 +2886,21 @@ const initHero = async () => {
   const { EffectComposer } = await import('three/addons/postprocessing/EffectComposer.js');
   const { RenderPass } = await import('three/addons/postprocessing/RenderPass.js');
   const { UnrealBloomPass } = await import('three/addons/postprocessing/UnrealBloomPass.js');
+  const { RoundedBoxGeometry } = await import('three/addons/geometries/RoundedBoxGeometry.js');
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-  camera.position.set(0, 0, 8);
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  camera.position.set(0, 0.6, 8);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  renderer.toneMappingExposure = 1.15;
 
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.35, 0.85, 0.0);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.95, 0.7, 0.0);
   composer.addPass(bloom);
 
   const resize = () => {
@@ -2911,77 +2912,161 @@ const initHero = async () => {
   resize();
   window.addEventListener('resize', resize, { passive: true });
 
-  // Gold light core — emissive sphere
-  const core = new THREE.Mesh(
-    new THREE.IcosahedronGeometry(0.6, 4),
-    new THREE.MeshStandardMaterial({
-      color: 0xC8A96A, emissive: 0xC8A96A, emissiveIntensity: 2.4,
-      roughness: 0.25, metalness: 0.4,
-    })
+  /* ---------- BUTTERFLY TEXTURE (SVG → texture) ---------- */
+  const butterflySVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FBE9B3"/>
+        <stop offset="45%" stop-color="#E5C988"/>
+        <stop offset="100%" stop-color="#8A7044"/>
+      </linearGradient>
+    </defs>
+    <ellipse cx="60" cy="50" rx="1.6" ry="22" fill="url(#g)"/>
+    <path d="M60,28 Q55,18 50,11" stroke="#E5C988" stroke-width="0.7" fill="none" opacity="0.95"/>
+    <path d="M60,28 Q65,18 70,11" stroke="#E5C988" stroke-width="0.7" fill="none" opacity="0.95"/>
+    <circle cx="50" cy="11" r="1" fill="#FBE9B3"/>
+    <circle cx="70" cy="11" r="1" fill="#FBE9B3"/>
+    <path d="M58,40 C40,16 14,26 11,44 C9,56 24,60 38,54 C48,50 56,46 58,42 Z" fill="url(#g)"/>
+    <path d="M58,52 C44,60 22,68 20,82 C19,90 34,89 44,82 C52,76 57,64 58,55 Z" fill="url(#g)" opacity="0.92"/>
+    <path d="M62,40 C80,16 106,26 109,44 C111,56 96,60 82,54 C72,50 64,46 62,42 Z" fill="url(#g)"/>
+    <path d="M62,52 C76,60 98,68 100,82 C101,90 86,89 76,82 C68,76 63,64 62,55 Z" fill="url(#g)" opacity="0.92"/>
+    <g stroke="#F6F1E8" stroke-width="0.4" fill="none" opacity="0.55">
+      <path d="M58,42 Q33,28 14,42"/><path d="M58,42 Q36,40 20,50"/>
+      <path d="M58,44 Q40,46 24,58"/><path d="M58,54 Q40,60 26,76"/>
+      <path d="M58,56 Q44,68 34,82"/>
+      <path d="M62,42 Q87,28 106,42"/><path d="M62,42 Q84,40 100,50"/>
+      <path d="M62,44 Q80,46 96,58"/><path d="M62,54 Q80,60 94,76"/>
+      <path d="M62,56 Q76,68 86,82"/>
+    </g>
+  </svg>`;
+  const bfTexture = new THREE.TextureLoader().load(
+    'data:image/svg+xml;utf8,' + encodeURIComponent(butterflySVG)
   );
-  scene.add(core);
+  bfTexture.colorSpace = THREE.SRGBColorSpace;
+  bfTexture.anisotropy = 8;
 
-  // Halo ring
-  const halo = new THREE.Mesh(
-    new THREE.RingGeometry(1.1, 1.18, 96),
-    new THREE.MeshBasicMaterial({ color: 0xC8A96A, side: THREE.DoubleSide, transparent: true, opacity: 0.55 })
-  );
-  halo.rotation.x = Math.PI / 2.4;
-  scene.add(halo);
+  /* ---------- THREE PACKAGE BOXES ---------- */
+  const boxGroup = new THREE.Group();
+  scene.add(boxGroup);
 
-  const halo2 = new THREE.Mesh(
-    new THREE.RingGeometry(1.6, 1.62, 128),
-    new THREE.MeshBasicMaterial({ color: 0xC8A96A, side: THREE.DoubleSide, transparent: true, opacity: 0.3 })
-  );
-  halo2.rotation.x = Math.PI / 2.8;
-  halo2.rotation.z = 0.2;
-  scene.add(halo2);
+  // Shared box geometry (rounded edges)
+  const boxGeo = new THREE.BoxGeometry(1.05, 1.45, 0.42);
+  const boxGeoR = new RoundedBoxGeometry(1.05, 1.45, 0.42, 4, 0.05);
 
-  // Orbital particles
-  const N = 1800;
+  // Helper: build a box with a label
+  const makeBox = (color, opts = {}) => {
+    const grp = new THREE.Group();
+    const mat = new THREE.MeshStandardMaterial({
+      color, roughness: opts.rough ?? 0.32, metalness: opts.metal ?? 0.55,
+      emissive: opts.emissive ?? 0x000000, emissiveIntensity: opts.emInt ?? 0,
+    });
+    const mesh = new THREE.Mesh(boxGeoR, mat);
+    grp.add(mesh);
+    // gold seam — thin emissive rim around the front edge
+    const rim = new THREE.Mesh(
+      new THREE.BoxGeometry(1.06, 1.46, 0.005),
+      new THREE.MeshStandardMaterial({
+        color: 0xC8A96A, emissive: 0xC8A96A, emissiveIntensity: opts.rimInt ?? 0.9,
+        metalness: 0.9, roughness: 0.25, transparent: true, opacity: 0.85,
+      })
+    );
+    rim.position.z = 0.211;
+    grp.add(rim);
+    // butterfly emblem on front face
+    const bfPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.62, 0.52),
+      new THREE.MeshBasicMaterial({
+        map: bfTexture, transparent: true, alphaTest: 0.05,
+        opacity: opts.bfOpacity ?? 0.95, depthWrite: false,
+      })
+    );
+    bfPlane.position.set(0, 0.18, 0.215);
+    grp.add(bfPlane);
+    return grp;
+  };
+
+  // Three boxes: Presence (cream), Story (silver/dark), Impact (deep + gold rim)
+  const boxPresence = makeBox(0xE9DDC2, { rough: 0.55, metal: 0.25, rimInt: 0.7, bfOpacity: 0.9 });
+  const boxStory    = makeBox(0xB6B0A4, { rough: 0.30, metal: 0.85, rimInt: 1.1, bfOpacity: 1.0 });
+  const boxImpact   = makeBox(0x111111, { rough: 0.22, metal: 0.95, emissive: 0x2a1a05, emInt: 0.4, rimInt: 1.6, bfOpacity: 1.0 });
+
+  boxPresence.position.set(-2.05, 0, -0.3);
+  boxPresence.rotation.y = 0.35;
+  boxStory.position.set(2.05, 0.05, -0.3);
+  boxStory.rotation.y = -0.35;
+  boxImpact.position.set(0, 0.18, 0.5);
+  boxImpact.scale.set(1.08, 1.08, 1.08);
+
+  boxGroup.add(boxPresence, boxStory, boxImpact);
+
+  /* ---------- FLYING 3D BUTTERFLY above the boxes ---------- */
+  const bfGrp = new THREE.Group();
+  const wingMat = new THREE.MeshBasicMaterial({
+    map: bfTexture, transparent: true, alphaTest: 0.05,
+    opacity: 0.95, side: THREE.DoubleSide, depthWrite: false,
+  });
+  const bfPlane = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.33), wingMat);
+  bfGrp.add(bfPlane);
+  bfGrp.position.set(0, 1.85, 0.6);
+  scene.add(bfGrp);
+
+  // Aura behind the butterfly (additive sprite)
+  const auraMat = new THREE.MeshBasicMaterial({
+    color: 0xC8A96A, transparent: true, opacity: 0.35,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  });
+  const aura = new THREE.Mesh(new THREE.CircleGeometry(0.95, 48), auraMat);
+  aura.position.z = -0.05;
+  bfGrp.add(aura);
+
+  /* ---------- DUST PARTICLES around the scene ---------- */
+  const N = 1200;
   const positions = new Float32Array(N * 3);
-  const phases = new Float32Array(N);
   for (let i = 0; i < N; i++) {
-    const r = 1.8 + Math.random() * 4.2;
+    const r = 2.5 + Math.random() * 4.2;
     const t = Math.random() * Math.PI * 2;
-    const y = (Math.random() - 0.5) * 2.2;
-    positions[i*3] = Math.cos(t) * r;
-    positions[i*3+1] = y;
-    positions[i*3+2] = Math.sin(t) * r;
-    phases[i] = Math.random() * Math.PI * 2;
+    positions[i*3]   = Math.cos(t) * r;
+    positions[i*3+1] = (Math.random() - 0.4) * 4;
+    positions[i*3+2] = Math.sin(t) * r - 1;
   }
   const partGeo = new THREE.BufferGeometry();
   partGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  const partMat = new THREE.PointsMaterial({
-    color: 0xC8A96A, size: 0.035, sizeAttenuation: true,
-    transparent: true, opacity: 0.7, depthWrite: false,
-  });
-  const particles = new THREE.Points(partGeo, partMat);
+  const particles = new THREE.Points(partGeo, new THREE.PointsMaterial({
+    color: 0xC8A96A, size: 0.028, sizeAttenuation: true,
+    transparent: true, opacity: 0.55, depthWrite: false,
+  }));
   scene.add(particles);
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0x221a10, 0.4));
-  const key = new THREE.PointLight(0xC8A96A, 2.2, 14);
-  key.position.set(0, 0, 0);
+  /* ---------- LIGHTING — studio with gold key ---------- */
+  scene.add(new THREE.AmbientLight(0x1a1410, 0.55));
+  const key = new THREE.DirectionalLight(0xFFE6B8, 2.2);
+  key.position.set(2.5, 4.5, 4);
   scene.add(key);
+  const rim = new THREE.PointLight(0xC8A96A, 2.8, 16);
+  rim.position.set(0, 2, 2);
+  scene.add(rim);
+  const fill = new THREE.PointLight(0x7858c8, 1.4, 14);
+  fill.position.set(-4, -1, 3);
+  scene.add(fill);
+  const ground = new THREE.PointLight(0xE5C988, 1.2, 8);
+  ground.position.set(0, -2.5, 2);
+  scene.add(ground);
 
-  // Mouse parallax
+  /* ---------- MOUSE PARALLAX ---------- */
   const mouse = { tx: 0, ty: 0, x: 0, y: 0 };
   window.addEventListener('mousemove', (e) => {
     mouse.tx = (e.clientX / innerWidth - 0.5) * 2;
     mouse.ty = (e.clientY / innerHeight - 0.5) * 2;
   }, { passive: true });
 
-  // Slow camera drift on scroll
+  /* ---------- SCROLL CHOREOGRAPHY ---------- */
   if (window.gsap && window.ScrollTrigger) {
-    gsap.to(camera.position, {
-      z: 12, y: 1.2,
-      scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: 1.6 },
-    });
-    gsap.to(core.scale, { x: 0.6, y: 0.6, z: 0.6,
-      scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: 1.6 } });
-    gsap.to(bloom, { strength: 0.6,
-      scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: 1.6 } });
+    gsap.registerPlugin(ScrollTrigger);
+    const st = { trigger: section, start: 'top top', end: 'bottom top', scrub: 1.6 };
+    gsap.to(camera.position, { z: 11, y: 1.4, scrollTrigger: st });
+    gsap.to(boxGroup.rotation, { y: 0.4, scrollTrigger: st });
+    gsap.to(bfGrp.position, { y: 3.2, scrollTrigger: st });
+    gsap.to(bloom, { strength: 0.5, scrollTrigger: st });
   }
 
   let visible = true;
@@ -2990,23 +3075,40 @@ const initHero = async () => {
       { rootMargin: '200px 0px' }).observe(section);
   }
 
+  /* ---------- ANIMATION LOOP ---------- */
   const clock = new THREE.Clock();
+  const baseY = { p: 0, s: 0.05, i: 0.18 };
   const tick = () => {
     requestAnimationFrame(tick);
     if (!visible) return;
     const t = clock.getElapsedTime();
+
     mouse.x += (mouse.tx - mouse.x) * 0.04;
     mouse.y += (mouse.ty - mouse.y) * 0.04;
-    camera.position.x = mouse.x * 0.7;
-    camera.lookAt(0, 0, 0);
-    core.rotation.y = t * 0.25;
-    core.rotation.x = Math.sin(t * 0.3) * 0.25;
-    halo.rotation.z = t * 0.15;
-    halo2.rotation.z = -t * 0.12;
-    particles.rotation.y = t * 0.08;
-    // Particle "breathing"
-    const breath = 1 + Math.sin(t * 0.6) * 0.04;
-    particles.scale.set(breath, breath, breath);
+    camera.position.x = mouse.x * 0.6;
+    camera.lookAt(0, 0.3, 0);
+
+    // Boxes float at different phases
+    boxPresence.position.y = baseY.p + Math.sin(t * 0.55) * 0.12;
+    boxStory.position.y    = baseY.s + Math.sin(t * 0.6 + 1.4) * 0.13;
+    boxImpact.position.y   = baseY.i + Math.sin(t * 0.5 + 2.8) * 0.10;
+
+    // Each box rotates slowly around Y
+    boxPresence.rotation.y = 0.35 + Math.sin(t * 0.3) * 0.18;
+    boxStory.rotation.y    = -0.35 + Math.sin(t * 0.32 + 1) * 0.18;
+    boxImpact.rotation.y   = Math.sin(t * 0.28) * 0.22;
+
+    // Butterfly drift + slow rotation
+    bfGrp.position.y = 1.85 + Math.sin(t * 0.7) * 0.18;
+    bfGrp.position.x = Math.sin(t * 0.4) * 0.35;
+    bfGrp.rotation.z = Math.sin(t * 0.6) * 0.08;
+    bfGrp.rotation.y = Math.sin(t * 0.35) * 0.25;
+    // Aura pulse
+    const pulse = 1 + Math.sin(t * 1.3) * 0.12;
+    aura.scale.set(pulse, pulse, 1);
+    auraMat.opacity = 0.25 + Math.sin(t * 1.0) * 0.12;
+
+    particles.rotation.y = t * 0.04;
     composer.render();
   };
   tick();
