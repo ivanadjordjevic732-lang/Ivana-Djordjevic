@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mindéa — Vorschau (goldener Schmetterling)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root { --gold:#b8904a; --gold-deep:#8b6432; --ink:#2c1f0e; --muted:#7a5c38; }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:'DM Sans',system-ui,sans-serif; color:var(--ink);
+    background-color:#f1e4cf;
+    background-image:
+      radial-gradient(60% 50% at 50% 12%, rgba(216,184,120,.35) 0%, rgba(216,184,120,0) 60%),
+      radial-gradient(45% 45% at 82% 30%, rgba(247,239,226,.9) 0%, rgba(247,239,226,0) 55%),
+      radial-gradient(55% 55% at 15% 70%, rgba(253,250,245,.85) 0%, rgba(253,250,245,0) 55%),
+      linear-gradient(180deg,#f7efe2 0%, #f1e4cf 55%, #ecdfca 100%);
+    background-attachment:fixed; -webkit-font-smoothing:antialiased;
+  }
+  /* Fixed full-page canvas behind the content */
+  #c { position:fixed; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; }
+  .content { position:relative; z-index:2; }
+
+  .hero { height:100svh; min-height:640px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; padding:0 24px; }
+  .wordmark { margin-top:30vh; font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(56px,12vw,128px); letter-spacing:.18em; line-height:1;
+    opacity:0; transform:translateY(18px); animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .1s forwards; }
+  .wordmark .acc { color:var(--gold); }
+  .sub { display:flex; align-items:center; gap:16px; margin-top:18px; opacity:0; transform:translateY(18px); animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .35s forwards; }
+  .sub span.line { width:40px; height:1px; background:rgba(184,144,74,.5); }
+  .sub span.txt { font-size:.7rem; font-weight:500; text-transform:uppercase; letter-spacing:.32em; color:var(--muted); }
+  .lead { margin-top:32px; max-width:30rem; font-weight:300; font-size:clamp(15px,2.2vw,18px); line-height:1.7; color:rgba(44,31,14,.7);
+    opacity:0; transform:translateY(18px); animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .6s forwards; }
+  .cue { position:absolute; bottom:32px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px;
+    opacity:0; animation:fadeUp 1s ease .9s forwards; }
+  .cue .t { font-size:.6rem; text-transform:uppercase; letter-spacing:.32em; color:rgba(122,92,56,.7); }
+  .cue .l { width:1px; height:40px; background:linear-gradient(to bottom, rgba(184,144,74,.6), transparent); animation:shimmer 4s ease-in-out infinite; }
+
+  section.block { max-width:64rem; margin:0 auto; padding:7rem 24px; text-align:center; }
+  .kicker { font-size:.7rem; font-weight:600; text-transform:uppercase; letter-spacing:.32em; color:var(--gold); }
+  h2 { font-family:'Playfair Display',serif; font-weight:600; font-size:clamp(28px,5vw,48px); margin-top:16px; }
+  .rule { width:96px; height:1px; margin:24px auto 0; background:linear-gradient(90deg,transparent,rgba(184,144,74,.6),transparent); }
+  .para { max-width:42rem; margin:28px auto 0; font-weight:300; font-size:clamp(15px,2.4vw,18px); line-height:1.75; color:rgba(44,31,14,.75); }
+  .pillars { display:grid; gap:24px; grid-template-columns:1fr; max-width:72rem; margin:0 auto; padding:0 24px 7rem; }
+  @media(min-width:768px){ .pillars{ grid-template-columns:repeat(3,1fr); } }
+  .card { border:1px solid rgba(184,144,74,.2); background:rgba(253,250,245,.7); border-radius:24px; padding:32px; text-align:left;
+    box-shadow:0 10px 40px rgba(139,100,50,.08); backdrop-filter:blur(4px); transition:transform .5s; }
+  .card:hover{ transform:translateY(-4px); }
+  .card .num{ font-family:'Playfair Display',serif; font-weight:700; font-size:48px; color:rgba(184,144,74,.3); }
+  .card h3{ font-family:'Playfair Display',serif; font-weight:600; font-size:24px; margin-top:8px; }
+  .card p{ margin-top:12px; font-weight:300; line-height:1.7; color:rgba(44,31,14,.7); }
+  blockquote{ font-family:'Playfair Display',serif; font-style:italic; font-weight:500; font-size:clamp(26px,5vw,40px); line-height:1.25; }
+  .cta{ display:inline-flex; align-items:center; justify-content:center; margin-top:8px; padding:16px 40px; border-radius:999px;
+    background:linear-gradient(90deg,var(--gold-deep),var(--gold)); color:#fdfaf5; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.32em;
+    text-decoration:none; box-shadow:0 10px 30px rgba(139,100,50,.25); transition:box-shadow .3s; }
+  .cta:hover{ box-shadow:0 14px 40px rgba(139,100,50,.35); }
+  footer{ border-top:1px solid rgba(184,144,74,.15); padding:40px; text-align:center; }
+  footer .w{ font-family:'Playfair Display',serif; font-weight:600; font-size:18px; letter-spacing:.2em; }
+  footer .s{ margin-top:8px; font-size:.7rem; text-transform:uppercase; letter-spacing:.32em; color:rgba(122,92,56,.7); }
+
+  .reveal{ opacity:0; transform:translateY(36px); transition:opacity 1.1s cubic-bezier(.16,1,.3,1), transform 1.1s cubic-bezier(.16,1,.3,1); }
+  .reveal.in{ opacity:1; transform:none; }
+
+  @keyframes fadeUp{ to{ opacity:1; transform:none; } }
+  @keyframes shimmer{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+  .note{ position:fixed; left:12px; bottom:12px; z-index:5; font-size:11px; color:rgba(122,92,56,.6); background:rgba(253,250,245,.7); padding:6px 10px; border-radius:8px; border:1px solid rgba(184,144,74,.2); }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="content">
+  <header class="hero">
+    <h1 class="wordmark">MIND<span class="acc">É</span>A</h1>
+    <div class="sub"><span class="line"></span><span class="txt">Production</span><span class="line"></span></div>
+    <p class="lead">Licht. Identität. Transformation.<br/>Eine ruhige, luxuriöse Markenwelt, getragen von einem goldenen Schmetterling.</p>
+    <div class="cue"><span class="t">Scrollen</span><span class="l"></span></div>
+  </header>
+
+  <section class="block reveal">
+    <div class="kicker">Mindéa Philosophie</div>
+    <h2>Schönheit, die ruht</h2>
+    <div class="rule"></div>
+    <p class="para">Mindéa steht für eine feminine, luxuriöse Markenwelt, in der weniger wirklich mehr ist. Kein Lärm, keine Hektik – nur Klarheit, Wärme und ein goldener Schimmer, der in Erinnerung bleibt.</p>
+  </section>
+
+  <div class="pillars">
+    <div class="card reveal"><div class="num">01</div><h3>Licht</h3><p>Jede Marke trägt ein eigenes Leuchten. Wir machen es sichtbar – warm, klar und unverwechselbar.</p></div>
+    <div class="card reveal"><div class="num">02</div><h3>Identität</h3><p>Aus Werten, Stimme und Ästhetik formen wir eine Identität, die ruhig wirkt und lange trägt.</p></div>
+    <div class="card reveal"><div class="num">03</div><h3>Transformation</h3><p>Wie der Schmetterling begleiten wir Wandel – behutsam, hochwertig und mit Sinn für das Echte.</p></div>
+  </div>
+
+  <section class="block reveal">
+    <div class="rule"></div>
+    <blockquote style="margin:32px 0">„Wahre Eleganz flüstert –<br/>sie schreit nie.“</blockquote>
+    <div class="rule"></div>
+  </section>
+
+  <section class="block reveal">
+    <div class="kicker">Kontakt</div>
+    <h2>Lass uns leuchten</h2>
+    <div class="rule"></div>
+    <p class="para">Bereit, deiner Marke ein goldenes Licht zu geben? Schreib uns – wir antworten ruhig, persönlich und mit Sinn fürs Detail.</p>
+    <div style="margin-top:40px"><a class="cta" href="mailto:hello@mindea.production">Anfrage senden</a></div>
+  </section>
+
+  <footer>
+    <div class="w">MIND<span style="color:var(--gold)">É</span>A</div>
+    <div class="s">Production · Vorschau</div>
+  </footer>
+</div>
+
+<div class="note">Vorschau · Three.js via CDN — bitte beim Öffnen kurz online sein</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(34, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.set(0, 0, 6);
+
+// In-memory studio environment → metallic gold reflections, no HDR fetch.
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+// Warm, soft lighting
+scene.add(new THREE.AmbientLight(0xfff4e0, 0.65));
+const key = new THREE.DirectionalLight(0xfff1d6, 1.5); key.position.set(2.5,4,3); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffd9a0, 0.5); fill.position.set(-3,1,2); scene.add(fill);
+const rim = new THREE.PointLight(0xffe9c2, 0.4); rim.position.set(0,-2,3); scene.add(rim);
+
+// ── Butterfly wing silhouette (bézier), mirrored from the Mindéa logo ──
+function wingShape(){
+  const s = new THREE.Shape();
+  s.moveTo(0.06, 0.92);
+  s.bezierCurveTo(0.72, 1.62, 1.78, 1.5, 1.74, 0.58);
+  s.bezierCurveTo(1.72, 0.22, 1.42, 0.05, 0.92, 0.04);
+  s.bezierCurveTo(1.18, -0.12, 1.46, -0.5, 1.34, -1.02);
+  s.bezierCurveTo(1.18, -1.5, 0.6, -1.56, 0.32, -1.12);
+  s.bezierCurveTo(0.2, -0.92, 0.12, -0.62, 0.16, -0.18);
+  s.bezierCurveTo(0.08, 0.1, 0.05, 0.5, 0.06, 0.92);
+  return s;
+}
+const depth = 0.05;
+const wingGeo = new THREE.ExtrudeGeometry(wingShape(), { depth, bevelEnabled:true, bevelThickness:0.04, bevelSize:0.04, bevelSegments:4, curveSegments:48 });
+wingGeo.translate(0, 0, -depth/2);
+wingGeo.computeVertexNormals();
+
+const gold = new THREE.MeshStandardMaterial({ color:0xc9a13f, metalness:0.95, roughness:0.28, emissive:0x5a4012, emissiveIntensity:0.32, envMapIntensity:1.15, side:THREE.DoubleSide });
+const bodyMat = new THREE.MeshStandardMaterial({ color:0x8b6432, metalness:0.9, roughness:0.38, emissive:0x3a2a0e, emissiveIntensity:0.3, envMapIntensity:1.0 });
+
+const root = new THREE.Group(); root.scale.setScalar(0.62); scene.add(root);
+
+const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 1.5, 8, 18), bodyMat); root.add(body);
+function antenna(mirror){
+  const d = mirror ? -1 : 1;
+  const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(d*0.04,0.82,0), new THREE.Vector3(d*0.32,1.18,0.04), new THREE.Vector3(d*0.46,1.4,0.02));
+  return new THREE.Mesh(new THREE.TubeGeometry(curve,16,0.012,6,false), bodyMat);
+}
+root.add(antenna(false)); root.add(antenna(true));
+
+const rightWing = new THREE.Group(); rightWing.add(new THREE.Mesh(wingGeo, gold)); root.add(rightWing);
+const leftWing = new THREE.Group(); leftWing.scale.x = -1; leftWing.add(new THREE.Mesh(wingGeo, gold)); root.add(leftWing);
+
+// ── GPU golden light-dust trail ──
+const isMobile = window.matchMedia('(max-width:768px)').matches;
+const COUNT = isMobile ? 220 : 480;
+const LIFESPAN = 1.7;
+const positions = new Float32Array(COUNT*3);
+const aLife = new Float32Array(COUNT);
+const aSize = new Float32Array(COUNT);
+const vels = new Float32Array(COUNT*3);
+for(let i=0;i<COUNT;i++){ positions[i*3+1] = -9999; aSize[i] = 9 + Math.random()*16; }
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+pGeo.setAttribute('aLife', new THREE.BufferAttribute(aLife,1));
+pGeo.setAttribute('aSize', new THREE.BufferAttribute(aSize,1));
+const pMat = new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  uniforms:{ uColorWarm:{value:new THREE.Color(0xf2d493)}, uColorDeep:{value:new THREE.Color(0xc9962f)} },
+  vertexShader:`attribute float aLife; attribute float aSize; varying float vLife;
+    void main(){ vLife=aLife; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_PointSize=aSize*aLife*(300.0/-mv.z); gl_Position=projectionMatrix*mv; }`,
+  fragmentShader:`varying float vLife; uniform vec3 uColorWarm; uniform vec3 uColorDeep;
+    void main(){ vec2 c=gl_PointCoord-0.5; float d=length(c); if(d>0.5) discard; float core=smoothstep(0.5,0.0,d);
+    vec3 col=mix(uColorDeep,uColorWarm,core); gl_FragColor=vec4(col, core*vLife); }`
+});
+const points = new THREE.Points(pGeo, pMat); points.frustumCulled = false; scene.add(points);
+
+let head=0; const lastPos=new THREE.Vector3(); const curPos=new THREE.Vector3(); let inited=false; const tmpVel=new THREE.Vector3();
+
+// ── Interaction state ──
+let scrollProgress = 0;
+function updateScroll(){
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  scrollProgress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+}
+window.addEventListener('scroll', updateScroll, { passive:true }); updateScroll();
+
+const pointer = { x:0, y:0 };
+window.addEventListener('pointermove', (e)=>{ pointer.x = (e.clientX/window.innerWidth)*2-1; pointer.y = -((e.clientY/window.innerHeight)*2-1); });
+const MAX_TILT = THREE.MathUtils.degToRad(9);
+const tilt = { x:0, y:0 };
+const eased = { x:0, y:0, z:0, rotY:0 };
+
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const delta = Math.min(clock.getDelta(), 1/30);
+  const t = clock.elapsedTime;
+
+  // Wing flap — slow, elegant, slight resting dihedral
+  const flap = -0.18 + Math.sin(t*1.6)*0.55;
+  leftWing.rotation.y = flap; rightWing.rotation.y = -flap;
+
+  // Idle float
+  const bob = Math.sin(t*0.6)*0.12;
+  const sway = Math.sin(t*0.4)*0.05;
+
+  // Scroll choreography
+  const tx = Math.sin(scrollProgress*Math.PI*1.5)*1.45;
+  const ty = 0.15 - scrollProgress*1.25;
+  const tz = Math.sin(scrollProgress*Math.PI)*-0.6;
+  const trY = scrollProgress*0.9;
+  const s = 1 - Math.exp(-3*delta);
+  eased.x += (tx-eased.x)*s; eased.y += (ty-eased.y)*s; eased.z += (tz-eased.z)*s; eased.rotY += (trY-eased.rotY)*s;
+
+  // Cursor tilt (damped, clamped)
+  const ct = 1 - Math.exp(-2.6*delta);
+  tilt.x += (-pointer.y*MAX_TILT - tilt.x)*ct;
+  tilt.y += ( pointer.x*MAX_TILT - tilt.y)*ct;
+
+  root.position.set(eased.x, eased.y + bob, eased.z);
+  root.rotation.set(tilt.x + sway*0.4, eased.rotY + tilt.y, sway);
+  root.getWorldPosition(curPos);
+
+  // Trail emission + aging
+  if(!inited){ lastPos.copy(curPos); inited=true; }
+  const vel = tmpVel.copy(curPos).sub(lastPos);
+  const speed = vel.length();
+  const emit = Math.min(6, 1 + Math.floor(speed*140));
+  for(let e=0;e<emit;e++){
+    const i=head; head=(head+1)%COUNT; const i3=i*3;
+    positions[i3]   = curPos.x - vel.x*Math.random()*6 + (Math.random()-0.5)*0.22;
+    positions[i3+1] = curPos.y - vel.y*Math.random()*6 + (Math.random()-0.5)*0.22;
+    positions[i3+2] = curPos.z - vel.z*Math.random()*6 + (Math.random()-0.5)*0.22;
+    vels[i3]   = -vel.x*2 + (Math.random()-0.5)*0.06;
+    vels[i3+1] = 0.05 + Math.random()*0.08;
+    vels[i3+2] = -vel.z*2 + (Math.random()-0.5)*0.06;
+    aLife[i]=1;
+  }
+  for(let i=0;i<COUNT;i++){
+    if(aLife[i]<=0) continue;
+    aLife[i] -= delta/LIFESPAN; if(aLife[i]<0) aLife[i]=0;
+    const i3=i*3;
+    positions[i3]+=vels[i3]*delta; positions[i3+1]+=vels[i3+1]*delta; positions[i3+2]+=vels[i3+2]*delta;
+    vels[i3]*=0.94; vels[i3+2]*=0.94;
+  }
+  lastPos.copy(curPos);
+  pGeo.attributes.position.needsUpdate = true;
+  pGeo.attributes.aLife.needsUpdate = true;
+
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Section reveals
+const io = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('in'); }); }, { threshold:0.15 });
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
