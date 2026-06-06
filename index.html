@@ -259,6 +259,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tc);heigh
       <button onclick="openMod('showcase')" class="sb-item">🏆 Showcase</button>
       <button onclick="openMod('projekte')" class="sb-item">📋 Projekte</button>
       <button onclick="openMod('preiscoach')" class="sb-item">💎 Preis-Coach</button>
+      <button onclick="openMod('rechner')" class="sb-item">🧮 Preisrechner</button>
     </div>
     <div style="font-size:9px;color:var(--b);font-weight:700;letter-spacing:2px;margin-bottom:8px">FÜR KUNDEN</div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
@@ -400,6 +401,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tc);heigh
         <button class="module-item" onclick="openMod('showcase')"><span class="module-item-icon">🏆</span><div><span class="module-item-title">Showcase</span><div class="module-item-sub">Referenzen & Social Proof</div></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
         <button class="module-item" onclick="openMod('projekte')"><span class="module-item-icon">📋</span><div><span class="module-item-title">Projekte</span></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
         <button class="module-item" onclick="openMod('preiscoach')"><span class="module-item-icon">💎</span><div><span class="module-item-title">Preis-Coach</span><div class="module-item-sub">Einwände kontern, nie Rabatt</div></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
+        <button class="module-item" onclick="openMod('rechner')"><span class="module-item-icon">🧮</span><div><span class="module-item-title">Preisrechner</span><div class="module-item-sub">Vergleich pro Drehtag</div></div><span class="module-item-arrow" style="color:#2e7d5e">›</span></button>
       </div>
     </div>
 
@@ -583,6 +585,7 @@ const MOD_META = {
   leadfinder:{title:'Lead-Finder',sub:'Neue Leads finden',    icon:'🔍', ac:'#2e7d5e'},
   showcase:{title:'Showcase',     sub:'Referenzen & Proof',    icon:'🏆', ac:'#2e7d5e'},
   preiscoach:{title:'Preis-Coach',sub:'Einwände kontern',      icon:'💎', ac:'#2e7d5e', chat:1},
+  rechner: {title:'Preisrechner', sub:'Vergleich pro Drehtag',  icon:'🧮', ac:'#2e7d5e'},
   projekte:{title:'Projekte',      sub:'Aufgaben & Status',     icon:'📋', ac:'#2e7d5e'},
   briefing:{title:'Briefing',      sub:'Kunden-Aufnahme',       icon:'📋', ac:'#4a7a96'},
   angebot: {title:'Angebote',      sub:'Individuell',           icon:'📄', ac:'#4a7a96'},
@@ -1038,7 +1041,7 @@ function openMod(id) {
 }
 function getAreaLabel(id) {
   if (['luna','heute','reels','post','story','text','mail','scriptdir','kalender','wochenplan','analytics','launchplan'].includes(id)) return 'FÜR DICH';
-  if (['sales','leadfinder','showcase','projekte','preiscoach','leadquellen'].includes(id)) return 'BUSINESS';
+  if (['sales','leadfinder','showcase','projekte','preiscoach','rechner','leadquellen'].includes(id)) return 'BUSINESS';
   if (['briefing','angebot','bp','bs','bi','prompts'].includes(id)) return 'FÜR KUNDEN';
   return 'KI WISSEN';
 }
@@ -1089,6 +1092,7 @@ function renderMod(id) {
   else if (id==='sales') renderSales(body);
   else if (id==='leadfinder') renderLeadFinder(body);
   else if (id==='showcase') renderShowcase(body);
+  else if (id==='rechner') renderRechner(body);
   else if (id==='preiscoach') renderChatMod(body, id);
   else if (id==='projekte') renderProjekte(body);
   else if (id==='briefing') renderBriefing(body);
@@ -2458,6 +2462,175 @@ async function genWochenplan(kw) {
   const r = await callApi(CD+' WOCHENPLAN KW'+kw+' mit SALES-FOKUS. JEDER Post hat ein SALES-ZIEL. Mo:AUTHORITY Reel(Ziel:DMs ausloesen) Di:Pause/Engagement Mi:SOCIAL PROOF(Ziel:Vertrauen,Paket erwaehnen) Do:Pause/Engagement Fr:OFFER/CTA(Ziel:Direkte Anfragen) Sa:Pause So:STORY/BTS(Ziel:Nahbarkeit,DM-Einladung). Pro Post: Format, Thema, Hook, SALES-ZIEL, CTA-Text. Reiner Text.','KW:'+kw+' Offene Leads:'+offeneLeads+' Pipeline:'+pipeline+'EUR Gebucht:'+gebucht+'EUR Ziel:5000EUR Pakete:BP398+BS598+BI898',4000,true);
   lsSet('mindea-wochenplan-'+kw, r);
   renderMod('wochenplan');
+}
+
+// ─── PREISRECHNER ────────────────────────────────────────────────────────
+// Kosten einer klassischen Werbespot-Produktion (Beispielwerte, pro Drehtag)
+const RECHNER_POSTEN = [
+  {label:'Videograf',              val:900, je:'Tag'},
+  {label:'Fotograf',               val:600, je:'Tag'},
+  {label:'Assistenz',              val:300, je:'Tag'},
+  {label:'Location',               val:500, je:'Tag'},
+  {label:'Konzept & Regie',        val:700, je:'Tag'},
+  {label:'Organisation & Styling', val:400, je:'Tag'},
+];
+const RECHNER_POST = 900; // Schnitt & Postproduktion, einmal pro Projekt
+const RECHNER_TAGESSATZ = RECHNER_POSTEN.reduce((s,p)=>s+p.val,0); // 3.400 €/Tag
+const RECHNER_PAKETE = {
+  presence:{name:'Brand Presence', preis:398, tage:1, umfang:'1 kurzer cinematischer Werbespot · 10 Markenbilder'},
+  story:   {name:'Brand Story',    preis:598, tage:2, umfang:'1 emotionaler Markenfilm mit Storytelling'},
+  impact:  {name:'Brand Impact',   preis:998, tage:3, umfang:'1 größerer Werbespot mit stärkerer Markenwirkung'},
+};
+let rechnerSel = 'presence';
+const fmtE = n => Math.round(n).toLocaleString('de-DE') + ' €';
+
+function renderRechner(body) {
+  // Header
+  const head = div('');
+  head.style.cssText = 'margin-bottom:18px';
+  head.innerHTML =
+    '<h1 style="font-family:\'Playfair Display\',serif;font-size:23px;font-weight:700;color:var(--tc);line-height:1.25;letter-spacing:.3px">Was kostet dein Werbespot wirklich?</h1>'
+    +'<p style="font-size:12px;color:var(--ts);line-height:1.6;margin-top:8px">Vergleiche ein Mindéa Paket mit einer klassischen Produktion pro Drehtag.</p>';
+  body.appendChild(head);
+
+  // Paketauswahl
+  const lbl = div('field-label');
+  lbl.style.cssText = 'font-size:10px;color:var(--tm);font-weight:600;letter-spacing:1.5px;margin-bottom:9px;text-transform:uppercase';
+  lbl.textContent = 'Wähle dein Mindéa Paket';
+  body.appendChild(lbl);
+
+  const sel = div('');
+  sel.id = 'rechner-pakete';
+  sel.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-bottom:18px';
+  body.appendChild(sel);
+  paintRechnerPakete();
+
+  // Ergebnis
+  const res = div('');
+  res.id = 'rechner-result';
+  body.appendChild(res);
+  paintRechnerResult();
+
+  // Aufschlüsselung Tagessatz
+  const br = div('card');
+  br.style.marginTop = '4px';
+  let rows = RECHNER_POSTEN.map(p =>
+    '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bd);font-size:12px"><span style="color:var(--ts)">'+p.label+'</span><span style="color:var(--tc);font-weight:600">'+fmtE(p.val)+' <span style="color:var(--tm);font-weight:400;font-size:10px">/ '+p.je+'</span></span></div>'
+  ).join('');
+  br.innerHTML =
+    '<div style="font-size:11px;font-weight:700;color:var(--tc);letter-spacing:1px;margin-bottom:6px">KLASSISCHER PRODUKTIONSTAG</div>'
+    +rows
+    +'<div style="display:flex;justify-content:space-between;padding:9px 0 3px;font-size:12px;font-weight:700"><span style="color:var(--tc)">Tageskosten gesamt</span><span style="color:var(--g)">'+fmtE(RECHNER_TAGESSATZ)+' / Tag</span></div>'
+    +'<div style="display:flex;justify-content:space-between;padding:7px 0 0;border-top:1px solid var(--bd);font-size:12px"><span style="color:var(--ts)">Schnitt & Postproduktion</span><span style="color:var(--tc);font-weight:600">'+fmtE(RECHNER_POST)+' <span style="color:var(--tm);font-weight:400;font-size:10px">/ Projekt</span></span></div>';
+  body.appendChild(br);
+
+  // Hinweis
+  const note = div('');
+  note.style.cssText = 'margin:6px 2px 24px;font-size:10.5px;color:var(--tm);line-height:1.7;font-style:italic';
+  note.textContent = 'Die klassischen Produktionskosten sind Beispielwerte und können je nach Team, Location und Aufwand variieren.';
+  body.appendChild(note);
+}
+
+function rechnerCalc(key) {
+  const p = RECHNER_PAKETE[key];
+  const tageskosten = RECHNER_TAGESSATZ * p.tage;
+  const klassisch = tageskosten + RECHNER_POST;
+  const ersparnis = klassisch - p.preis;
+  return {p, tageskosten, klassisch, ersparnis};
+}
+
+function selRechner(key) {
+  rechnerSel = key;
+  paintRechnerPakete();
+  paintRechnerResult();
+}
+
+function paintRechnerPakete() {
+  const wrap = document.getElementById('rechner-pakete');
+  if (!wrap) return;
+  wrap.innerHTML = Object.keys(RECHNER_PAKETE).map(key => {
+    const p = RECHNER_PAKETE[key];
+    const on = key === rechnerSel;
+    return '<button onclick="selRechner(\''+key+'\')" style="width:100%;text-align:left;cursor:pointer;border-radius:var(--cr);padding:13px 15px;transition:all .2s;'
+      +(on
+        ? 'background:var(--gg);border:1.5px solid transparent;box-shadow:var(--sm)'
+        : 'background:var(--bc);border:1.5px solid var(--bd);box-shadow:var(--sh)')+'">'
+      +'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">'
+        +'<span style="font-family:\'Playfair Display\',serif;font-size:15px;font-weight:600;color:'+(on?'#fff':'var(--tc)')+'">Mindéa '+p.name+'</span>'
+        +'<span style="font-size:15px;font-weight:700;color:'+(on?'#fff':'var(--g)')+';white-space:nowrap">'+fmtE(p.preis)+'</span>'
+      +'</div>'
+      +'<div style="font-size:11px;line-height:1.55;margin-top:4px;color:'+(on?'rgba(255,255,255,.82)':'var(--ts)')+'">'+p.umfang+'</div>'
+      +'<div style="font-size:10px;letter-spacing:.5px;margin-top:6px;color:'+(on?'rgba(255,255,255,.65)':'var(--tm)')+'">≈ '+p.tage+' Produktionstag'+(p.tage>1?'e':'')+' klassisch</div>'
+      +'</button>';
+  }).join('');
+}
+
+function paintRechnerResult() {
+  const wrap = document.getElementById('rechner-result');
+  if (!wrap) return;
+  const {p, tageskosten, klassisch, ersparnis} = rechnerCalc(rechnerSel);
+  const pctMindea = Math.max(6, Math.round(p.preis / klassisch * 100));
+
+  // Kennzahlen
+  const kpi = (lbl, val, sub, accent) =>
+    '<div style="background:var(--bc);border:1.5px solid '+(accent?'rgba(46,125,94,.3)':'var(--bd)')+';border-radius:var(--cr);padding:13px 12px;box-shadow:var(--sh)">'
+      +'<div style="font-size:9px;letter-spacing:1px;color:var(--tm);font-weight:600;text-transform:uppercase">'+lbl+'</div>'
+      +'<div style="font-family:\'Playfair Display\',serif;font-size:19px;font-weight:700;color:'+(accent?'#2e7d5e':'var(--tc)')+';margin-top:4px;line-height:1">'+val+'</div>'
+      +(sub?'<div style="font-size:10px;color:var(--ts);margin-top:3px">'+sub+'</div>':'')
+    +'</div>';
+
+  // Vergleichsbalken
+  const bar = (lbl, val, pct, fill, txtCol) =>
+    '<div style="margin-bottom:11px">'
+      +'<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span style="color:var(--ts);font-weight:500">'+lbl+'</span><span style="color:'+txtCol+';font-weight:700">'+val+'</span></div>'
+      +'<div style="height:12px;border-radius:7px;background:var(--gbg);overflow:hidden"><div style="height:100%;width:'+pct+'%;border-radius:7px;background:'+fill+';transition:width .4s ease"></div></div>'
+    +'</div>';
+
+  // Skala 1 / 2 / 3 Tage
+  const scale = [1,2,3].map(t => {
+    const on = t === p.tage;
+    return '<div style="flex:1;text-align:center">'
+      +'<div style="width:14px;height:14px;border-radius:50%;margin:0 auto 6px;'+(on?'background:var(--gg);box-shadow:0 0 0 4px var(--gba)':'background:var(--bc);border:2px solid var(--bd)')+'"></div>'
+      +'<div style="font-size:11px;font-weight:'+(on?'700':'500')+';color:'+(on?'var(--g)':'var(--tm)')+'">'+t+' Tag'+(t>1?'e':'')+'</div>'
+    +'</div>';
+  }).join('');
+
+  wrap.innerHTML =
+    // Skala
+    '<div class="card" style="margin-bottom:12px">'
+      +'<div style="font-size:10px;letter-spacing:1.5px;color:var(--tm);font-weight:600;text-transform:uppercase;margin-bottom:12px">Geschätzte klassische Produktionstage</div>'
+      +'<div style="position:relative;margin-bottom:4px">'
+        +'<div style="position:absolute;top:7px;left:16%;right:16%;height:2px;background:var(--bd)"></div>'
+        +'<div style="position:relative;display:flex;justify-content:space-between">'+scale+'</div>'
+      +'</div>'
+    +'</div>'
+    // KPIs
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">'
+      +kpi('Mindéa Preis', fmtE(p.preis), 'Fixpreis · Mindéa '+p.name, false)
+      +kpi('Klassische Tage', '≈ '+p.tage, fmtE(RECHNER_TAGESSATZ)+' / Tag', false)
+      +kpi('Klassisch gesamt', fmtE(klassisch), p.tage+' Tag'+(p.tage>1?'e':'')+' + Post', false)
+      +kpi('Deine Ersparnis', fmtE(ersparnis), 'gegenüber klassisch', true)
+    +'</div>'
+    // Vergleichsbalken
+    +'<div class="card" style="margin-bottom:12px">'
+      +'<div style="font-size:10px;letter-spacing:1.5px;color:var(--tm);font-weight:600;text-transform:uppercase;margin-bottom:12px">Vergleich</div>'
+      +bar('Mindéa Fixpreis', fmtE(p.preis), pctMindea, 'var(--gg)', 'var(--g)')
+      +bar('Klassische Produktion', fmtE(klassisch), 100, 'linear-gradient(135deg,#7a5c38,#9a7a52)', 'var(--tc)')
+      +'<div style="margin-top:6px;padding-top:11px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">'
+        +'<span style="font-size:12px;color:var(--tc);font-weight:600">Ersparnis durch Mindéa</span>'
+        +'<span style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:700;color:#2e7d5e">'+fmtE(ersparnis)+'</span>'
+      +'</div>'
+    +'</div>'
+    // Berechnung transparent
+    +'<div class="card" style="margin-bottom:12px;background:var(--gbg);border-color:transparent">'
+      +'<div style="font-size:11px;color:var(--ts);line-height:1.7">'
+        +'<strong style="color:var(--tc)">So rechnet sich das:</strong><br>'
+        +p.tage+' × '+fmtE(RECHNER_TAGESSATZ)+' (Drehtag) = '+fmtE(tageskosten)+'<br>'
+        +'+ '+fmtE(RECHNER_POST)+' (Schnitt & Postproduktion, einmalig)<br>'
+        +'= '+fmtE(klassisch)+' klassische Produktion<br>'
+        +'− '+fmtE(p.preis)+' Mindéa Fixpreis = <strong style="color:#2e7d5e">'+fmtE(ersparnis)+' Ersparnis</strong>'
+      +'</div>'
+    +'</div>';
 }
 
 // ─── ANALYTICS ───────────────────────────────────────────────────────────
