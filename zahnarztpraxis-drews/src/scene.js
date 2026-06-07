@@ -10,13 +10,15 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
-export function createHeroScene(host, { gsap, ScrollTrigger }) {
+export function createHeroScene(host, { gsap, ScrollTrigger, lowPower = false }) {
   const width = () => host.clientWidth || window.innerWidth;
   const height = () => host.clientHeight || window.innerHeight;
+  const isNarrow = () => window.innerWidth < 921;
+  const maxDPR = lowPower ? 1.5 : 2; // auf Mobil die Pixeldichte deckeln
 
   /* ---------- Renderer ---------- */
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const renderer = new THREE.WebGLRenderer({ antialias: !lowPower, alpha: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDPR));
   renderer.setSize(width(), height());
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -49,18 +51,34 @@ export function createHeroScene(host, { gsap, ScrollTrigger }) {
 
   /* ---------- Abstraktes Emaille-Objekt ---------- */
   const group = new THREE.Group();
-  group.position.x = 1.35; // nach rechts, damit links Platz für Text bleibt
+  let baseY = 0; // Grund-Höhe, wird je nach Viewport gesetzt
+  function layoutGroup() {
+    if (isNarrow()) {
+      // schmal: mittig, etwas tiefer und kleiner, damit der Text frei bleibt
+      group.position.x = 0;
+      baseY = -0.55;
+      group.scale.setScalar(0.82);
+    } else {
+      group.position.x = 1.35;
+      baseY = 0;
+      group.scale.setScalar(1);
+    }
+  }
+  layoutGroup();
   scene.add(group);
 
-  const geo = new THREE.IcosahedronGeometry(1.55, 24);
+  const detail = lowPower ? 12 : 24; // weniger Geometrie auf Mobil
+  const geo = new THREE.IcosahedronGeometry(1.55, detail);
   deform(geo, 0.16);
   geo.computeVertexNormals();
 
+  // Transmission ist der teuerste Effekt, auf Mobil etwas zurücknehmen.
+  const baseTransmission = lowPower ? 0.32 : 0.5;
   const material = new THREE.MeshPhysicalMaterial({
     color: 0xf4efe5,
     roughness: 0.38,
     metalness: 0.0,
-    transmission: 0.5,
+    transmission: baseTransmission,
     thickness: 1.4,
     ior: 1.42,
     clearcoat: 0.55,
@@ -85,10 +103,11 @@ export function createHeroScene(host, { gsap, ScrollTrigger }) {
   const particles = makeParticles();
   scene.add(particles.points);
 
-  /* ---------- Postprocessing: dezente Tiefenschärfe ---------- */
+  /* ---------- Postprocessing: dezente Tiefenschärfe (nur Desktop) ---------- */
   let composer = null;
   let bokeh = null;
   try {
+    if (lowPower) throw new Error('skip-postprocessing'); // Mobil ohne Bokeh, schont GPU
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     bokeh = new BokehPass(scene, camera, { focus: 6.2, aperture: 0.0006, maxblur: 0.006 });
@@ -146,9 +165,9 @@ export function createHeroScene(host, { gsap, ScrollTrigger }) {
     // Kamera nähert und senkt sich beim Scrollen, Objekt gleitet weg
     camera.position.z = 6.2 - p * 1.6;
     camera.position.y = p * 0.8;
-    group.position.y = -p * 1.2;
+    group.position.y = baseY - p * 1.2;
     group.rotation.z = p * 0.3;
-    enamel.material.transmission = 0.5 + p * 0.2;
+    enamel.material.transmission = baseTransmission + p * 0.2;
     camera.lookAt(group.position.x * 0.4, 0, 0);
 
     // Partikel leicht treiben lassen
@@ -168,6 +187,7 @@ export function createHeroScene(host, { gsap, ScrollTrigger }) {
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
     if (composer) composer.setSize(w, h);
+    layoutGroup(); // Position/Größe je nach Breite neu setzen
   }
   window.addEventListener('resize', onResize);
 
@@ -192,7 +212,7 @@ export function createHeroScene(host, { gsap, ScrollTrigger }) {
   }
 
   function makeParticles() {
-    const count = 280;
+    const count = lowPower ? 120 : 280;
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const r = 4 + Math.random() * 6;

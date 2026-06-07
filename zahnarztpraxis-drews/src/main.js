@@ -10,8 +10,22 @@ gsap.registerPlugin(ScrollTrigger);
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isFinePointer = window.matchMedia('(pointer: fine)').matches;
 const isDesktop = window.matchMedia('(min-width: 921px)').matches;
-// 3D nur, wenn es sich lohnt und niemandem schadet.
-const allow3D = isDesktop && isFinePointer && !prefersReducedMotion;
+
+// WebGL-Fähigkeit prüfen, damit wir nie ins Leere starten.
+function hasWebGL() {
+  try {
+    const c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+  } catch (e) {
+    return false;
+  }
+}
+
+// 3D auf Desktop UND Mobil/Touch. Nur bei reduzierter Bewegung oder fehlendem
+// WebGL bleibt der edle Verlauf stehen. Auf kleinen Geräten läuft eine
+// leichtere Variante (siehe lowPower), damit es flüssig bleibt.
+const allow3D = !prefersReducedMotion && hasWebGL();
+const lowPower = !isDesktop; // Mobil bzw. schmale Viewports schonender rendern
 
 /* ---------- Jahr im Footer ---------- */
 document.getElementById('yr').textContent = new Date().getFullYear();
@@ -52,6 +66,10 @@ async function initSmoothScroll() {
     duration: 1.15,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
+    // Touch ebenfalls per JS steuern, damit die 3D-Szene beim Swipen
+    // ohne Ruckler weiterläuft (iOS pausiert sonst rAF während des Scrollens).
+    syncTouch: true,
+    syncTouchLerp: 0.09,
     touchMultiplier: 1.6,
   });
   lenis.on('scroll', () => {
@@ -108,7 +126,7 @@ function lazyInit3D() {
           io.disconnect();
           try {
             const { createHeroScene } = await import('./scene.js');
-            createHeroScene(host, { gsap, ScrollTrigger });
+            createHeroScene(host, { gsap, ScrollTrigger, lowPower });
             document.body.classList.add('scene-on');
           } catch (err) {
             // Wenn WebGL fehlschlägt, bleibt der edle Verlauf stehen.
