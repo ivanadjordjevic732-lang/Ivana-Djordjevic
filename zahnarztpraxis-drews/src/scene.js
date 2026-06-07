@@ -8,7 +8,35 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+
+/* Kompakte 3D-Simplex-Noise (Ashima/Stefan Gustavson) für das GPU-Displacement. */
+const NOISE_GLSL = /* glsl */ `
+vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x,289.0);}
+vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+float snoise(vec3 v){
+  const vec2 C=vec2(1.0/6.0,1.0/3.0);const vec4 D=vec4(0.0,0.5,1.0,2.0);
+  vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);
+  vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.0-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);
+  vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;
+  i=mod(i,289.0);
+  vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+  float n_=1.0/7.0;vec3 ns=n_*D.wyz-D.xzx;
+  vec4 j=p-49.0*floor(p*ns.z*ns.z);
+  vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);
+  vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.0-abs(x)-abs(y);
+  vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);
+  vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;vec4 sh=-step(h,vec4(0.0));
+  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+  vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
+  vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+  p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+  vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);m=m*m;
+  return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+}
+`;
+
 
 export function createHeroScene(host, { gsap, ScrollTrigger, lowPower = false }) {
   const width = () => host.clientWidth || window.innerWidth;
@@ -72,32 +100,72 @@ export function createHeroScene(host, { gsap, ScrollTrigger, lowPower = false })
   deform(geo, 0.16);
   geo.computeVertexNormals();
 
+  // Gemeinsame Zeit-Uniform für die lebendige Oberfläche.
+  const uTime = { value: 0 };
+
   // Transmission ist der teuerste Effekt, auf Mobil etwas zurücknehmen.
   const baseTransmission = lowPower ? 0.32 : 0.5;
   const material = new THREE.MeshPhysicalMaterial({
     color: 0xf4efe5,
-    roughness: 0.38,
+    roughness: 0.36,
     metalness: 0.0,
     transmission: baseTransmission,
     thickness: 1.4,
     ior: 1.42,
-    clearcoat: 0.55,
-    clearcoatRoughness: 0.45,
-    sheen: 0.6,
+    clearcoat: 0.6,
+    clearcoatRoughness: 0.4,
+    sheen: 0.65,
     sheenColor: new THREE.Color(0xfff3df),
+    // feines Perlmutt-Schimmern, sehr dezent, nie comichaft
+    iridescence: lowPower ? 0.0 : 0.22,
+    iridescenceIOR: 1.3,
+    iridescenceThicknessRange: [120, 420],
     attenuationColor: new THREE.Color(0xe9e1cf),
     attenuationDistance: 4,
-    envMapIntensity: 1.05,
+    envMapIntensity: 1.1,
   });
+
+  // GPU-Displacement: die Oberfläche „atmet" sanft, ohne CPU-Last.
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uTime = uTime;
+    shader.uniforms.uAmp = { value: lowPower ? 0.05 : 0.085 };
+    shader.uniforms.uFreq = { value: 1.15 };
+    shader.uniforms.uSpeed = { value: 0.22 };
+    shader.vertexShader =
+      'uniform float uTime;uniform float uAmp;uniform float uFreq;uniform float uSpeed;\n' +
+      NOISE_GLSL +
+      shader.vertexShader.replace(
+        '#include <begin_vertex>',
+        `#include <begin_vertex>
+         float nAmp = snoise(normalize(position) * uFreq + vec3(0.0, 0.0, uTime * uSpeed));
+         transformed += normal * nAmp * uAmp;`
+      );
+  };
+
   const enamel = new THREE.Mesh(geo, material);
   group.add(enamel);
 
-  // dezenter Gold-Kern als Glanzpunkt
+  // dezenter Gold-Kern als Glanzpunkt (leuchtet leicht für den Bloom)
   const core = new THREE.Mesh(
     new THREE.IcosahedronGeometry(0.55, 6),
-    new THREE.MeshStandardMaterial({ color: 0xb08a4e, roughness: 0.3, metalness: 0.6, emissive: 0x3a2a12, emissiveIntensity: 0.4 })
+    new THREE.MeshStandardMaterial({ color: 0xc89a57, roughness: 0.28, metalness: 0.65, emissive: 0xb0833f, emissiveIntensity: 0.7 })
   );
   group.add(core);
+
+  // weicher Lichthof hinter dem Objekt für räumliche Tiefe
+  const glow = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map: makeGlowTexture(),
+      color: 0xffe6b8,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    })
+  );
+  glow.scale.set(7, 7, 1);
+  glow.position.set(group.position.x, baseY, -1.2);
+  scene.add(glow);
 
   /* ---------- Partikelfeld ---------- */
   const particles = makeParticles();
@@ -112,6 +180,9 @@ export function createHeroScene(host, { gsap, ScrollTrigger, lowPower = false })
     composer.addPass(new RenderPass(scene, camera));
     bokeh = new BokehPass(scene, camera, { focus: 6.2, aperture: 0.0006, maxblur: 0.006 });
     composer.addPass(bokeh);
+    // sehr dezenter Bloom: lässt nur Goldkern und Glanzlichter weich strahlen
+    const bloom = new UnrealBloomPass(new THREE.Vector2(width(), height()), 0.35, 0.7, 0.9);
+    composer.addPass(bloom);
     composer.addPass(new OutputPass());
     composer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     composer.setSize(width(), height());
@@ -151,6 +222,10 @@ export function createHeroScene(host, { gsap, ScrollTrigger, lowPower = false })
     if (!running) return;
     const t = clock.getElapsedTime();
     const p = scrollState.progress;
+    uTime.value = t; // lässt die Oberfläche atmen
+
+    // langsam bewegte Umgebungsreflexionen für mehr Lebendigkeit
+    if (scene.environmentRotation) scene.environmentRotation.y = t * 0.05;
 
     // sanfte Eigenrotation
     group.rotation.y = t * 0.18 + pointer.x * 0.4;
@@ -169,6 +244,11 @@ export function createHeroScene(host, { gsap, ScrollTrigger, lowPower = false })
     group.rotation.z = p * 0.3;
     enamel.material.transmission = baseTransmission + p * 0.2;
     camera.lookAt(group.position.x * 0.4, 0, 0);
+
+    // Halo folgt dem Objekt und blendet beim Scrollen sanft aus
+    glow.position.x = group.position.x;
+    glow.position.y = group.position.y;
+    glow.material.opacity = (0.5 + Math.sin(t * 0.8) * 0.06) * (1 - p * 0.7);
 
     // Partikel leicht treiben lassen
     particles.points.rotation.y = t * 0.02 + pointer.x * 0.15;
@@ -209,6 +289,23 @@ export function createHeroScene(host, { gsap, ScrollTrigger, lowPower = false })
       pos.setXYZ(i, v.x, v.y, v.z);
     }
     pos.needsUpdate = true;
+  }
+
+  function makeGlowTexture() {
+    const size = 256;
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    g.addColorStop(0, 'rgba(255,255,255,0.9)');
+    g.addColorStop(0.25, 'rgba(255,225,170,0.55)');
+    g.addColorStop(0.6, 'rgba(176,138,78,0.15)');
+    g.addColorStop(1, 'rgba(176,138,78,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, size, size);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
   }
 
   function makeParticles() {

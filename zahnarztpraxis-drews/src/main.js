@@ -1,7 +1,7 @@
 import './style.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { initReveals, initParallax, heroIntro } from './animations.js';
+import { initReveals, initParallax, heroIntro, initCounters } from './animations.js';
 import { initCursor } from './cursor.js';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -105,6 +105,7 @@ async function start() {
   await initSmoothScroll();
   heroIntro(gsap, prefersReducedMotion);
   initReveals(gsap, ScrollTrigger);
+  initCounters(gsap, ScrollTrigger);
   if (!prefersReducedMotion) initParallax(gsap, ScrollTrigger);
   if (isFinePointer && isDesktop) initCursor(gsap);
 

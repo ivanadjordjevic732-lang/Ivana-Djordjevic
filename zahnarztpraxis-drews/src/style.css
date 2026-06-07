@@ -139,6 +139,9 @@ body.scene-on .card-photo .photo-slot{opacity:0;transition:opacity .8s ease}
 .eyebrow::before{content:"";width:28px;height:1.5px;background:var(--gold)}
 .hero h1{font-size:clamp(2.6rem,6vw,4.6rem);margin-bottom:24px}
 .hero h1 em{font-style:italic;color:var(--gold)}
+/* Wort-für-Wort-Reveal der Headline */
+.hero h1 .word{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.05em}
+.hero h1 .word-in{display:inline-block;will-change:transform}
 .hero p.lead{font-size:1.16rem;max-width:30em;color:#3a544e;margin-bottom:34px}
 .hero-cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:36px}
 .trust{display:flex;flex-wrap:wrap;gap:26px;align-items:center;padding-top:30px;border-top:1px solid rgba(30,78,71,.14)}

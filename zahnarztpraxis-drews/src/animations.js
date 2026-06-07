@@ -1,19 +1,80 @@
 /* GSAP-gesteuerte Reveals, Hero-Intro und Parallax. */
 
 export function heroIntro(gsap, reduced) {
-  const items = document.querySelectorAll('.hero-reveal');
+  const items = gsap.utils.toArray('.hero-reveal');
   if (!items.length) return;
   if (reduced) {
     gsap.set(items, { opacity: 1, y: 0 });
     return;
   }
-  gsap.to(items, {
-    opacity: 1,
-    y: 0,
-    duration: 1,
-    ease: 'power3.out',
-    stagger: 0.12,
-    delay: 0.15,
+
+  const h1 = document.querySelector('.hero h1.hero-reveal');
+  const others = items.filter((el) => el !== h1);
+  const tl = gsap.timeline({ delay: 0.15 });
+
+  if (h1) {
+    splitHeadline(h1);
+    gsap.set(h1, { opacity: 1, y: 0 });
+    const words = h1.querySelectorAll('.word-in');
+    gsap.set(words, { yPercent: 115 });
+    tl.to(words, { yPercent: 0, duration: 0.95, ease: 'power4.out', stagger: 0.07 }, 0);
+  }
+
+  tl.to(others, { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.12 }, h1 ? 0.2 : 0);
+}
+
+// Headline in einzelne Wörter zerlegen (Maskierungs-Reveal), Stilelemente wie <em> bleiben erhalten.
+function splitHeadline(h1) {
+  const frag = document.createDocumentFragment();
+  const wrapWords = (text, parent) => {
+    text.split(/(\s+)/).forEach((tok) => {
+      if (tok === '') return;
+      if (/^\s+$/.test(tok)) {
+        parent.appendChild(document.createTextNode(tok));
+        return;
+      }
+      const word = document.createElement('span');
+      word.className = 'word';
+      const inner = document.createElement('span');
+      inner.className = 'word-in';
+      inner.textContent = tok;
+      word.appendChild(inner);
+      parent.appendChild(word);
+    });
+  };
+  h1.childNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      wrapWords(node.textContent, frag);
+    } else {
+      const clone = node.cloneNode(false); // z. B. <em> ohne Inhalt
+      wrapWords(node.textContent, clone);
+      frag.appendChild(clone);
+    }
+  });
+  h1.textContent = '';
+  h1.appendChild(frag);
+}
+
+// Zahlen sanft hochzählen lassen, sobald sie sichtbar werden.
+export function initCounters(gsap, ScrollTrigger) {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  gsap.utils.toArray('[data-count]').forEach((el) => {
+    const target = parseFloat(el.dataset.count);
+    const dec = parseInt(el.dataset.decimals || '0', 10);
+    const fmt = (v) => v.toFixed(dec).replace('.', ',');
+    if (reduced || Number.isNaN(target)) {
+      el.textContent = fmt(target);
+      return;
+    }
+    const obj = { v: 0 };
+    el.textContent = fmt(0);
+    gsap.to(obj, {
+      v: target,
+      duration: 1.4,
+      ease: 'power2.out',
+      scrollTrigger: { trigger: el, start: 'top 92%', once: true },
+      onUpdate: () => { el.textContent = fmt(obj.v); },
+    });
   });
 }
 
