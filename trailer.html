@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mindéa — Trailer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#cda35e; --gl:#b8904a; --g:#8b6432;
+  --cream:#f1e4cf; --cream2:#fdfaf5; --tm:rgba(241,228,207,.5);
+  --gg:linear-gradient(135deg,#b8904a,#8b6432);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#000;overflow:hidden;font-family:'DM Sans',sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+
+#stage{position:relative;width:min(46vh,420px);height:min(92vh,840px);background:#08060300;
+  border-radius:18px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.8),0 0 0 1px rgba(205,163,94,.12);
+  background:#0a0703}
+#stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:70;
+  background:radial-gradient(130% 100% at 50% 50%,transparent 50%,rgba(0,0,0,.6) 100%)}
+
+/* grain */
+.grain{position:absolute;inset:-50%;z-index:60;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain .9s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-5%,4%)}50%{transform:translate(4%,-5%)}75%{transform:translate(-3%,-2%)}100%{transform:translate(3%,4%)}}
+
+/* flash-to-white cut */
+#flash{position:absolute;inset:0;z-index:65;background:#fff;opacity:0;pointer-events:none}
+#flash.fire{animation:flash .42s ease-out}
+@keyframes flash{0%{opacity:0}12%{opacity:.85}100%{opacity:0}}
+/* cut-to-black */
+#blk{position:absolute;inset:0;z-index:64;background:#000;opacity:0;pointer-events:none}
+#blk.fire{animation:blk .3s ease-out}
+@keyframes blk{0%{opacity:1}100%{opacity:0}}
+
+/* cinebars */
+.bar{position:absolute;left:0;right:0;height:9%;background:#000;z-index:50}
+.bar.t{top:0}.bar.b{bottom:0}
+
+/* SHOTS */
+.shot{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:36px 30px;opacity:0;z-index:10}
+.shot.on{opacity:1}
+
+.word{font-family:'Playfair Display',serif;font-weight:700;color:var(--cream2);line-height:1.05}
+.word.xl{font-size:clamp(40px,13vh,64px)}
+.word.lg{font-size:clamp(30px,9vh,46px)}
+.word em{font-style:italic;color:var(--gold)}
+.tag{font-size:11px;letter-spacing:6px;color:var(--gold);text-transform:uppercase;font-weight:600}
+
+/* punch-in zoom for a hard cut feel */
+.on .punch{animation:punch 2s cubic-bezier(.12,.7,.2,1) both}
+@keyframes punch{0%{transform:scale(1.18);filter:blur(6px);opacity:0}
+  14%{opacity:1;filter:blur(0)}100%{transform:scale(1)}}
+/* slam from below */
+.on .slam{animation:slam .7s cubic-bezier(.1,.9,.2,1) both}
+@keyframes slam{0%{transform:translateY(40px) scale(.9);opacity:0;letter-spacing:14px}
+  100%{transform:translateY(0) scale(1);opacity:1;letter-spacing:2px}}
+/* glitch-in */
+.on .stretch{animation:stretch 2s cubic-bezier(.1,.8,.2,1) both}
+@keyframes stretch{0%{transform:scaleX(1.6);opacity:0;letter-spacing:30px}
+  100%{transform:scaleX(1);opacity:1;letter-spacing:3px}}
+
+/* transformation shot */
+.tf{width:220px;height:300px;border-radius:14px;position:relative;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,.7)}
+.tf .flat{position:absolute;inset:0;background:linear-gradient(160deg,#7d7468,#4a4034);filter:saturate(.5) brightness(.8)}
+.tf .film{position:absolute;inset:0;opacity:0;
+  background:radial-gradient(60% 50% at 38% 32%,rgba(205,163,94,.6),transparent 60%),linear-gradient(160deg,#a3743c,#321f0e)}
+.on .tf .film{animation:reveal 1.6s .5s forwards}
+@keyframes reveal{to{opacity:1}}
+.tf .sweep{position:absolute;top:0;bottom:0;width:50%;left:-60%;z-index:3;
+  background:linear-gradient(90deg,transparent,rgba(255,247,230,.9),transparent)}
+.on .tf .sweep{animation:sweep 1.7s .4s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes sweep{0%{left:-60%}100%{left:160%}}
+.tf .subj{position:absolute;left:50%;bottom:0;width:110px;height:190px;transform:translateX(-50%);
+  background:linear-gradient(180deg,rgba(40,28,14,.1),rgba(15,9,3,.75));border-radius:55px 55px 0 0}
+
+/* package montage card */
+.pcard{padding:22px 26px;border-radius:16px;border:1px solid var(--gold);
+  background:linear-gradient(135deg,rgba(205,163,94,.16),rgba(139,100,50,.04));text-align:center}
+.pcard .pn{font-family:'Playfair Display',serif;font-size:26px;color:var(--cream2);font-weight:600}
+.pcard .pp{font-family:'Playfair Display',serif;font-size:40px;color:var(--gold);font-weight:700;margin-top:6px}
+.pcard .pp small{font-size:18px}
+
+/* title card */
+.logo{width:96px;height:96px;border-radius:26px;background:var(--gg);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 24px 60px rgba(184,144,74,.5);position:relative}
+.logo span{font-family:'Playfair Display',serif;font-size:48px;font-weight:700;color:#fff}
+.on .logo{animation:logoSlam .8s cubic-bezier(.1,.9,.15,1) both}
+@keyframes logoSlam{0%{transform:scale(1.6);opacity:0;filter:blur(10px)}50%{opacity:1;filter:blur(0)}
+  60%{transform:scale(.94)}100%{transform:scale(1)}}
+.ring{position:absolute;inset:-16px;border:1px solid rgba(205,163,94,.5);border-radius:34px}
+.on .ring{animation:ring 1.4s .25s cubic-bezier(.16,1,.3,1) both}
+@keyframes ring{0%{transform:scale(.7);opacity:0}40%{opacity:1}100%{transform:scale(1.5);opacity:0}}
+.brand{font-family:'Playfair Display',serif;font-size:38px;letter-spacing:12px;color:var(--cream2);margin-top:30px;opacity:0}
+.on .brand{animation:fade 1s .5s forwards}
+.sub{font-size:10px;letter-spacing:6px;color:var(--gold);text-transform:uppercase;margin-top:12px;opacity:0}
+.on .sub{animation:fade 1s .9s forwards}
+@keyframes fade{to{opacity:1}}
+
+/* end CTA */
+.cta-line{font-family:'Playfair Display',serif;font-style:italic;font-size:30px;color:var(--gold);opacity:0}
+.on .cta-line{animation:fade 1s .2s forwards}
+.cta-btn{margin-top:30px;padding:15px 34px;border-radius:40px;background:var(--gg);color:#fff;
+  font-size:13px;letter-spacing:3px;font-weight:600;text-transform:uppercase;opacity:0;
+  box-shadow:0 16px 40px rgba(184,144,74,.45)}
+.on .cta-btn{animation:slam .8s .8s both}
+.handle{margin-top:18px;font-size:11px;letter-spacing:4px;color:var(--tm);opacity:0}
+.on .handle{animation:fade 1s 1.4s forwards}
+
+/* beat pulse light */
+.pulse{position:absolute;inset:0;z-index:4;pointer-events:none;
+  background:radial-gradient(60% 40% at 50% 50%,rgba(205,163,94,.10),transparent 70%);opacity:0}
+.on .pulse{animation:pulse 2.6s ease-out both}
+@keyframes pulse{0%{opacity:0;transform:scale(.6)}20%{opacity:1}100%{opacity:0;transform:scale(1.4)}}
+
+/* progress */
+#bar{position:absolute;bottom:0;left:0;height:3px;z-index:55;background:var(--gold);width:0}
+
+/* start */
+#start{position:absolute;inset:0;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;background:radial-gradient(120% 80% at 50% 40%,#221709,#000);cursor:pointer}
+#start .play{width:74px;height:74px;border-radius:50%;border:1px solid rgba(205,163,94,.5);
+  display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:24px;
+  animation:bp 2.4s ease-in-out infinite}
+@keyframes bp{0%,100%{box-shadow:0 0 0 0 rgba(205,163,94,.4)}50%{box-shadow:0 0 0 18px rgba(205,163,94,0)}}
+#start .w{font-family:'Playfair Display',serif;font-size:22px;letter-spacing:8px;color:var(--cream2)}
+#start .s{font-size:10px;letter-spacing:5px;color:var(--gold);text-transform:uppercase}
+#start.hide{opacity:0;pointer-events:none;transition:opacity .6s}
+
+/* replay */
+#replay{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:56;
+  width:40px;height:40px;border-radius:50%;border:1px solid rgba(205,163,94,.4);background:rgba(20,12,4,.6);
+  backdrop-filter:blur(6px);color:var(--cream);cursor:pointer;font-size:16px;opacity:0;transition:.3s}
+#stage:hover #replay{opacity:1}
+#replay:hover{background:var(--gold);color:#0a0703}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="grain"></div>
+  <div class="bar t"></div><div class="bar b"></div>
+
+  <!-- shots -->
+  <div class="shot" data-i="0"><div class="pulse"></div><div class="word xl punch">3&nbsp;Sekunden.</div></div>
+  <div class="shot" data-i="1"><div class="word xl punch">Ein&nbsp;Eindruck.</div></div>
+  <div class="shot" data-i="2"><div class="word xl punch">Eine&nbsp;<em>Chance.</em></div></div>
+
+  <div class="shot" data-i="3"><div class="word lg stretch">90% bleiben<br>unsichtbar.</div></div>
+
+  <div class="shot" data-i="4"><div class="tag" style="margin-bottom:22px">Foto&nbsp;→&nbsp;Film</div>
+    <div class="tf"><div class="flat"><div class="subj"></div></div><div class="film"><div class="subj"></div></div><div class="sweep"></div></div></div>
+
+  <div class="shot" data-i="5"><div class="word lg slam">Aus deinem Foto<br><em>wird ein Film.</em></div></div>
+
+  <div class="shot" data-i="6"><div class="pcard"><div class="pn">Brand Presence</div><div class="pp">398<small>€</small></div></div></div>
+  <div class="shot" data-i="7"><div class="pcard"><div class="pn">Brand Story</div><div class="pp">598<small>€</small></div></div></div>
+  <div class="shot" data-i="8"><div class="pcard"><div class="pn">Brand Impact</div><div class="pp">898<small>€</small></div></div></div>
+
+  <!-- title card -->
+  <div class="shot" data-i="9"><div class="logo"><span>M</span><div class="ring"></div></div>
+    <div class="brand">MINDÉA</div><div class="sub">Premium KI · Brand Studio</div></div>
+
+  <!-- end -->
+  <div class="shot" data-i="10"><div class="cta-line">Mindéa bist du.</div>
+    <div class="cta-btn">Jetzt sichtbar werden</div><div class="handle">@mindea.studio</div></div>
+
+  <div id="flash"></div>
+  <div id="blk"></div>
+  <div id="bar"></div>
+  <button id="replay" title="Von vorn">↻</button>
+
+  <div id="start">
+    <div class="play">▶</div><div class="w">MINDÉA</div><div class="s">Trailer ansehen</div>
+  </div>
+</div>
+
+<script>
+// trailer = fast cuts. durations in ms, transition type per shot: 'f'=flash, 'b'=black, ''=hardcut
+const SHOTS=[
+  {d:1400,t:''},  // 3 Sekunden
+  {d:1400,t:'b'}, // Ein Eindruck
+  {d:1700,t:'b'}, // Eine Chance
+  {d:2000,t:'f'}, // 90% unsichtbar
+  {d:2600,t:'b'}, // foto->film visual
+  {d:2300,t:'f'}, // wird ein film
+  {d:1100,t:'f'}, // 398
+  {d:1100,t:'f'}, // 598
+  {d:1500,t:'f'}, // 898
+  {d:3000,t:'f'}, // title card
+  {d:4200,t:'b'}, // end cta
+];
+const shots=[...document.querySelectorAll('.shot')];
+const flash=document.getElementById('flash'), blk=document.getElementById('blk'), bar=document.getElementById('bar');
+let idx=0, timer=null, playing=false, startTime=0, total=SHOTS.reduce((a,s)=>a+s.d,0), raf=null;
+
+function fireTrans(t){
+  if(t==='f'){flash.classList.remove('fire');void flash.offsetWidth;flash.classList.add('fire');}
+  if(t==='b'){blk.classList.remove('fire');void blk.offsetWidth;blk.classList.add('fire');}
+}
+function play(i){
+  shots.forEach(s=>s.classList.remove('on'));
+  idx=i;
+  const s=shots[i];
+  fireTrans(SHOTS[i].t);
+  void s.offsetWidth; s.classList.add('on');
+  clearTimeout(timer);
+  timer=setTimeout(()=> i<shots.length-1 ? play(i+1) : end(), SHOTS[i].d);
+}
+function progress(){
+  const el=performance.now()-startTime;
+  bar.style.width=Math.min(100,el/total*100)+'%';
+  if(el<total && playing) raf=requestAnimationFrame(progress);
+}
+function start(){
+  playing=true; startTime=performance.now();
+  bar.style.width='0'; progress(); play(0);
+}
+function end(){ playing=false; cancelAnimationFrame(raf); bar.style.width='100%'; }
+
+document.getElementById('start').onclick=function(){this.classList.add('hide');start();};
+document.getElementById('replay').onclick=()=>{clearTimeout(timer);start();};
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();clearTimeout(timer);start();}});
+</script>
+</body>
+</html>
