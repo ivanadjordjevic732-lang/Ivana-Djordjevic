@@ -1,5 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
+import HeroVisual from './HeroVisual';
 
 const fade = {
   hidden: { opacity: 0, y: 26 },
@@ -28,21 +29,7 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        <motion.div className="hero-visual" variants={fade} initial="hidden" animate="show" custom={3}>
-          {/* PHOTO-SLOT: hochwertiges Hero-Bild (z. B. 1A-Gebiss mit Instrumenten) einsetzen */}
-          <div className="slot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5.5c-2-2-5.5-2-7 .5-1.4 2.4-.3 6 1 9 .7 1.7 1.2 3.5 2 3.5s1-2 2-2 1.2 2 2 2 1.3-1.8 2-3.5c1.3-3 2.4-6.6 1-9-1.5-2.5-5-2.5-7-.5Z" />
-            </svg>
-            <small>Platzhalter · Hero-Bild einsetzen</small>
-          </div>
-          <div className="play-pill">
-            <span className="circle" aria-hidden="true">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-            </span>
-            Animation ansehen
-          </div>
-        </motion.div>
+        <HeroVisual />
       </div>
     </section>
   );
