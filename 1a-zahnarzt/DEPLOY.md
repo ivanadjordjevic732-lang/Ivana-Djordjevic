@@ -30,9 +30,26 @@ npm run build
 npm run start
 ```
 
-## Deploy
-- **Vercel** (empfohlen für Next.js): Repo verbinden, fertig. Oder `vercel` CLI.
-- **Netlify**: mit dem offiziellen Next.js Runtime/Adapter (Build-Befehl `npm run build`).
+## Statischer Export (out/)
+Das Projekt ist auf statischen Export gestellt (`output: 'export'`). Beim Build
+entsteht der Ordner **`out/`** mit rein statischen Dateien.
+```bash
+npm run build      # erzeugt out/
+```
+
+### out/ lokal ansehen
+Wegen absoluter Pfade NICHT per Doppelklick öffnen, sondern über einen kleinen
+Static-Server (eine Zeile genügt):
+```bash
+npx serve out
+# oder ohne npm:
+cd out && python3 -m http.server 8000
+```
+Dann die angezeigte Adresse im Browser öffnen (z. B. http://localhost:8000).
+
+### Deploy
+- **Netlify (Drag-and-drop):** den Ordner **`out/`** auf https://app.netlify.com/drop ziehen.
+- **Vercel:** Repo verbinden, fertig (erkennt Next.js automatisch). Oder `vercel` CLI.
 
 ## Eigene Bilder einsetzen
 In `lib/data.js` bei jeder Karte das Feld `image` auf einen echten Pfad setzen,
