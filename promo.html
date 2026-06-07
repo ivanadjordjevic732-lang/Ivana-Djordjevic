@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mindéa — Brand Film</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#8b6432; --gl:#b8904a; --gold:#cda35e;
+  --bg:#1a130a; --bg2:#241910;
+  --cream:#f1e4cf; --cream2:#fdfaf5;
+  --ts:#c9a877; --tm:rgba(241,228,207,.5);
+  --gg:linear-gradient(135deg,#b8904a,#8b6432);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0c0905;overflow:hidden;font-family:'DM Sans',sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+
+/* ===== STAGE (9:16 cinematic) ===== */
+#stage{
+  position:relative;width:min(46vh,420px);height:min(92vh,840px);
+  background:radial-gradient(120% 80% at 50% 25%,#2a1d10 0%,#1a130a 55%,#0e0a05 100%);
+  border-radius:18px;overflow:hidden;
+  box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 1px rgba(205,163,94,.12);
+}
+/* film grain + grading overlays */
+#stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:60;
+  background:radial-gradient(130% 100% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%);}
+.grain{position:absolute;inset:-50%;z-index:55;pointer-events:none;opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1.1s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-4%,3%)}50%{transform:translate(3%,-4%)}75%{transform:translate(-3%,-2%)}100%{transform:translate(2%,3%)}}
+
+/* golden dust particles */
+.dust{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.mote{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(205,163,94,.9),transparent 70%);
+  filter:blur(.3px);animation:float linear infinite}
+@keyframes float{0%{transform:translateY(110%) translateX(0);opacity:0}
+  10%{opacity:.8}90%{opacity:.5}100%{transform:translateY(-15%) translateX(20px);opacity:0}}
+
+/* ===== SCENES ===== */
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:40px 30px;opacity:0;z-index:10}
+.scene.on{opacity:1}
+
+/* shared text styles */
+.eyebrow{font-size:10px;letter-spacing:5px;font-weight:600;color:var(--gold);text-transform:uppercase}
+.serif{font-family:'Playfair Display',serif;color:var(--cream2)}
+.kicker{font-size:13px;letter-spacing:3px;color:var(--tm);text-transform:uppercase;font-weight:500}
+
+/* word-by-word reveal */
+.reveal-line{overflow:hidden;display:block}
+.reveal-word{display:inline-block;transform:translateY(115%);opacity:0}
+.on .reveal-word{animation:rise .9s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes rise{to{transform:translateY(0);opacity:1}}
+
+/* ===== S1 — opening logo ===== */
+.logo-mark{width:84px;height:84px;border-radius:24px;background:var(--gg);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  box-shadow:0 20px 50px rgba(184,144,74,.45);transform:scale(.4);opacity:0}
+.on .logo-mark{animation:pop 1.2s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes pop{to{transform:scale(1);opacity:1}}
+.logo-mark span{font-family:'Playfair Display',serif;font-size:42px;font-weight:700;color:#fff}
+.logo-ring{position:absolute;inset:-14px;border:1px solid rgba(205,163,94,.45);border-radius:32px;
+  transform:scale(.6);opacity:0}
+.on .logo-ring{animation:ring 1.6s .3s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes ring{0%{transform:scale(.6);opacity:0}40%{opacity:1}100%{transform:scale(1.35);opacity:0}}
+.logo-word{font-family:'Playfair Display',serif;font-size:30px;letter-spacing:10px;color:var(--cream2);
+  margin-top:26px;opacity:0;transform:translateY(12px)}
+.on .logo-word{animation:fade .9s 1s forwards}
+.logo-sub{font-size:9px;letter-spacing:7px;color:var(--gold);margin-top:10px;opacity:0;text-transform:uppercase}
+.on .logo-sub{animation:fade .9s 1.35s forwards}
+@keyframes fade{to{opacity:1;transform:translateY(0)}}
+
+/* ===== S2 — problem (kinetic) ===== */
+.big-statement{font-family:'Playfair Display',serif;font-size:38px;line-height:1.18;font-weight:600;color:var(--cream2)}
+.big-statement em{font-style:italic;color:var(--gold)}
+
+/* ===== S3 — transformation (photo -> film) ===== */
+.transform-wrap{width:230px;height:300px;border-radius:16px;position:relative;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,.6);opacity:0;transform:scale(.9)}
+.on .transform-wrap{animation:fade .9s .1s forwards}
+.tf-layer{position:absolute;inset:0}
+.tf-flat{background:linear-gradient(160deg,#7d7468,#54493c);filter:saturate(.55) brightness(.8)}
+.tf-film{background:
+  radial-gradient(60% 50% at 35% 30%,rgba(205,163,94,.55),transparent 60%),
+  linear-gradient(160deg,#9a7240,#3a2814);opacity:0}
+.on .tf-film{animation:fade 2s 1.6s forwards}
+.tf-sweep{position:absolute;top:0;bottom:0;width:48%;left:-50%;z-index:3;
+  background:linear-gradient(90deg,transparent,rgba(255,247,230,.85),transparent)}
+.on .tf-sweep{animation:sweep 2.1s 1.5s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes sweep{0%{left:-55%}100%{left:155%}}
+.tf-subject{position:absolute;left:50%;bottom:0;width:120px;height:200px;transform:translateX(-50%);
+  background:linear-gradient(180deg,rgba(40,28,14,.1),rgba(20,12,4,.7));
+  border-radius:60px 60px 0 0;backdrop-filter:blur(1px)}
+.tf-label{position:absolute;left:14px;z-index:4;font-size:9px;letter-spacing:3px;font-weight:600;
+  text-transform:uppercase;padding:5px 10px;border-radius:20px;background:rgba(0,0,0,.45);
+  backdrop-filter:blur(4px);color:var(--cream)}
+.tf-before{bottom:14px;opacity:0}.on .tf-before{animation:fade .6s .6s forwards}
+.tf-after{bottom:14px;color:var(--bg);background:var(--gold);opacity:0}
+.on .tf-after{animation:fade .6s 3.2s forwards}
+.transform-cap{margin-top:24px;font-size:14px;letter-spacing:1px;color:var(--ts);opacity:0}
+.on .transform-cap{animation:fade .9s 3.4s forwards}
+.transform-cap b{color:var(--cream2);font-weight:600}
+
+/* ===== S4 — process steps ===== */
+.steps{display:flex;flex-direction:column;gap:16px;width:100%;max-width:300px}
+.step{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:14px;
+  background:rgba(241,228,207,.04);border:1px solid rgba(205,163,94,.14);text-align:left;
+  opacity:0;transform:translateX(-24px)}
+.on .step{animation:slidein .8s cubic-bezier(.16,1,.3,1) forwards}
+.on .step:nth-child(1){animation-delay:.2s}
+.on .step:nth-child(2){animation-delay:.5s}
+.on .step:nth-child(3){animation-delay:.8s}
+.on .step:nth-child(4){animation-delay:1.1s}
+@keyframes slidein{to{opacity:1;transform:translateX(0)}}
+.step-num{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);min-width:30px}
+.step-t{font-size:15px;font-weight:600;color:var(--cream2)}
+.step-s{font-size:11px;color:var(--tm);margin-top:2px}
+
+/* ===== S5 — packages ===== */
+.pkgs{display:flex;flex-direction:column;gap:12px;width:100%;max-width:310px}
+.pkg{padding:16px 18px;border-radius:14px;background:linear-gradient(135deg,rgba(241,228,207,.06),rgba(241,228,207,.02));
+  border:1px solid rgba(205,163,94,.18);display:flex;justify-content:space-between;align-items:center;
+  opacity:0;transform:translateY(26px) scale(.96)}
+.on .pkg{animation:popcard .85s cubic-bezier(.16,1,.3,1) forwards}
+.on .pkg:nth-child(1){animation-delay:.2s}
+.on .pkg:nth-child(2){animation-delay:.45s}
+.on .pkg:nth-child(3){animation-delay:.7s}
+@keyframes popcard{to{opacity:1;transform:translateY(0) scale(1)}}
+.pkg.feat{border-color:var(--gold);background:linear-gradient(135deg,rgba(205,163,94,.22),rgba(139,100,50,.08));
+  box-shadow:0 16px 40px rgba(184,144,74,.2)}
+.pkg-l .pkg-n{font-family:'Playfair Display',serif;font-size:17px;color:var(--cream2);font-weight:600}
+.pkg-l .pkg-d{font-size:10px;color:var(--tm);letter-spacing:1px;margin-top:3px}
+.pkg-p{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);font-weight:700}
+.pkg-p small{font-size:12px;opacity:.7}
+
+/* ===== S6 — closing ===== */
+.close-mark{font-family:'Playfair Display',serif;font-size:34px;letter-spacing:8px;color:var(--cream2);opacity:0}
+.on .close-mark{animation:fade 1s .2s forwards}
+.close-line{font-family:'Playfair Display',serif;font-style:italic;font-size:26px;color:var(--gold);
+  margin-top:18px;opacity:0;transform:translateY(14px)}
+.on .close-line{animation:fade 1.1s .9s forwards}
+.close-cta{margin-top:34px;padding:14px 30px;border-radius:40px;background:var(--gg);color:#fff;
+  font-size:13px;letter-spacing:3px;font-weight:600;text-transform:uppercase;opacity:0;transform:scale(.92);
+  box-shadow:0 14px 36px rgba(184,144,74,.4)}
+.on .close-cta{animation:popcard 1s 1.7s cubic-bezier(.16,1,.3,1) forwards}
+.close-handle{margin-top:18px;font-size:11px;letter-spacing:3px;color:var(--tm);opacity:0}
+.on .close-handle{animation:fade 1s 2.2s forwards}
+
+/* light beam sweep used across scenes */
+.beam{position:absolute;top:-30%;left:-60%;width:60%;height:160%;z-index:8;pointer-events:none;
+  background:linear-gradient(105deg,transparent,rgba(205,163,94,.10),transparent);transform:skewX(-12deg);
+  animation:beamMove 7s linear infinite}
+@keyframes beamMove{0%{left:-60%}100%{left:160%}}
+
+/* ===== UI: progress + controls ===== */
+.cine-bar{position:absolute;left:0;right:0;height:40px;z-index:40;background:linear-gradient(rgba(0,0,0,.55),transparent)}
+.cine-bar.top{top:0}.cine-bar.bot{bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.55));transform:scaleY(-1)}
+
+#progress{position:absolute;bottom:0;left:0;right:0;height:3px;z-index:45;background:rgba(241,228,207,.12)}
+#progress .seg{position:relative;flex:1;height:100%}
+#progress{display:flex;gap:3px;padding:0 8px 8px}
+#progress .seg{background:rgba(241,228,207,.15);border-radius:2px;overflow:hidden}
+#progress .seg i{position:absolute;inset:0;width:0;background:var(--gold);border-radius:2px}
+
+#controls{position:absolute;bottom:16px;left:0;right:0;z-index:50;display:flex;align-items:center;
+  justify-content:center;gap:14px;opacity:0;transition:opacity .3s}
+#stage:hover #controls{opacity:1}
+.ctrl{width:38px;height:38px;border-radius:50%;border:1px solid rgba(205,163,94,.4);
+  background:rgba(20,12,4,.6);backdrop-filter:blur(6px);color:var(--cream);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:15px;transition:.2s}
+.ctrl:hover{background:var(--gold);color:#1a130a;border-color:var(--gold)}
+
+/* intro click-to-start overlay */
+#start{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:20px;background:radial-gradient(120% 80% at 50% 40%,#2a1d10,#0e0a05);cursor:pointer}
+#start .play{width:74px;height:74px;border-radius:50%;border:1px solid rgba(205,163,94,.5);
+  display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:24px;
+  animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(205,163,94,.4)}50%{box-shadow:0 0 0 18px rgba(205,163,94,0)}}
+#start .st-word{font-family:'Playfair Display',serif;font-size:24px;letter-spacing:8px;color:var(--cream2)}
+#start .st-sub{font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
+#start.hide{opacity:0;pointer-events:none;transition:opacity .8s}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="grain"></div>
+  <div class="dust" id="dust"></div>
+  <div class="beam"></div>
+  <div class="cine-bar top"></div>
+  <div class="cine-bar bot"></div>
+
+  <!-- S1 logo -->
+  <section class="scene" data-scene="0">
+    <div class="logo-mark"><span>M</span><div class="logo-ring"></div></div>
+    <div class="logo-word">MINDÉA</div>
+    <div class="logo-sub">Premium KI&nbsp;·&nbsp;Brand Studio</div>
+  </section>
+
+  <!-- S2 problem -->
+  <section class="scene" data-scene="1">
+    <div class="eyebrow" style="margin-bottom:22px">In 3 Sekunden entscheidet sich alles</div>
+    <h1 class="big-statement">
+      <span class="reveal-line"><span class="reveal-word" style="animation-delay:.1s">90%</span></span>
+      <span class="reveal-line"><span class="reveal-word" style="animation-delay:.3s">der&nbsp;Marken</span></span>
+      <span class="reveal-line"><span class="reveal-word" style="animation-delay:.5s"><em>bleiben</em></span></span>
+      <span class="reveal-line"><span class="reveal-word" style="animation-delay:.7s"><em>unsichtbar.</em></span></span>
+    </h1>
+  </section>
+
+  <!-- S3 transformation -->
+  <section class="scene" data-scene="2">
+    <div class="eyebrow" style="margin-bottom:20px">Foto&nbsp;→&nbsp;Cinematic Film</div>
+    <div class="transform-wrap">
+      <div class="tf-layer tf-flat"><div class="tf-subject"></div></div>
+      <div class="tf-layer tf-film"><div class="tf-subject"></div></div>
+      <div class="tf-sweep"></div>
+      <div class="tf-label tf-before">Dein Foto</div>
+      <div class="tf-label tf-after">Brand Film</div>
+    </div>
+    <p class="transform-cap">Aus einem Foto und deiner Stimme<br><b>wird ein Film der wirkt.</b></p>
+  </section>
+
+  <!-- S4 process -->
+  <section class="scene" data-scene="3">
+    <div class="eyebrow" style="margin-bottom:26px">Der Mindéa Prozess</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><div><div class="step-t">Du schickst Fotos</div><div class="step-s">Kein Kamerateam, kein Set</div></div></div>
+      <div class="step"><div class="step-num">02</div><div><div class="step-t">KI formt deine Welt</div><div class="step-s">Cinematic, warm, premium</div></div></div>
+      <div class="step"><div class="step-num">03</div><div><div class="step-t">Deine Stimme trägt</div><div class="step-s">Ruhig, hochwertig, klar</div></div></div>
+      <div class="step"><div class="step-num">04</div><div><div class="step-t">Dein Brand Film</div><div class="step-s">Bereit für jeden Auftritt</div></div></div>
+    </div>
+  </section>
+
+  <!-- S5 packages -->
+  <section class="scene" data-scene="4">
+    <div class="eyebrow" style="margin-bottom:24px">Drei Wege, sichtbar zu werden</div>
+    <div class="pkgs">
+      <div class="pkg"><div class="pkg-l"><div class="pkg-n">Brand Presence</div><div class="pkg-d">DER ERSTE EINDRUCK</div></div><div class="pkg-p">398<small>€</small></div></div>
+      <div class="pkg feat"><div class="pkg-l"><div class="pkg-n">Brand Story</div><div class="pkg-d">DEINE GESCHICHTE · FILM</div></div><div class="pkg-p">598<small>€</small></div></div>
+      <div class="pkg"><div class="pkg-l"><div class="pkg-n">Brand Impact</div><div class="pkg-d">DER GROSSE AUFTRITT</div></div><div class="pkg-p">898<small>€</small></div></div>
+    </div>
+  </section>
+
+  <!-- S6 closing -->
+  <section class="scene" data-scene="5">
+    <div class="close-mark">MINDÉA</div>
+    <div class="close-line">Mindéa bist du.</div>
+    <div class="close-cta">Jetzt sichtbar werden</div>
+    <div class="close-handle">@mindea.studio</div>
+  </section>
+
+  <!-- UI -->
+  <div id="progress"></div>
+  <div id="controls">
+    <button class="ctrl" id="btnPrev" title="Zurück">‹</button>
+    <button class="ctrl" id="btnPlay" title="Pause">❚❚</button>
+    <button class="ctrl" id="btnNext" title="Weiter">›</button>
+    <button class="ctrl" id="btnReplay" title="Von vorn">↻</button>
+  </div>
+
+  <div id="start">
+    <div class="play">▶</div>
+    <div class="st-word">MINDÉA</div>
+    <div class="st-sub">Brand Film abspielen</div>
+  </div>
+</div>
+
+<script>
+// scene durations (ms)
+const DUR = [4200, 4000, 6000, 5200, 5200, 5800];
+const scenes = [...document.querySelectorAll('.scene')];
+const prog = document.getElementById('progress');
+let idx = 0, timer = null, t0 = 0, elapsed = 0, paused = false, started = false;
+
+// build progress segments
+scenes.forEach(()=>{const s=document.createElement('div');s.className='seg';s.innerHTML='<i></i>';prog.appendChild(s);});
+const fills = [...prog.querySelectorAll('.seg i')];
+
+// golden dust
+const dust = document.getElementById('dust');
+for(let i=0;i<26;i++){
+  const m=document.createElement('div');m.className='mote';
+  const s=1+Math.random()*3.5;
+  m.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;
+    animation-duration:${7+Math.random()*9}s;animation-delay:${-Math.random()*12}s`;
+  dust.appendChild(m);
+}
+
+function show(i){
+  scenes.forEach(s=>s.classList.remove('on'));
+  fills.forEach((f,k)=>{f.style.transition='none';f.style.width=k<i?'100%':'0%';});
+  void prog.offsetWidth;
+  idx=i; elapsed=0; t0=performance.now();
+  const sc=scenes[i];
+  // restart CSS animations by forcing reflow
+  sc.classList.remove('on'); void sc.offsetWidth; sc.classList.add('on');
+  runFill();
+  schedule();
+}
+function runFill(){
+  const f=fills[idx];
+  f.style.transition='none';f.style.width=(elapsed/DUR[idx]*100)+'%';
+  void f.offsetWidth;
+  if(!paused){f.style.transition=`width ${DUR[idx]-elapsed}ms linear`;f.style.width='100%';}
+}
+function schedule(){
+  clearTimeout(timer);
+  if(paused)return;
+  timer=setTimeout(()=>{ next(); }, DUR[idx]-elapsed);
+  t0=performance.now();
+}
+function next(){ idx<scenes.length-1 ? show(idx+1) : finish(); }
+function prev(){ show(Math.max(0,idx-1)); }
+function finish(){
+  paused=true; clearTimeout(timer);
+  document.getElementById('btnPlay').textContent='↻';
+}
+function togglePlay(){
+  if(idx===scenes.length-1 && paused){ show(0); paused=false; setPlayIcon(); return; }
+  paused=!paused;
+  if(paused){
+    clearTimeout(timer);
+    elapsed+=performance.now()-t0;
+    const f=fills[idx];const w=getComputedStyle(f).width;
+    f.style.transition='none';f.style.width=w;
+  }else{ t0=performance.now(); runFill(); schedule(); }
+  setPlayIcon();
+}
+function setPlayIcon(){document.getElementById('btnPlay').textContent=paused?'▶':'❚❚';}
+
+document.getElementById('btnNext').onclick=()=>{paused=false;setPlayIcon();next();};
+document.getElementById('btnPrev').onclick=()=>{paused=false;setPlayIcon();prev();};
+document.getElementById('btnReplay').onclick=()=>{paused=false;setPlayIcon();show(0);};
+document.getElementById('btnPlay').onclick=togglePlay;
+
+document.getElementById('start').onclick=function(){
+  if(started)return;started=true;
+  this.classList.add('hide');
+  show(0);
+};
+// keyboard
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();togglePlay();}
+  if(e.code==='ArrowRight')next();
+  if(e.code==='ArrowLeft')prev();
+});
+</script>
+</body>
+</html>
