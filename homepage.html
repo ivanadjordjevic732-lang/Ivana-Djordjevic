@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f3ece1">
+<meta name="description" content="Mindéa — KI-gestütztes Brand Studio für Unternehmerinnen, Coaches und Personal Brands. Cinematische Markenfilme, die Vertrauen schaffen und Marken erlebbar machen.">
+<meta name="author" content="Mindéa · Ivana Djordjevic">
+<meta property="og:title" content="Mindéa — Ihre Marke sollte wirken, bevor sie erklärt werden muss.">
+<meta property="og:description" content="KI-gestütztes Brand Studio für cinematische Markenfilme und Bildwelten im Stil moderner Luxusmarken.">
+<meta property="og:type" content="website">
+<title>Mindéa — Cinematische Markenfilme · KI Brand Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   MINDÉA — Homepage
+   Quiet Luxury · Editorial · Apple × Aesop × The Row × Notion
+   Self-contained · no dependencies · mobile-first
+   ============================================================ */
+
+:root{
+  /* Palette — cream, sand, taupe, ivory, gold */
+  --ivory:#fbf8f2;
+  --cream:#f3ece1;
+  --sand:#e9dfce;
+  --taupe:#cdbfa8;
+  --taupe-deep:#a8987e;
+  --ink:#2a2420;
+  --ink-soft:#6f6457;
+  --ink-faint:rgba(42,36,32,.5);
+  --gold:#b3924f;
+  --gold-deep:#8a6d33;
+  --gold-light:#d9bd82;
+  --noir:#1c1813;
+  --noir-soft:#26211b;
+  --line:rgba(42,36,32,.12);
+  --line-soft:rgba(42,36,32,.07);
+  --gold-grad:linear-gradient(135deg,#d9bd82,#b3924f 45%,#8a6d33);
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+::selection{background:rgba(179,146,79,.22);color:var(--ink)}
+
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+body{
+  font-family:'Inter',-apple-system,system-ui,sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  line-height:1.6;
+  font-weight:400;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;line-height:1.08;letter-spacing:-.01em}
+
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+
+/* ---- Layout helpers ---- */
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+.eyebrow{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-deep)}
+.lead{color:var(--ink-soft);font-weight:300}
+
+/* gold underline accent */
+.rule{width:46px;height:1px;background:var(--gold-grad);display:inline-block}
+
+/* ============================================================ NAV */
+header.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 28px;
+  transition:padding .5s var(--ease),background .5s var(--ease),box-shadow .5s var(--ease),backdrop-filter .5s var(--ease);
+}
+header.nav.scrolled{
+  padding:13px 28px;
+  background:rgba(243,236,225,.82);
+  backdrop-filter:saturate(160%) blur(16px);
+  -webkit-backdrop-filter:saturate(160%) blur(16px);
+  box-shadow:0 1px 0 var(--line-soft);
+}
+.brand{display:flex;align-items:center;gap:11px;font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;letter-spacing:.06em;color:var(--ink)}
+.brand .mk{
+  width:30px;height:30px;flex-shrink:0;
+  filter:drop-shadow(0 2px 6px rgba(138,109,51,.35));
+}
+.nav-links{display:flex;align-items:center;gap:34px}
+.nav-links a{font-size:13px;font-weight:400;letter-spacing:.02em;color:var(--ink-soft);position:relative;transition:color .3s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-5px;width:0;height:1px;background:var(--gold-grad);transition:width .4s var(--ease)}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  font-size:12.5px;letter-spacing:.04em;color:var(--ink);
+  border:1px solid var(--line);border-radius:100px;padding:9px 19px;
+  transition:all .4s var(--ease);background:rgba(251,248,242,.4);
+}
+.nav-cta:hover{border-color:var(--gold);color:var(--gold-deep);box-shadow:0 4px 18px rgba(138,109,51,.12)}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px}
+.nav-burger span{width:22px;height:1.5px;background:var(--ink);transition:.3s}
+@media(max-width:860px){
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+}
+
+/* ============================================================ BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;letter-spacing:.02em;
+  padding:15px 30px;border-radius:100px;cursor:pointer;border:1px solid transparent;
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease),background .45s var(--ease),color .45s var(--ease),border-color .45s var(--ease);
+  will-change:transform;
+}
+.btn .arr{transition:transform .45s var(--ease)}
+.btn:hover .arr{transform:translateX(4px)}
+.btn-primary{background:var(--noir);color:var(--ivory)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px -12px rgba(28,24,19,.5)}
+.btn-gold{background:var(--gold-grad);color:#fff;box-shadow:0 8px 26px -10px rgba(138,109,51,.6)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 18px 46px -12px rgba(138,109,51,.7)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold-deep);transform:translateY(-2px)}
+.btn-light{background:rgba(251,248,242,.1);color:var(--ivory);border-color:rgba(251,248,242,.28)}
+.btn-light:hover{background:rgba(251,248,242,.18);transform:translateY(-2px)}
+
+/* ============================================================ REVEAL */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity 1.1s var(--ease-out),transform 1.1s var(--ease-out)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}
+.reveal.d2{transition-delay:.16s}
+.reveal.d3{transition-delay:.24s}
+.reveal.d4{transition-delay:.32s}
+
+/* ============================================================ HERO */
+.hero{
+  position:relative;min-height:100svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:140px 28px 80px;overflow:hidden;
+  background:
+    radial-gradient(120% 80% at 50% -10%,#fdfaf4 0%,#f3ece1 42%,#ebe0cf 100%);
+}
+/* ambient light blooms */
+.hero-glow{position:absolute;inset:0;pointer-events:none;z-index:0}
+.hero-glow span{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;mix-blend-mode:multiply}
+.hero-glow .g1{width:520px;height:520px;top:-120px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(217,189,130,.45),transparent 65%);mix-blend-mode:normal;animation:drift1 18s var(--ease) infinite alternate}
+.hero-glow .g2{width:420px;height:420px;bottom:-100px;left:8%;background:radial-gradient(circle,rgba(205,191,168,.5),transparent 70%);animation:drift2 22s var(--ease) infinite alternate}
+.hero-glow .g3{width:380px;height:380px;bottom:-60px;right:6%;background:radial-gradient(circle,rgba(179,146,79,.28),transparent 70%);animation:drift1 20s var(--ease) infinite alternate-reverse}
+@keyframes drift1{to{transform:translate(-50%,40px)}}
+@keyframes drift2{to{transform:translate(50px,-30px)}}
+
+/* particles */
+.particles{position:absolute;inset:0;z-index:1;pointer-events:none}
+.particles i{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(217,189,130,.9),rgba(179,146,79,0));animation:floatUp linear infinite}
+@keyframes floatUp{
+  0%{transform:translateY(20px);opacity:0}
+  12%{opacity:.8}
+  88%{opacity:.5}
+  100%{transform:translateY(-110px);opacity:0}
+}
+
+.hero-inner{position:relative;z-index:3;max-width:920px;display:flex;flex-direction:column;align-items:center}
+
+/* Butterfly stage */
+.fly-stage{position:relative;width:200px;height:170px;margin-bottom:6px;animation:flyFloat 7s var(--ease) infinite}
+.fly-stage .halo{position:absolute;inset:-30% ;border-radius:50%;background:radial-gradient(circle,rgba(217,189,130,.45),transparent 62%);filter:blur(14px);animation:halo 5s ease-in-out infinite}
+@keyframes halo{0%,100%{opacity:.6;transform:scale(.92)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes flyFloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-16px) rotate(1.5deg)}}
+.fly{position:relative;width:100%;height:100%;filter:drop-shadow(0 14px 22px rgba(138,109,51,.3))}
+.fly .wing{transform-box:fill-box;transform-origin:center right;animation:flap 4.6s ease-in-out infinite}
+.fly .wing.r{transform-origin:center left;animation-name:flapR}
+@keyframes flap{0%,100%{transform:rotateY(8deg)}50%{transform:rotateY(46deg)}}
+@keyframes flapR{0%,100%{transform:rotateY(-8deg)}50%{transform:rotateY(-46deg)}}
+
+.hero h1{
+  font-size:clamp(40px,7.2vw,82px);font-weight:500;color:var(--ink);
+  margin:22px 0 0;max-width:14ch;letter-spacing:-.015em;
+}
+.hero h1 em{font-style:italic;color:var(--gold-deep)}
+.hero .sub{
+  font-size:clamp(15px,1.9vw,19px);font-weight:300;color:var(--ink-soft);
+  max-width:60ch;margin:26px auto 0;line-height:1.7;
+}
+.hero-ctas{display:flex;gap:14px;margin-top:40px;flex-wrap:wrap;justify-content:center}
+
+.scroll-cue{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:9px;color:var(--ink-faint)}
+.scroll-cue .ln{width:1px;height:42px;background:linear-gradient(var(--gold),transparent);position:relative;overflow:hidden}
+.scroll-cue .ln::after{content:"";position:absolute;top:-50%;left:0;width:100%;height:50%;background:var(--gold-deep);animation:scrolldot 2.4s var(--ease) infinite}
+@keyframes scrolldot{0%{top:-50%}100%{top:120%}}
+.scroll-cue span{font-size:9px;letter-spacing:.3em;text-transform:uppercase}
+
+/* ============================================================ SECTION SHELL */
+section{position:relative}
+.sec{padding:clamp(90px,12vw,160px) 0}
+.sec-head{max-width:760px;margin:0 auto;text-align:center}
+.sec-head .eyebrow{margin-bottom:18px;display:inline-block}
+.sec-head h2{font-size:clamp(30px,4.6vw,54px);color:var(--ink);margin-bottom:0}
+.sec-head h2 em{font-style:italic;color:var(--gold-deep)}
+.sec-head p{margin-top:20px;font-size:17px;color:var(--ink-soft);font-weight:300;line-height:1.7}
+
+/* media placeholder (editorial) */
+.editorial{position:relative;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,#e7dcca,#cdbfa8 60%,#b8a786);box-shadow:0 30px 70px -34px rgba(42,36,32,.4)}
+.editorial::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(120% 90% at 30% 12%,rgba(255,255,255,.5),transparent 45%),
+  radial-gradient(90% 70% at 80% 90%,rgba(138,109,51,.25),transparent 55%)}
+.editorial .tag{position:absolute;bottom:18px;left:20px;z-index:2;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.85);font-weight:500}
+.editorial .mono{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;font-family:'Cormorant Garamond',serif;font-size:84px;color:rgba(255,255,255,.34);font-style:italic}
+
+/* ============================================================ PROBLEM */
+.problem{background:linear-gradient(180deg,var(--cream),var(--ivory))}
+.problem-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center;margin-top:64px}
+.problem-cards{display:flex;flex-direction:column;gap:14px}
+.pcard{
+  display:flex;align-items:flex-start;gap:16px;padding:22px 24px;
+  background:var(--ivory);border:1px solid var(--line-soft);border-radius:4px;
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset;
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .5s var(--ease);
+}
+.pcard:hover{transform:translateX(6px);box-shadow:0 18px 40px -26px rgba(42,36,32,.35);border-color:var(--line)}
+.pcard .x{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1px solid rgba(179,146,79,.4);display:flex;align-items:center;justify-content:center;color:var(--gold-deep);font-size:13px;margin-top:1px}
+.pcard h4{font-family:'Inter',sans-serif;font-size:15px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.pcard p{font-size:13.5px;color:var(--ink-soft);font-weight:300;line-height:1.5}
+.problem-visual{position:relative}
+.problem-visual .editorial{aspect-ratio:4/5}
+.problem-quote{margin-top:30px}
+.problem-quote p{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.6vw,30px);font-style:italic;color:var(--ink);line-height:1.4}
+.problem-quote p span{color:var(--gold-deep)}
+
+/* ============================================================ WHAT */
+.what{background:var(--ivory)}
+.what-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:64px}
+.wcol{
+  position:relative;padding:38px 32px 34px;border-radius:5px;
+  background:linear-gradient(180deg,#fbf8f2,#f3ece1);
+  border:1px solid var(--line-soft);overflow:hidden;
+  transition:transform .55s var(--ease),box-shadow .55s var(--ease);
+}
+.wcol:hover{transform:translateY(-6px);box-shadow:0 30px 60px -34px rgba(42,36,32,.4)}
+.wcol .no{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:var(--gold-deep);letter-spacing:.05em}
+.wcol h3{font-size:27px;color:var(--ink);margin:14px 0 12px}
+.wcol p{font-size:14.5px;color:var(--ink-soft);font-weight:300;line-height:1.65}
+.wcol .glyph{position:absolute;right:-10px;top:-10px;font-size:120px;font-family:'Cormorant Garamond',serif;color:rgba(179,146,79,.07);font-style:italic;pointer-events:none}
+
+/* process flow */
+.flow{margin-top:80px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}
+.flow .step{
+  font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.4vw,26px);color:var(--ink);
+  padding:12px 22px;border:1px solid var(--line);border-radius:100px;background:var(--ivory);
+  white-space:nowrap;transition:all .5s var(--ease);
+}
+.flow .step:hover{border-color:var(--gold);color:var(--gold-deep);box-shadow:0 10px 28px -16px rgba(138,109,51,.4);transform:translateY(-3px)}
+.flow .step.accent{background:var(--noir);color:var(--ivory);border-color:var(--noir)}
+.flow .arr{color:var(--gold);font-size:20px;opacity:.7}
+@media(max-width:760px){.flow{flex-direction:column}.flow .arr{transform:rotate(90deg)}}
+
+/* ============================================================ PACKAGES */
+.packages{background:linear-gradient(180deg,var(--ivory),var(--cream))}
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:64px;align-items:stretch}
+.pkg{
+  position:relative;display:flex;flex-direction:column;
+  background:linear-gradient(165deg,#26211b,#1c1813 70%);
+  border:1px solid rgba(217,189,130,.18);border-radius:8px;
+  padding:40px 34px 36px;color:var(--ivory);overflow:hidden;
+  box-shadow:0 36px 80px -44px rgba(28,24,19,.8);
+  transition:transform .6s var(--ease),box-shadow .6s var(--ease),border-color .6s var(--ease);
+}
+.pkg::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 60% at 50% -10%,rgba(217,189,130,.16),transparent 60%);pointer-events:none}
+.pkg:hover{transform:translateY(-10px);border-color:rgba(217,189,130,.45);box-shadow:0 50px 100px -40px rgba(28,24,19,.9)}
+.pkg.featured{transform:scale(1.03)}
+.pkg.featured:hover{transform:scale(1.03) translateY(-10px)}
+.pkg-badge{position:absolute;top:20px;right:20px;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--noir);background:var(--gold-grad);padding:5px 11px;border-radius:100px;font-weight:600}
+.pkg .pname{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;letter-spacing:.01em}
+.pkg .pname b{background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:600}
+.pkg .pdesc{font-size:13px;color:rgba(251,248,242,.6);font-weight:300;margin:10px 0 22px;min-height:42px;line-height:1.55}
+.pkg .price{display:flex;align-items:baseline;gap:6px;margin-bottom:26px}
+.pkg .price .amt{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.pkg .price .cur{font-size:18px;color:var(--gold-light)}
+.pkg .feat{list-style:none;display:flex;flex-direction:column;gap:13px;margin-bottom:26px;flex:1}
+.pkg .feat li{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;color:rgba(251,248,242,.82);font-weight:300}
+.pkg .feat li .dot{color:var(--gold-light);flex-shrink:0;margin-top:1px}
+.pkg .result{border-top:1px solid rgba(217,189,130,.18);padding-top:18px;margin-bottom:24px}
+.pkg .result span{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:rgba(217,189,130,.7)}
+.pkg .result p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:var(--ivory);margin-top:5px;line-height:1.35}
+.pkg .pbtn{
+  text-align:center;padding:13px;border-radius:100px;font-size:13px;font-weight:500;letter-spacing:.02em;
+  border:1px solid rgba(217,189,130,.4);color:var(--gold-light);transition:all .4s var(--ease);
+}
+.pkg .pbtn:hover{background:var(--gold-grad);color:var(--noir);border-color:transparent}
+.pkg.featured .pbtn{background:var(--gold-grad);color:var(--noir);border-color:transparent}
+.pkg.featured .pbtn:hover{filter:brightness(1.08)}
+
+/* ============================================================ TRANSFORM */
+.transform{background:var(--ink);color:var(--ivory);overflow:hidden}
+.transform .sec-head h2,.transform .sec-head p{color:var(--ivory)}
+.transform .sec-head .eyebrow{color:var(--gold-light)}
+.transform .sec-head p{color:rgba(251,248,242,.6)}
+.tgrid{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin-top:64px;align-items:stretch;border:1px solid rgba(217,189,130,.16);border-radius:8px;overflow:hidden}
+.tside{padding:48px 44px}
+.tside.before{background:rgba(251,248,242,.02)}
+.tside.after{background:linear-gradient(160deg,rgba(217,189,130,.1),rgba(217,189,130,.02))}
+.tside .tlabel{font-size:10px;letter-spacing:.3em;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:10px}
+.tside.before .tlabel{color:rgba(251,248,242,.45)}
+.tside.after .tlabel{color:var(--gold-light)}
+.tside ul{list-style:none;display:flex;flex-direction:column;gap:20px}
+.tside li{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.4vw,28px);line-height:1.3}
+.tside.before li{color:rgba(251,248,242,.4);font-style:italic}
+.tside.after li{color:var(--ivory)}
+.tside.after li::before{content:"—  ";color:var(--gold-light)}
+.tdivider{width:1px;background:linear-gradient(180deg,transparent,rgba(217,189,130,.5),transparent);position:relative}
+.tdivider .arrow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;color:var(--noir);font-size:20px;box-shadow:0 0 40px rgba(217,189,130,.4)}
+@media(max-width:760px){
+  .tgrid{grid-template-columns:1fr}
+  .tdivider{width:auto;height:1px;background:linear-gradient(90deg,transparent,rgba(217,189,130,.5),transparent)}
+  .tdivider .arrow{transform:translate(-50%,-50%) rotate(90deg)}
+}
+
+/* ============================================================ PORTFOLIO */
+.portfolio{background:linear-gradient(180deg,var(--ink),var(--noir));color:var(--ivory);overflow:hidden;padding-bottom:clamp(90px,12vw,160px)}
+.portfolio .sec-head h2{color:var(--ivory)}
+.portfolio .sec-head .eyebrow{color:var(--gold-light)}
+.portfolio .sec-head p{color:rgba(251,248,242,.6)}
+.strip{display:flex;gap:24px;margin-top:60px;will-change:transform}
+.strip.row2{margin-top:24px}
+.poster{
+  position:relative;flex-shrink:0;width:300px;aspect-ratio:2/3;border-radius:6px;overflow:hidden;
+  border:1px solid rgba(217,189,130,.16);
+  background:linear-gradient(160deg,var(--p1,#3a332a),var(--p2,#221d17));
+  box-shadow:0 30px 60px -34px rgba(0,0,0,.7);
+  transition:transform .55s var(--ease),box-shadow .55s var(--ease);cursor:pointer;
+}
+.poster::before{content:"";position:absolute;inset:0;background:radial-gradient(100% 70% at 50% 0%,rgba(217,189,130,.22),transparent 55%),linear-gradient(180deg,transparent 40%,rgba(0,0,0,.55))}
+.poster:hover{transform:translateY(-8px) scale(1.015);box-shadow:0 50px 90px -40px rgba(0,0,0,.85);border-color:rgba(217,189,130,.4)}
+.poster .pmono{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:72px;color:rgba(217,189,130,.22)}
+.poster .pmeta{position:absolute;left:22px;right:22px;bottom:22px;z-index:2}
+.poster .pmeta .cat{font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-light)}
+.poster .pmeta .ttl{font-family:'Cormorant Garamond',serif;font-size:24px;margin-top:4px;color:var(--ivory)}
+.poster .pmeta .res{font-size:12px;color:rgba(251,248,242,.55);font-weight:300;margin-top:3px}
+
+/* ============================================================ FOUNDER */
+.founder{background:var(--cream)}
+.founder-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:70px;align-items:center}
+.founder-visual .editorial{aspect-ratio:3/4}
+.founder-visual{position:relative}
+.founder-visual .sig{position:absolute;bottom:24px;right:-14px;background:var(--ivory);border:1px solid var(--line);border-radius:4px;padding:14px 20px;box-shadow:0 20px 40px -24px rgba(42,36,32,.4)}
+.founder-visual .sig b{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;display:block;color:var(--ink)}
+.founder-visual .sig span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-deep)}
+.founder-text .eyebrow{margin-bottom:18px;display:inline-block}
+.founder-text h2{font-size:clamp(30px,4.4vw,50px);color:var(--ink);margin-bottom:26px}
+.founder-text h2 em{font-style:italic;color:var(--gold-deep)}
+.founder-text p{font-size:16px;color:var(--ink-soft);font-weight:300;line-height:1.8;margin-bottom:18px}
+.founder-text .pull{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,34px);font-style:italic;color:var(--ink);line-height:1.35;margin:30px 0 0;border-left:2px solid var(--gold);padding-left:24px}
+.founder-text .pull span{color:var(--gold-deep)}
+
+/* ============================================================ STEPS */
+.process{background:var(--ivory)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:64px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.pstep{background:var(--ivory);padding:42px 30px 40px;transition:background .5s var(--ease)}
+.pstep:hover{background:linear-gradient(180deg,#fbf8f2,#f3ece1)}
+.pstep .pnum{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:500;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:18px}
+.pstep h4{font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:500;color:var(--ink);margin-bottom:10px}
+.pstep p{font-size:13.5px;color:var(--ink-soft);font-weight:300;line-height:1.6}
+@media(max-width:860px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.steps{grid-template-columns:1fr}}
+
+/* ============================================================ TESTIMONIALS */
+.testi{background:linear-gradient(180deg,var(--ivory),var(--cream))}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:64px}
+.tcard{
+  background:var(--ivory);border:1px solid var(--line-soft);border-radius:6px;padding:38px 32px 30px;
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset;
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease);display:flex;flex-direction:column;
+}
+.tcard:hover{transform:translateY(-6px);box-shadow:0 30px 60px -36px rgba(42,36,32,.4)}
+.tcard .mark{font-family:'Cormorant Garamond',serif;font-size:60px;line-height:.4;color:rgba(179,146,79,.3);height:30px}
+.tcard blockquote{font-family:'Cormorant Garamond',serif;font-size:21px;font-style:italic;color:var(--ink);line-height:1.42;margin:6px 0 24px;flex:1}
+.tcard .who{display:flex;align-items:center;gap:13px;border-top:1px solid var(--line-soft);padding-top:18px}
+.tcard .av{width:40px;height:40px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;flex-shrink:0}
+.tcard .who b{font-size:14px;font-weight:500;color:var(--ink);display:block}
+.tcard .who span{font-size:12px;color:var(--ink-faint)}
+@media(max-width:860px){.testi-grid{grid-template-columns:1fr}}
+
+/* ============================================================ FINAL CTA */
+.final{position:relative;background:linear-gradient(165deg,#26211b,#1c1813 70%);color:var(--ivory);text-align:center;overflow:hidden;padding:clamp(110px,14vw,180px) 0}
+.final .glow-b{position:absolute;inset:0;pointer-events:none}
+.final .glow-b span{position:absolute;border-radius:50%;filter:blur(80px)}
+.final .glow-b .a{width:500px;height:500px;top:-160px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(217,189,130,.22),transparent 65%)}
+.final .glow-b .b{width:360px;height:360px;bottom:-120px;left:10%;background:radial-gradient(circle,rgba(179,146,79,.16),transparent 70%)}
+/* flying butterfly across final */
+.final-fly{position:absolute;z-index:1;width:88px;opacity:.85;filter:drop-shadow(0 10px 18px rgba(217,189,130,.4));animation:crossFly 26s linear infinite}
+@keyframes crossFly{
+  0%{transform:translate(-12vw,40px) rotate(-6deg) scale(.7);opacity:0}
+  10%{opacity:.85}
+  50%{transform:translate(46vw,-30px) rotate(4deg) scale(1)}
+  90%{opacity:.85}
+  100%{transform:translate(108vw,30px) rotate(-4deg) scale(.8);opacity:0}
+}
+.final-fly .wing{transform-box:fill-box;transform-origin:center right;animation:flap 3.2s ease-in-out infinite}
+.final-fly .wing.r{transform-origin:center left;animation-name:flapR}
+.final .wrap{position:relative;z-index:3}
+.final .eyebrow{color:var(--gold-light);margin-bottom:24px;display:inline-block}
+.final h2{font-size:clamp(34px,5.4vw,68px);color:var(--ivory);max-width:18ch;margin:0 auto;letter-spacing:-.015em}
+.final h2 em{font-style:italic;color:var(--gold-light)}
+.final p{font-size:18px;color:rgba(251,248,242,.65);font-weight:300;max-width:54ch;margin:26px auto 0;line-height:1.7}
+.final-ctas{display:flex;gap:14px;justify-content:center;margin-top:42px;flex-wrap:wrap}
+
+/* ============================================================ FOOTER */
+footer{background:var(--noir);color:rgba(251,248,242,.6);padding:64px 0 36px;border-top:1px solid rgba(217,189,130,.12)}
+.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.foot-brand{display:flex;align-items:center;gap:11px;font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--ivory);letter-spacing:.06em;margin-bottom:18px}
+.foot-brand .mk{width:28px;height:28px}
+.foot-col h5{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-light);margin-bottom:18px;font-weight:500}
+.foot-col a{display:block;font-size:14px;font-weight:300;margin-bottom:11px;color:rgba(251,248,242,.6);transition:color .3s}
+.foot-col a:hover{color:var(--ivory)}
+.foot-about{font-size:14px;font-weight:300;line-height:1.7;max-width:34ch}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(251,248,242,.08);padding-top:26px;font-size:12px;color:rgba(251,248,242,.4);flex-wrap:wrap;gap:14px}
+.foot-bottom a:hover{color:var(--ivory)}
+@media(max-width:860px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.foot-grid{grid-template-columns:1fr}}
+
+/* ============================================================ RESPONSIVE */
+@media(max-width:980px){
+  .problem-grid{grid-template-columns:1fr;gap:44px}
+  .what-cols{grid-template-columns:1fr;gap:18px}
+  .pkg-grid{grid-template-columns:1fr;gap:22px;max-width:440px;margin-left:auto;margin-right:auto}
+  .pkg.featured{transform:none}
+  .pkg.featured:hover{transform:translateY(-10px)}
+  .founder-grid{grid-template-columns:1fr;gap:40px}
+  .testi-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .wrap{padding:0 20px}
+  header.nav{padding:16px 20px}
+  header.nav.scrolled{padding:11px 20px}
+  .tside{padding:34px 28px}
+  .hero-ctas{flex-direction:column;width:100%;max-width:300px}
+  .hero-ctas .btn{justify-content:center;width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================ SVG butterfly symbol (reused) ============================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gld" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e7d3a0"/>
+      <stop offset=".45" stop-color="#c9a85f"/>
+      <stop offset="1" stop-color="#8a6d33"/>
+    </linearGradient>
+    <linearGradient id="gld2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0e2bd"/>
+      <stop offset="1" stop-color="#b3924f"/>
+    </linearGradient>
+    <symbol id="butterfly" viewBox="0 0 200 170">
+      <g class="wing l">
+        <path d="M100 88 C70 40 30 18 16 40 C2 62 20 96 52 104 C30 112 22 138 40 150 C62 164 92 128 100 96 Z" fill="url(#gld)" opacity=".95"/>
+        <path d="M100 88 C76 52 44 34 30 48 C40 70 64 84 100 92 Z" fill="url(#gld2)" opacity=".55"/>
+      </g>
+      <g class="wing r">
+        <path d="M100 88 C130 40 170 18 184 40 C198 62 180 96 148 104 C170 112 178 138 160 150 C138 164 108 128 100 96 Z" fill="url(#gld)" opacity=".95"/>
+        <path d="M100 88 C124 52 156 34 170 48 C160 70 136 84 100 92 Z" fill="url(#gld2)" opacity=".55"/>
+      </g>
+      <path d="M100 60 C97 60 96 64 96 72 L98 118 C98 124 99 128 100 128 C101 128 102 124 102 118 L104 72 C104 64 103 60 100 60 Z" fill="#5a4524"/>
+      <circle cx="100" cy="58" r="5" fill="#5a4524"/>
+      <path d="M100 56 C96 46 90 40 84 40" stroke="#5a4524" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M100 56 C104 46 110 40 116 40" stroke="#5a4524" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav" id="nav">
+  <a href="#top" class="brand">
+    <svg class="mk" viewBox="0 0 200 170"><use href="#butterfly"/></svg>
+    Mindéa
+  </a>
+  <nav class="nav-links">
+    <a href="#was">Studio</a>
+    <a href="#pakete">Pakete</a>
+    <a href="#portfolio">Arbeiten</a>
+    <a href="#gruenderin">Gründerin</a>
+    <a href="#prozess">Prozess</a>
+  </nav>
+  <a href="#kontakt" class="nav-cta">Projekt anfragen</a>
+  <div class="nav-burger" id="burger"><span></span><span></span><span></span></div>
+</header>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero" id="top">
+  <div class="hero-glow"><span class="g1"></span><span class="g2"></span><span class="g3"></span></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="hero-inner">
+    <div class="fly-stage reveal in">
+      <div class="halo"></div>
+      <svg class="fly" viewBox="0 0 200 170"><use href="#butterfly"/></svg>
+    </div>
+
+    <div class="eyebrow reveal in d1">KI Brand Studio · für Unternehmerinnen</div>
+    <h1 class="reveal in d2">Ihre Marke sollte <em>wirken</em>, bevor sie erklärt werden muss.</h1>
+    <p class="sub reveal in d3">Mindéa verwandelt Ihre Geschichte, Ihre Expertise und Ihre Identität in cinematische Markenfilme, die Vertrauen schaffen, Sichtbarkeit erhöhen und Ihre Marke erlebbar machen.</p>
+    <div class="hero-ctas reveal in d4">
+      <a href="#pakete" class="btn btn-gold">Pakete entdecken <span class="arr">→</span></a>
+      <a href="#kontakt" class="btn btn-ghost">Projekt anfragen</a>
+    </div>
+  </div>
+
+  <div class="scroll-cue"><div class="ln"></div><span>Scroll</span></div>
+</section>
+
+<!-- ============================ PROBLEM ============================ -->
+<section class="sec problem" id="problem">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Das Problem</span>
+      <h2 class="reveal d1">Viele Marken werden gesehen.<br><em>Nur wenige bleiben im Gedächtnis.</em></h2>
+    </div>
+
+    <div class="problem-grid">
+      <div class="problem-cards">
+        <div class="pcard reveal"><div class="x">✕</div><div><h4>Austauschbare Inhalte</h4><p>Content, der aussieht wie alles andere im Feed.</p></div></div>
+        <div class="pcard reveal d1"><div class="x">✕</div><div><h4>Keine emotionale Verbindung</h4><p>Botschaften, die informieren, aber nicht berühren.</p></div></div>
+        <div class="pcard reveal d2"><div class="x">✕</div><div><h4>Unklare Positionierung</h4><p>Eine Marke, die nicht weiß, wofür sie steht.</p></div></div>
+        <div class="pcard reveal d3"><div class="x">✕</div><div><h4>Fehlende Wiedererkennbarkeit</h4><p>Heute gesehen, morgen vergessen.</p></div></div>
+      </div>
+
+      <div class="problem-visual reveal d2">
+        <div class="editorial"><span class="mono">M</span><span class="tag">Editorial · Unternehmerin</span></div>
+        <div class="problem-quote">
+          <p>Menschen kaufen selten nur ein Angebot. Sie vertrauen einer <span>Geschichte</span>. Sie erinnern sich an Gefühle. Sie entscheiden sich für Marken, die <span>Klarheit</span> ausstrahlen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ WHAT MINDÉA DOES ============================ -->
+<section class="sec what" id="was">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Was Mindéa macht</span>
+      <h2 class="reveal d1">Marken sichtbar machen.<br><em>Ohne Kamerateam. Ohne Drehtag.</em></h2>
+    </div>
+
+    <div class="what-cols">
+      <div class="wcol reveal">
+        <span class="glyph">01</span>
+        <span class="no">01 — Fundament</span>
+        <h3>Strategie</h3>
+        <p>Ihre Marke wird analysiert und in eine klare, unverwechselbare Geschichte übersetzt. Positionierung, Werte und Tonalität werden präzise definiert.</p>
+      </div>
+      <div class="wcol reveal d1">
+        <span class="glyph">02</span>
+        <span class="no">02 — Bedeutung</span>
+        <h3>Storytelling</h3>
+        <p>Ihre Erfahrungen, Werte und Expertise werden emotional aufbereitet — zu einer Erzählung, die Vertrauen schafft und in Erinnerung bleibt.</p>
+      </div>
+      <div class="wcol reveal d2">
+        <span class="glyph">03</span>
+        <span class="no">03 — Inszenierung</span>
+        <h3>Cinematic Creation</h3>
+        <p>Mit KI entstehen hochwertige Markenfilme und Bildwelten im Stil moderner Luxusmarken — cinematisch, konsistent, unverwechselbar.</p>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="step reveal">Ihre Geschichte</div>
+      <span class="arr reveal d1">→</span>
+      <div class="step reveal d1">Strategie</div>
+      <span class="arr reveal d2">→</span>
+      <div class="step reveal d2">KI Produktion</div>
+      <span class="arr reveal d3">→</span>
+      <div class="step reveal d3">Markenfilm</div>
+      <span class="arr reveal d4">→</span>
+      <div class="step accent reveal d4">Sichtbarkeit</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PACKAGES ============================ -->
+<section class="sec packages" id="pakete">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Die Pakete</span>
+      <h2 class="reveal d1">Drei Wege zu einer <em>Marke, die wirkt</em></h2>
+      <p class="reveal d2">Klar definierte Premium-Produktionen — von professioneller Präsenz bis zu maximaler Wirkung.</p>
+    </div>
+
+    <div class="pkg-grid">
+      <!-- Brand Presence -->
+      <div class="pkg reveal">
+        <div class="pname">Brand <b>Presence</b></div>
+        <div class="pdesc">Für Unternehmerinnen, die professionell sichtbar werden möchten.</div>
+        <div class="price"><span class="amt">398</span><span class="cur">€</span></div>
+        <ul class="feat">
+          <li><span class="dot">◦</span> 1 cinematisches Brand Intro</li>
+          <li><span class="dot">◦</span> 10 abgestimmte Markenbilder</li>
+          <li><span class="dot">◦</span> 1 Feedbackrunde</li>
+          <li><span class="dot">◦</span> 9:16 Format</li>
+        </ul>
+        <div class="result"><span>Ergebnis</span><p>Ein professioneller erster Eindruck.</p></div>
+        <a href="#kontakt" class="pbtn">Paket wählen</a>
+      </div>
+
+      <!-- Brand Story (featured) -->
+      <div class="pkg featured reveal d1">
+        <div class="pkg-badge">Beliebt</div>
+        <div class="pname">Brand <b>Story</b></div>
+        <div class="pdesc">Für Unternehmerinnen, die ihre Geschichte sichtbar machen möchten.</div>
+        <div class="price"><span class="amt">598</span><span class="cur">€</span></div>
+        <ul class="feat">
+          <li><span class="dot">◦</span> Cinematischer Markenfilm</li>
+          <li><span class="dot">◦</span> Story Entwicklung</li>
+          <li><span class="dot">◦</span> Visuelle Markenwelt</li>
+          <li><span class="dot">◦</span> 1 Feedbackrunde</li>
+        </ul>
+        <div class="result"><span>Ergebnis</span><p>Vertrauen durch Persönlichkeit.</p></div>
+        <a href="#kontakt" class="pbtn">Paket wählen</a>
+      </div>
+
+      <!-- Brand Impact -->
+      <div class="pkg reveal d2">
+        <div class="pname">Brand <b>Impact</b></div>
+        <div class="pdesc">Für Unternehmerinnen, die maximale Wirkung erzielen möchten.</div>
+        <div class="price"><span class="amt">998</span><span class="cur">€</span></div>
+        <ul class="feat">
+          <li><span class="dot">◦</span> Premium Markenfilm</li>
+          <li><span class="dot">◦</span> Erweiterte Story Inszenierung</li>
+          <li><span class="dot">◦</span> Zusätzliche Kurzclips</li>
+          <li><span class="dot">◦</span> Hochwertige Markenbilder</li>
+        </ul>
+        <div class="result"><span>Ergebnis</span><p>Eine Marke, die im Gedächtnis bleibt.</p></div>
+        <a href="#kontakt" class="pbtn">Paket wählen</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TRANSFORM ============================ -->
+<section class="sec transform" id="transformation">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Vorher · Nachher</span>
+      <h2 class="reveal d1">Von <em>austauschbar</em> zu <em>unvergesslich</em></h2>
+      <p class="reveal d2">Dieselbe Person. Dieselbe Expertise. Eine völlig andere Wahrnehmung.</p>
+    </div>
+
+    <div class="tgrid reveal d1">
+      <div class="tside before">
+        <div class="tlabel"><span class="rule"></span> Vorher</div>
+        <ul>
+          <li>Unsichtbare Marke</li>
+          <li>Beliebiger Social Content</li>
+          <li>Austauschbare Wahrnehmung</li>
+        </ul>
+      </div>
+      <div class="tdivider"><div class="arrow">→</div></div>
+      <div class="tside after">
+        <div class="tlabel"><span class="rule"></span> Nachher</div>
+        <ul>
+          <li>Professionelle Markenpräsenz</li>
+          <li>Cinematische Bildwelt</li>
+          <li>Emotionale Verbindung</li>
+          <li>Hohe Wiedererkennbarkeit</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PORTFOLIO ============================ -->
+<section class="sec portfolio" id="portfolio">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Ausgewählte Arbeiten</span>
+      <h2 class="reveal d1">Markenfilme, die <em>in Erinnerung bleiben</em></h2>
+      <p class="reveal d2">Jedes Projekt ist ein Filmplakat — eine Geschichte, die sich entfaltet.</p>
+    </div>
+  </div>
+
+  <div class="strip" data-speed="-0.06" id="strip1">
+    <div class="poster" style="--p1:#3a2f24;--p2:#1f1812"><span class="pmono">A</span><div class="pmeta"><div class="cat">Coaching · Brand Film</div><div class="ttl">Aurélie Mind</div><div class="res">+ 220% Reichweite</div></div></div>
+    <div class="poster" style="--p1:#33342c;--p2:#1a1c16"><span class="pmono">L</span><div class="pmeta"><div class="cat">Beratung · Visual World</div><div class="ttl">Lumen Studio</div><div class="res">Premium Rebrand</div></div></div>
+    <div class="poster" style="--p1:#3c3026;--p2:#221a13"><span class="pmono">S</span><div class="pmeta"><div class="cat">Expertin · Story Film</div><div class="ttl">Solène Atelier</div><div class="res">Volle Buchung in 4 Wochen</div></div></div>
+    <div class="poster" style="--p1:#34302a;--p2:#1b1813"><span class="pmono">É</span><div class="pmeta"><div class="cat">Personal Brand</div><div class="ttl">Éclat & Co.</div><div class="res">Wiedererkennbare Bildwelt</div></div></div>
+    <div class="poster" style="--p1:#3a342a;--p2:#1e1a13"><span class="pmono">V</span><div class="pmeta"><div class="cat">Health · Brand Intro</div><div class="ttl">Vita Sérène</div><div class="res">Vertrauen in Sekunden</div></div></div>
+  </div>
+
+  <div class="strip row2" data-speed="0.06" id="strip2">
+    <div class="poster" style="--p1:#34302b;--p2:#1c1814"><span class="pmono">M</span><div class="pmeta"><div class="cat">Mentoring · Film</div><div class="ttl">Maison Élève</div><div class="res">Editorial Identity</div></div></div>
+    <div class="poster" style="--p1:#3b332a;--p2:#201a13"><span class="pmono">N</span><div class="pmeta"><div class="cat">Finance · Brand Story</div><div class="ttl">Noir Capital</div><div class="res">Autorität & Wärme</div></div></div>
+    <div class="poster" style="--p1:#332f2a;--p2:#1a1713"><span class="pmono">C</span><div class="pmeta"><div class="cat">Creative · Impact</div><div class="ttl">Céline Voss</div><div class="res">Signature Look</div></div></div>
+    <div class="poster" style="--p1:#3a332b;--p2:#1f1a14"><span class="pmono">R</span><div class="pmeta"><div class="cat">Realestate · Film</div><div class="ttl">Rivage Maison</div><div class="res">Luxury Positioning</div></div></div>
+    <div class="poster" style="--p1:#35302a;--p2:#1c1813"><span class="pmono">I</span><div class="pmeta"><div class="cat">Coaching · Presence</div><div class="ttl">Ilaria Bloom</div><div class="res">Klarheit & Sichtbarkeit</div></div></div>
+  </div>
+</section>
+
+<!-- ============================ FOUNDER ============================ -->
+<section class="sec founder" id="gruenderin">
+  <div class="wrap">
+    <div class="founder-grid">
+      <div class="founder-visual reveal">
+        <div class="editorial"><span class="mono">I·D</span><span class="tag">Gründerin · Ivana Djordjevic</span></div>
+        <div class="sig"><b>Ivana Djordjevic</b><span>Founder · Mindéa</span></div>
+      </div>
+      <div class="founder-text">
+        <span class="eyebrow reveal">Über die Gründerin</span>
+        <h2 class="reveal d1">Die Geschichte <em>hinter Mindéa</em></h2>
+        <p class="reveal d2">Mindéa entstand aus dem Wunsch, Marken sichtbar zu machen, ohne lauter werden zu müssen.</p>
+        <p class="reveal d2">Als Gründerin verbindet Ivana Djordjevic strategisches Denken, emotionale Markenführung und moderne KI-Technologien zu einer neuen Form des Storytellings.</p>
+        <div class="pull reveal d3">Ziel ist nicht mehr Content.<br><span>Ziel ist mehr Bedeutung.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PROCESS ============================ -->
+<section class="sec process" id="prozess">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Der Prozess</span>
+      <h2 class="reveal d1">In vier Schritten zur <em>sichtbaren Marke</em></h2>
+    </div>
+
+    <div class="steps">
+      <div class="pstep reveal"><div class="pnum">01</div><h4>Kennenlernen</h4><p>Wir verstehen Sie, Ihre Marke und Ihr Ziel — in einem persönlichen Gespräch.</p></div>
+      <div class="pstep reveal d1"><div class="pnum">02</div><h4>Strategie &amp; Story</h4><p>Positionierung und Erzählung werden präzise entwickelt und definiert.</p></div>
+      <div class="pstep reveal d2"><div class="pnum">03</div><h4>Produktion</h4><p>Mit KI entstehen Ihre cinematischen Markenfilme und Bildwelten.</p></div>
+      <div class="pstep reveal d3"><div class="pnum">04</div><h4>Auslieferung</h4><p>Sie erhalten fertige, sofort einsetzbare Assets in Premium-Qualität.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TESTIMONIALS ============================ -->
+<section class="sec testi" id="stimmen">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Stimmen</span>
+      <h2 class="reveal d1">Was Kundinnen <em>erleben</em></h2>
+    </div>
+
+    <div class="testi-grid">
+      <div class="tcard reveal">
+        <div class="mark">”</div>
+        <blockquote>Zum ersten Mal fühlt sich meine Marke an wie ich — nur klarer. Innerhalb von Wochen kamen Anfragen, die genau passten.</blockquote>
+        <div class="who"><div class="av">A</div><div><b>Aurélie M.</b><span>Business Coach</span></div></div>
+      </div>
+      <div class="tcard reveal d1">
+        <div class="mark">”</div>
+        <blockquote>Ich musste nie vor der Kamera stehen — und trotzdem wirkt alles cinematisch und hochwertig. Das hat alles verändert.</blockquote>
+        <div class="who"><div class="av">S</div><div><b>Solène R.</b><span>Ernährungsexpertin</span></div></div>
+      </div>
+      <div class="tcard reveal d2">
+        <div class="mark">”</div>
+        <blockquote>Mindéa hat meine Geschichte in Bilder übersetzt, die Menschen sich merken. Endlich werde ich erkannt — nicht nur gesehen.</blockquote>
+        <div class="who"><div class="av">C</div><div><b>Céline V.</b><span>Creative Mentor</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FINAL CTA ============================ -->
+<section class="final" id="kontakt">
+  <div class="glow-b"><span class="a"></span><span class="b"></span></div>
+  <svg class="final-fly" viewBox="0 0 200 170"><use href="#butterfly"/></svg>
+
+  <div class="wrap">
+    <span class="eyebrow reveal">Beginnen wir</span>
+    <h2 class="reveal d1">Ihre Geschichte verdient mehr als <em>einen weiteren Post.</em></h2>
+    <p class="reveal d2">Lassen Sie uns gemeinsam eine Marke erschaffen, die Menschen nicht nur sehen, sondern erinnern.</p>
+    <div class="final-ctas reveal d3">
+      <a href="mailto:ivanadjordjevic732@googlemail.com?subject=Projektanfrage%20Mind%C3%A9a" class="btn btn-gold">Projekt anfragen <span class="arr">→</span></a>
+      <a href="mailto:ivanadjordjevic732@googlemail.com?subject=Kostenloses%20Erstgespr%C3%A4ch" class="btn btn-light">Kostenloses Erstgespräch</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><svg class="mk" viewBox="0 0 200 170"><use href="#butterfly"/></svg> Mindéa</div>
+        <p class="foot-about">KI-gestütztes Brand Studio für Unternehmerinnen, Coaches, Expertinnen und Personal Brands. Cinematische Markenfilme, die Bedeutung schaffen.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Studio</h5>
+        <a href="#was">Was wir tun</a>
+        <a href="#prozess">Prozess</a>
+        <a href="#gruenderin">Gründerin</a>
+        <a href="#portfolio">Arbeiten</a>
+      </div>
+      <div class="foot-col">
+        <h5>Pakete</h5>
+        <a href="#pakete">Brand Presence</a>
+        <a href="#pakete">Brand Story</a>
+        <a href="#pakete">Brand Impact</a>
+        <a href="#kontakt">Erstgespräch</a>
+      </div>
+      <div class="foot-col">
+        <h5>Kontakt</h5>
+        <a href="mailto:ivanadjordjevic732@googlemail.com">E-Mail schreiben</a>
+        <a href="#kontakt">Projekt anfragen</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year">2026</span> Mindéa · Ivana Djordjevic</span>
+      <span>Markenfilme · Strategie · KI Storytelling</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- Year ---- */
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ---- Nav background on scroll ---- */
+  var nav = document.getElementById('nav');
+  function onScrollNav(){ nav.classList.toggle('scrolled', window.scrollY > 30); }
+  onScrollNav();
+
+  /* ---- Mobile burger: smooth-scroll to packages as a simple entry ---- */
+  document.getElementById('burger').addEventListener('click', function(){
+    document.getElementById('pakete').scrollIntoView({behavior:'smooth'});
+  });
+
+  /* ---- Reveal on scroll ---- */
+  var revealEls = [].slice.call(document.querySelectorAll('.reveal:not(.in)'));
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold:.14, rootMargin:'0px 0px -8% 0px'});
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---- Hero particles ---- */
+  (function(){
+    if(reduce) return;
+    var host = document.getElementById('particles');
+    var n = window.innerWidth < 640 ? 14 : 26;
+    var frag = document.createDocumentFragment();
+    for(var i=0;i<n;i++){
+      var p = document.createElement('i');
+      var s = 2 + Math.random()*4;
+      p.style.width = s+'px';
+      p.style.height = s+'px';
+      p.style.left = (Math.random()*100)+'%';
+      p.style.top = (40 + Math.random()*60)+'%';
+      p.style.animationDuration = (9 + Math.random()*12)+'s';
+      p.style.animationDelay = (-Math.random()*15)+'s';
+      frag.appendChild(p);
+    }
+    host.appendChild(frag);
+  })();
+
+  /* ---- Portfolio parallax (horizontal film strips) ---- */
+  var strips = [].slice.call(document.querySelectorAll('.strip'));
+  var ticking = false;
+  function parallax(){
+    var vh = window.innerHeight;
+    strips.forEach(function(st){
+      var r = st.getBoundingClientRect();
+      if(r.bottom < -200 || r.top > vh + 200) return;
+      var speed = parseFloat(st.getAttribute('data-speed')) || 0;
+      var progress = (vh - r.top) ; // px travelled into view
+      st.style.transform = 'translate3d(' + (progress * speed) + 'px,0,0)';
+    });
+    ticking = false;
+  }
+  function onScroll(){
+    onScrollNav();
+    if(!ticking && !reduce){ window.requestAnimationFrame(parallax); ticking = true; }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', parallax, {passive:true});
+  if(!reduce) parallax();
+
+  /* ---- Lightweight "lenis-style" eased anchor scrolling already handled by CSS smooth-scroll ---- */
+})();
+</script>
+</body>
+</html>
