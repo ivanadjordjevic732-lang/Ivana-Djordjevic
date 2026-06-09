@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1c1813">
+<title>Mindéa · Brand DNA — 3D Animation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   MINDÉA — Brand DNA · 3D double-helix animation
+   Pure CSS 3D + vanilla JS · self-contained · no dependencies
+   ============================================================ */
+:root{
+  --ivory:#fbf8f2; --cream:#f3ece1; --ink:#2a2420;
+  --gold:#b3924f; --gold-deep:#8a6d33; --gold-light:#d9bd82;
+  --noir:#1c1813; --noir-soft:#26211b;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:radial-gradient(130% 110% at 50% 0%,#26211b 0%,#1c1813 55%,#120f0b 100%);
+  color:var(--ivory);overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  display:flex;align-items:center;justify-content:center;
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+
+/* ambient gold blooms */
+.amb{position:fixed;inset:0;pointer-events:none;z-index:0}
+.amb span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+.amb .a{width:520px;height:520px;top:-160px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(217,189,130,.28),transparent 65%)}
+.amb .b{width:420px;height:420px;bottom:-150px;left:6%;background:radial-gradient(circle,rgba(179,146,79,.2),transparent 70%)}
+.amb .c{width:380px;height:380px;bottom:-120px;right:6%;background:radial-gradient(circle,rgba(217,189,130,.16),transparent 70%)}
+
+/* floating dust particles */
+.dust{position:fixed;inset:0;z-index:1;pointer-events:none}
+.dust i{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(217,189,130,.9),transparent 70%);animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(30px);opacity:0}15%{opacity:.7}85%{opacity:.4}100%{transform:translateY(-120px);opacity:0}}
+
+/* ---- stage ---- */
+.stage{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:0;width:100%;height:100%;justify-content:center}
+
+.kicker{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-light);margin-bottom:14px;text-align:center;opacity:0;animation:fade 1.2s var(--ease) .2s forwards}
+.title{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,5vw,56px);font-weight:500;text-align:center;line-height:1.05;letter-spacing:-.01em;opacity:0;animation:fade 1.2s var(--ease) .35s forwards}
+.title em{font-style:italic;color:var(--gold-light)}
+.sub{font-size:14px;font-weight:300;color:rgba(251,248,242,.6);text-align:center;max-width:46ch;margin:16px auto 0;line-height:1.7;opacity:0;animation:fade 1.2s var(--ease) .5s forwards}
+@keyframes fade{to{opacity:1}}
+
+/* ---- 3D scene ---- */
+.scene{
+  width:340px;height:clamp(360px,52vh,540px);
+  perspective:1100px;perspective-origin:50% 50%;
+  margin:8px 0 6px;position:relative;
+}
+.scene::after{content:"";position:absolute;left:50%;top:50%;width:240px;height:240px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(217,189,130,.18),transparent 65%);filter:blur(30px);pointer-events:none}
+
+.helix{
+  position:absolute;left:50%;top:50%;width:0;height:0;
+  transform-style:preserve-3d;
+  animation:spin 16s linear infinite, sway 9s ease-in-out infinite;
+}
+@keyframes spin{from{transform:rotateX(8deg) rotateY(0)}to{transform:rotateX(8deg) rotateY(360deg)}}
+@keyframes sway{0%,100%{margin-top:-6px}50%{margin-top:6px}}
+
+.rung{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform}
+.bar{
+  position:absolute;height:2px;left:0;top:-1px;transform-origin:left center;
+  background:linear-gradient(90deg,rgba(217,189,130,.15),rgba(217,189,130,.55),rgba(217,189,130,.15));
+  border-radius:2px;
+}
+.node{
+  position:absolute;border-radius:50%;top:50%;
+  background:radial-gradient(circle at 32% 28%,#f4e6c2,#c9a85f 45%,#8a6d33 100%);
+  box-shadow:0 0 12px rgba(217,189,130,.55),0 2px 6px rgba(0,0,0,.4);
+}
+.node.alt{background:radial-gradient(circle at 32% 28%,#fff7e6,#e7d3a0 45%,#b3924f 100%);box-shadow:0 0 18px rgba(217,189,130,.85),0 2px 6px rgba(0,0,0,.4)}
+
+.legend{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;margin-top:10px;opacity:0;animation:fade 1.4s var(--ease) .8s forwards}
+.legend span{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,2vw,20px);color:rgba(251,248,242,.85);position:relative;padding-left:16px}
+.legend span::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#e7d3a0,#8a6d33);box-shadow:0 0 8px rgba(217,189,130,.6)}
+
+.brand{position:fixed;top:24px;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:.06em;color:var(--ivory);opacity:0;animation:fade 1s var(--ease) forwards}
+.brand svg{width:26px;height:26px;filter:drop-shadow(0 2px 6px rgba(217,189,130,.5))}
+
+.hint{position:fixed;bottom:20px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(251,248,242,.32);z-index:5}
+
+@media(max-width:520px){.scene{width:280px}.legend{gap:14px}}
+</style>
+</head>
+<body>
+
+<!-- butterfly mark -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7d3a0"/><stop offset=".5" stop-color="#c9a85f"/><stop offset="1" stop-color="#8a6d33"/></linearGradient>
+  <symbol id="bf" viewBox="0 0 200 170">
+    <path d="M100 88 C70 40 30 18 16 40 C2 62 20 96 52 104 C30 112 22 138 40 150 C62 164 92 128 100 96 Z" fill="url(#g)"/>
+    <path d="M100 88 C130 40 170 18 184 40 C198 62 180 96 148 104 C170 112 178 138 160 150 C138 164 108 128 100 96 Z" fill="url(#g)"/>
+    <path d="M100 60 C97 60 96 64 96 72 L98 118 C98 124 99 128 100 128 C101 128 102 124 102 118 L104 72 C104 64 103 60 100 60 Z" fill="#5a4524"/>
+    <circle cx="100" cy="58" r="5" fill="#5a4524"/>
+  </symbol>
+</defs></svg>
+
+<div class="amb"><span class="a"></span><span class="b"></span><span class="c"></span></div>
+<div class="dust" id="dust"></div>
+
+<div class="brand"><svg viewBox="0 0 200 170"><use href="#bf"/></svg> Mindéa</div>
+
+<div class="stage">
+  <div class="kicker">Brand DNA</div>
+  <h1 class="title">Die <em>DNA</em> von Mindéa</h1>
+  <p class="sub">Strategie, Geschichte und Technologie — verwoben zu einer unverwechselbaren Markenidentität.</p>
+
+  <div class="scene">
+    <div class="helix" id="helix"></div>
+  </div>
+
+  <div class="legend">
+    <span>Strategie</span>
+    <span>Storytelling</span>
+    <span>Identität</span>
+    <span>KI Craft</span>
+  </div>
+</div>
+
+<div class="hint">Schmetterling · Marken-DNA in Bewegung</div>
+
+<script>
+(function(){
+  'use strict';
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- build the double helix ---- */
+  var helix = document.getElementById('helix');
+  var RUNGS   = 24;     // number of base pairs
+  var STEP    = 15;     // degrees of twist per rung
+  var SPACING = 19;     // px vertical gap
+  var RADIUS  = 95;     // px helix radius
+  var NODE    = 17;     // px node diameter
+  var topY    = -((RUNGS-1)*SPACING)/2;
+
+  var frag = document.createDocumentFragment();
+  for(var i=0;i<RUNGS;i++){
+    var y = topY + i*SPACING;
+    var angle = i*STEP;
+    var rung = document.createElement('div');
+    rung.className = 'rung';
+    rung.style.transform = 'translateY('+y+'px) rotateY('+angle+'deg)';
+
+    // connecting bar spans the diameter (centered)
+    var bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.width = (RADIUS*2)+'px';
+    bar.style.left = (-RADIUS)+'px';
+    rung.appendChild(bar);
+
+    // every 6th pair is a highlighted "value" node
+    var alt = (i % 6 === 0) ? ' alt' : '';
+
+    var nL = document.createElement('div');
+    nL.className = 'node'+alt;
+    nL.style.width = nL.style.height = NODE+'px';
+    nL.style.left = (-RADIUS)+'px';
+    nL.style.marginLeft = (-NODE/2)+'px';
+    nL.style.marginTop = (-NODE/2)+'px';
+
+    var nR = document.createElement('div');
+    nR.className = 'node'+alt;
+    nR.style.width = nR.style.height = NODE+'px';
+    nR.style.left = (RADIUS)+'px';
+    nR.style.marginLeft = (-NODE/2)+'px';
+    nR.style.marginTop = (-NODE/2)+'px';
+
+    rung.appendChild(nL);
+    rung.appendChild(nR);
+    frag.appendChild(rung);
+  }
+  helix.appendChild(frag);
+
+  /* ---- floating dust ---- */
+  if(!reduce){
+    var dust = document.getElementById('dust');
+    var n = innerWidth < 600 ? 16 : 30, df = document.createDocumentFragment();
+    for(var k=0;k<n;k++){
+      var p = document.createElement('i');
+      var s = 2 + Math.random()*3;
+      p.style.width = p.style.height = s+'px';
+      p.style.left = (Math.random()*100)+'%';
+      p.style.top = (40+Math.random()*60)+'%';
+      p.style.animationDuration = (10+Math.random()*12)+'s';
+      p.style.animationDelay = (-Math.random()*18)+'s';
+      df.appendChild(p);
+    }
+    dust.appendChild(df);
+  }
+
+  /* ---- subtle pointer parallax on the scene ---- */
+  if(!reduce){
+    var scene = document.querySelector('.scene');
+    addEventListener('pointermove', function(e){
+      var rx = (e.clientY/innerHeight - .5) * -10;
+      var ry = (e.clientX/innerWidth  - .5) * 14;
+      scene.style.perspectiveOrigin = (50 + (e.clientX/innerWidth-.5)*20)+'% '+(50 + (e.clientY/innerHeight-.5)*20)+'%';
+    }, {passive:true});
+  }
+})();
+</script>
+</body>
+</html>
