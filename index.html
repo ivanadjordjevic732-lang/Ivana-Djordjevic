@@ -30831,6 +30831,8 @@ body.lux-dark{
 /* ─── FLOATING GLASS CARDS · 3D depth ─────────────────────────────────── */
 .card,.stat-card,.quick-card,.module-item,.lib-item,.next-post-btn,.rev-dash,.task-item,.cal-item,.lead-item{
   background: color-mix(in srgb, var(--bc) 80%, transparent);
+  -webkit-backdrop-filter: blur(15px) saturate(1.25);
+  backdrop-filter: blur(15px) saturate(1.25);
   box-shadow: var(--luxos-card-shadow) !important;
   border:1px solid var(--bd);
   position:relative;
@@ -30851,6 +30853,24 @@ body.lux-dark{
     z-index:6;
   }
 }
+/* Touch devices: tactile press feedback + gold edge on tap */
+@media (hover:none){
+  .card:active,.stat-card:active,.quick-card:active,.module-item:active,.lib-item:active,.next-post-btn:active,.lead-header:active{
+    transform: perspective(900px) scale(.975) translateY(-2px) !important;
+    border-color: var(--luxos-gold-soft) !important;
+    box-shadow: var(--luxos-card-shadow-hover) !important;
+    transition: transform .14s ease, box-shadow .2s ease, border-color .2s ease !important;
+  }
+}
+
+/* ─── TOUCH GOLD RIPPLE ───────────────────────────────────────────────── */
+.luxos-ripple{
+  position:absolute; border-radius:50%; pointer-events:none; z-index:3;
+  transform:translate(-50%,-50%) scale(0); opacity:.65;
+  background:radial-gradient(circle, rgba(212,175,55,.5), rgba(212,175,55,.18) 45%, rgba(212,175,55,0) 70%);
+  mix-blend-mode:screen; animation:luxos-ripple .6s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes luxos-ripple{ to{ transform:translate(-50%,-50%) scale(1); opacity:0; } }
 
 /* ─── 3D KPI BLOCKS ───────────────────────────────────────────────────── */
 .stat-card{ padding:16px 8px 14px !important; overflow:hidden; }
@@ -30943,7 +30963,7 @@ body.lux-dark{
       '<div class="luxos-spot s1"></div><div class="luxos-spot s2"></div><div class="luxos-spot s3"></div>'+
       '<div id="luxos-fog"></div><canvas id="luxos-particles"></canvas></div>');
     b.insertBefore(env, b.firstChild);
-    if(FINE){ b.appendChild(el('<div id="luxos-cursor" aria-hidden="true"></div>')); }
+    b.appendChild(el('<div id="luxos-cursor" aria-hidden="true"></div>')); /* mouse + finger glow */
     b.appendChild(el('<div id="luxos-sweep" aria-hidden="true"></div>'));
   }
 
@@ -30975,21 +30995,67 @@ body.lux-dark{
     document.addEventListener('visibilitychange', function(){ if(document.hidden){ cancelAnimationFrame(raf); } else if(N>0){ raf=requestAnimationFrame(frame); } });
   }
 
-  /* ---- cursor spotlight + environment parallax ---- */
-  function cursorAndParallax(){
-    if(!FINE || RM) return;
+  /* ---- spotlight (mouse + finger) + mouse parallax ---- */
+  function spotlight(){
+    if(RM) return;
     var cur=document.getElementById('luxos-cursor');
     var env=document.getElementById('luxos-env');
-    var tx=innerWidth/2, ty=innerHeight/2, cx=tx, cy=ty, shown=false, raf;
-    addEventListener('pointermove', function(e){ tx=e.clientX; ty=e.clientY; if(!shown && cur){ cur.style.opacity='1'; shown=true; } }, {passive:true});
+    var tx=innerWidth/2, ty=innerHeight/2, cx=tx, cy=ty, shown=false, hideT;
+    function move(x,y){ tx=x; ty=y; if(cur && !shown){ cur.style.opacity='1'; shown=true; } clearTimeout(hideT); }
+    addEventListener('pointermove', function(e){ move(e.clientX,e.clientY); }, {passive:true});
+    /* on touch, fade the glow out shortly after the finger lifts */
+    addEventListener('pointerup', function(){ if(!FINE){ hideT=setTimeout(function(){ if(cur){ cur.style.opacity='0'; shown=false; } }, 700); } }, {passive:true});
     function loop(){
       cx+=(tx-cx)*0.16; cy+=(ty-cy)*0.16;
       if(cur) cur.style.transform='translate3d('+cx+'px,'+cy+'px,0)';
-      if(env){ var ox=(tx/innerWidth-0.5), oy=(ty/innerHeight-0.5);
+      if(env && FINE){ var ox=(tx/innerWidth-0.5), oy=(ty/innerHeight-0.5);
         env.style.transform='translate3d('+(ox*-18)+'px,'+(oy*-18)+'px,0)'; }
-      raf=requestAnimationFrame(loop);
+      requestAnimationFrame(loop);
     }
-    raf=requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
+  }
+
+  /* ---- gyroscope parallax (Handy / iPad) ---- */
+  function gyro(){
+    if(RM || FINE) return;                 /* touch devices only */
+    var env=document.getElementById('luxos-env');
+    var cur=document.getElementById('luxos-cursor');
+    var bx=0, by=0, tgx=0, tgy=0, running=false;
+    function onTilt(e){
+      var g=e.gamma, b=e.beta; if(g==null||b==null) return;
+      g=Math.max(-32,Math.min(32,g));          /* left/right */
+      b=Math.max(-32,Math.min(32,(b||0)-32));  /* neutral ≈ holding upright */
+      tgx=g/32; tgy=b/32;
+    }
+    function loop(){ bx+=(tgx-bx)*0.10; by+=(tgy-by)*0.10;
+      if(env) env.style.transform='translate3d('+(bx*-26)+'px,'+(by*-26)+'px,0)';
+      requestAnimationFrame(loop); }
+    function start(){ if(running) return; running=true; window.addEventListener('deviceorientation', onTilt, true); requestAnimationFrame(loop); }
+    var D=window.DeviceOrientationEvent;
+    if(D && typeof D.requestPermission==='function'){
+      /* iOS 13+ needs a user gesture to grant motion access */
+      var ask=function(){ try{ D.requestPermission().then(function(r){ if(r==='granted') start(); })['catch'](function(){}); }catch(e){} };
+      document.addEventListener('touchend', ask, {once:true, passive:true});
+      document.addEventListener('click', ask, {once:true});
+    } else if(D){ start(); }
+  }
+
+  /* ---- touch gold ripple on cards & buttons ---- */
+  function ripple(){
+    if(RM) return;
+    var SEL='.card,.stat-card,.quick-card,.module-item,.next-post-btn,.lead-header,.sb-item,.gbtn,.qp-chip,.pkg-tab,.lib-item,.status-chip';
+    document.addEventListener('pointerdown', function(e){
+      var t=e.target.closest ? e.target.closest(SEL) : null;
+      if(!t || t.disabled) return;
+      var r=t.getBoundingClientRect(); if(!r.width) return;
+      var size=Math.min(r.width,r.height)*1.5;
+      if(getComputedStyle(t).position==='static') t.style.position='relative';
+      var sp=document.createElement('span'); sp.className='luxos-ripple';
+      sp.style.width=sp.style.height=size+'px';
+      sp.style.left=(e.clientX-r.left)+'px'; sp.style.top=(e.clientY-r.top)+'px';
+      t.appendChild(sp);
+      setTimeout(function(){ if(sp.parentNode) sp.parentNode.removeChild(sp); }, 640);
+    }, {passive:true});
   }
 
   /* ---- liquid 3D tilt on floating cards ---- */
@@ -31071,7 +31137,7 @@ body.lux-dark{
   }
 
   function boot(){
-    mount(); loader(); particles(); cursorAndParallax(); tilt(); counters(); pageTransitions();
+    mount(); loader(); particles(); spotlight(); gyro(); ripple(); tilt(); counters(); pageTransitions();
   }
   if(document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
 })();
