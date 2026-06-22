@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d0a07">
+<title>Mindéa</title>
+<style>
+  :root{
+    --ivory:#f6ecd6; --cream:#fbf6ea; --beige:#e7d3ad;
+    --gold:#c79a4e; --champagne:#e6c98a; --bronze:#9c6b3f;
+    --ink:#0d0a07;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--ink);overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;color:var(--ivory);
+    font-family:"Cormorant Garamond","Times New Roman",serif}
+  /* tall scroll track that drives the timeline */
+  #track{position:relative;width:100%;height:600vh}
+  /* fixed cinematic stage */
+  #stage{position:fixed;inset:0;width:100%;height:100%;z-index:1}
+  canvas{display:block;width:100%;height:100%}
+
+  /* vignette + grain to seat the render in premium darkness/light */
+  #vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(120% 120% at 50% 42%,
+      rgba(0,0,0,0) 38%, rgba(13,10,7,.28) 72%, rgba(13,10,7,.62) 100%);
+    transition:opacity 1.2s ease}
+  #grain{position:fixed;inset:-50%;z-index:3;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode:overlay;animation:grain 7s steps(6) infinite}
+  @keyframes grain{
+    0%{transform:translate(0,0)} 16%{transform:translate(-3%,2%)}
+    33%{transform:translate(2%,-3%)} 50%{transform:translate(-2%,3%)}
+    66%{transform:translate(3%,-1%)} 83%{transform:translate(-1%,-2%)}
+    100%{transform:translate(0,0)}}
+
+  /* loader — pure light, no text */
+  #loader{position:fixed;inset:0;z-index:6;display:flex;align-items:center;
+    justify-content:center;background:var(--ink);transition:opacity 1.4s ease}
+  #loader.hidden{opacity:0;pointer-events:none}
+  #loader .pulse{width:10px;height:10px;border-radius:50%;
+    background:radial-gradient(circle,var(--champagne),var(--gold));
+    box-shadow:0 0 24px 6px rgba(199,154,78,.5);
+    animation:bloom 2.4s ease-in-out infinite}
+  @keyframes bloom{
+    0%,100%{transform:scale(.6);opacity:.45}
+    50%{transform:scale(1.25);opacity:1}}
+
+  /* scroll cue — a breathing thread of light, no words */
+  #cue{position:fixed;left:50%;bottom:34px;z-index:4;translate:-50% 0;
+    display:flex;flex-direction:column;align-items:center;gap:9px;
+    opacity:0;transition:opacity 1s ease}
+  #cue.show{opacity:.8}
+  #cue .thread{width:1px;height:46px;background:linear-gradient(
+    to bottom, rgba(230,201,138,0), rgba(230,201,138,.9));
+    animation:thread 2.6s ease-in-out infinite}
+  #cue .dot{width:5px;height:5px;border-radius:50%;background:var(--champagne);
+    box-shadow:0 0 12px 3px rgba(230,201,138,.6);animation:fall 2.6s ease-in-out infinite}
+  @keyframes thread{0%,100%{opacity:.35;transform:scaleY(.7)}50%{opacity:1;transform:scaleY(1)}}
+  @keyframes fall{0%{transform:translateY(-8px);opacity:0}40%{opacity:1}100%{transform:translateY(10px);opacity:0}}
+
+  /* graceful fallback if WebGL is unavailable */
+  #fallback{position:fixed;inset:0;z-index:5;display:none;
+    background:radial-gradient(130% 100% at 50% 30%,#2a2013,#0d0a07 70%)}
+  #fallback.show{display:block}
+  #fallback .orb{position:absolute;border-radius:50%;
+    background:radial-gradient(circle,rgba(230,201,138,.8),rgba(199,154,78,0));
+    filter:blur(2px);animation:drift 14s ease-in-out infinite}
+  @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-26px)}}
+
+  @media (prefers-reduced-motion: reduce){
+    #grain{animation:none} #loader .pulse{animation:none}
+  }
+</style>
+</head>
+<body>
+  <div id="stage"><canvas id="scene"></canvas></div>
+  <div id="vignette"></div>
+  <div id="grain"></div>
+  <div id="fallback"></div>
+  <div id="cue"><div class="thread"></div><div class="dot"></div></div>
+  <div id="loader"><div class="pulse"></div></div>
+  <div id="track"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cue=document.getElementById('cue');
+const vignette=document.getElementById('vignette');
+
+/* ---------- boot guard ---------- */
+function showFallback(){
+  document.getElementById('fallback').classList.add('show');
+  document.getElementById('loader').classList.add('hidden');
+  const fb = document.getElementById('fallback');
+  for(let i=0;i<7;i++){
+    const o=document.createElement('div'); o.className='orb';
+    const s=80+Math.random()*260;
+    o.style.width=o.style.height=s+'px';
+    o.style.left=(Math.random()*100)+'%'; o.style.top=(Math.random()*100)+'%';
+    o.style.opacity=.15+Math.random()*.35;
+    o.style.animationDelay=(-Math.random()*14)+'s';
+    fb.appendChild(o);
+  }
+}
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({
+    canvas: document.getElementById('scene'),
+    antialias: true, alpha: false, powerPreference:'high-performance'
+  });
+} catch(e){ showFallback(); throw e; }
+
+/* ---------- palette ---------- */
+const COL = {
+  ink:    new THREE.Color('#0d0a07'),
+  warmDk: new THREE.Color('#1c140b'),
+  glowLo: new THREE.Color('#2c2110'),
+  brightBg:new THREE.Color('#f4e8cf'),
+  fogDk:  new THREE.Color('#17110a'),
+  fogBr:  new THREE.Color('#efe2c6'),
+  gold:   new THREE.Color('#c79a4e'),
+  champ:  new THREE.Color('#e6c98a'),
+  ivory:  new THREE.Color('#f6ecd6'),
+  bronze: new THREE.Color('#9c6b3f'),
+  cream:  new THREE.Color('#fbf6ea')
+};
+
+/* ---------- renderer setup ---------- */
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = COL.ink.clone();
+scene.fog = new THREE.FogExp2(COL.fogDk.clone(), 0.034);
+
+const camera = new THREE.PerspectiveCamera(46, innerWidth/innerHeight, 0.1, 120);
+camera.position.set(0, 0.4, 17);
+
+/* environment for premium glass reflections */
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+/* ---------- lighting ---------- */
+const amb = new THREE.AmbientLight(0xffe9c4, 0.35);
+scene.add(amb);
+
+const key = new THREE.DirectionalLight(0xffd9a0, 1.1);
+key.position.set(6, 8, 6);
+scene.add(key);
+
+const rim = new THREE.DirectionalLight(0xa9d0e6, 0.25);
+rim.position.set(-7, -2, -4);
+scene.add(rim);
+
+// the central golden "spotlight" that swells at the finale
+const spot = new THREE.PointLight(0xffcf86, 0.0, 60, 1.4);
+spot.position.set(0, 0.3, 4);
+scene.add(spot);
+
+/* ---------- gradient backdrop sphere ---------- */
+const bgMat = new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite:false,
+  uniforms:{
+    uTop:{value: COL.glowLo.clone()},
+    uBot:{value: COL.ink.clone()},
+    uMid:{value: COL.warmDk.clone()},
+    uBright:{value: 0.0}
+  },
+  vertexShader:`varying vec3 vP; void main(){ vP=position;
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader:`
+    varying vec3 vP; uniform vec3 uTop,uBot,uMid; uniform float uBright;
+    void main(){
+      float h = normalize(vP).y*0.5+0.5;
+      vec3 c = mix(uBot, uMid, smoothstep(0.0,0.55,h));
+      c = mix(c, uTop, smoothstep(0.5,1.0,h));
+      // warm core glow toward center
+      float core = smoothstep(0.75,0.2,length(normalize(vP).xy));
+      c += vec3(0.20,0.13,0.05)*core*(0.5+uBright);
+      c = mix(c, vec3(0.95,0.88,0.74), uBright*0.85);
+      gl_FragColor = vec4(c,1.0);
+    }`
+});
+const backdrop = new THREE.Mesh(new THREE.SphereGeometry(60, 32, 32), bgMat);
+scene.add(backdrop);
+
+/* =====================================================================
+   BUTTERFLY TARGET FIELD  — Temple Fay transcendental butterfly curve
+   Particles travel from chaos -> these points, forming the wings.
+   ===================================================================== */
+const N = reduced ? 2600 : 5200;
+const aStart  = new Float32Array(N*3);
+const aTarget = new Float32Array(N*3);
+const aColor  = new Float32Array(N*3);
+const aRand   = new Float32Array(N);
+
+const SCALE = 0.92;
+const tmpc = new THREE.Color();
+// palette weighting: mostly champagne/ivory, gold cores, occasional bronze
+function pickColor(rBody){
+  const r = Math.random();
+  if (rBody < 0.22)           tmpc.copy(COL.cream);            // body/core
+  else if (r < 0.5)           tmpc.copy(COL.champ);
+  else if (r < 0.8)           tmpc.copy(COL.ivory);
+  else if (r < 0.93)          tmpc.copy(COL.gold);
+  else                        tmpc.copy(COL.bronze);
+  // subtle per-particle variance
+  tmpc.offsetHSL(0,(Math.random()-0.5)*0.04,(Math.random()-0.5)*0.06);
+  return tmpc;
+}
+
+let minY=Infinity, maxY=-Infinity, minX=Infinity, maxX=-Infinity;
+const pts=[];
+for(let i=0;i<N;i++){
+  const t = Math.random()*Math.PI*12;
+  const F = Math.exp(Math.cos(t)) - 2*Math.cos(4*t) - Math.pow(Math.sin(t/12),5);
+  const s = Math.sqrt(Math.random());        // area-uniform interior fill
+  const rad = F * s;
+  let x = Math.sin(t) * rad * SCALE;
+  let y = Math.cos(t) * rad * SCALE;
+  const bodyDist = Math.abs(x);              // closeness to vertical body axis
+  // gentle 3D fold: wings tilt back, thin volume
+  let z = -Math.abs(x)*0.14 + (Math.random()-0.5)*0.18;
+  pts.push([x,y,z,bodyDist]);
+  if(y<minY)minY=y; if(y>maxY)maxY=y; if(x<minX)minX=x; if(x>maxX)maxX=x;
+}
+const cy=(minY+maxY)/2;
+for(let i=0;i<N;i++){
+  const [x,y,z,bodyDist]=pts[i];
+  const tx=x, ty=y-cy+0.2, tz=z;
+  aTarget[i*3]=tx; aTarget[i*3+1]=ty; aTarget[i*3+2]=tz;
+
+  // chaotic origin — drifting in from the far warm dark
+  const ang=Math.random()*Math.PI*2;
+  const rr=6+Math.random()*13;
+  aStart[i*3]   = Math.cos(ang)*rr*(0.7+Math.random()*0.6);
+  aStart[i*3+1] = (Math.random()-0.5)*16;
+  aStart[i*3+2] = -8 - Math.random()*26;
+
+  const bnorm = THREE.MathUtils.clamp(bodyDist/3.0,0,1);
+  const c=pickColor(bnorm<0.18?0.1:1);
+  aColor[i*3]=c.r; aColor[i*3+1]=c.g; aColor[i*3+2]=c.b;
+  aRand[i]=Math.random();
+}
+
+const pGeo=new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(aStart.slice(),3)); // placeholder
+pGeo.setAttribute('aStart',  new THREE.BufferAttribute(aStart,3));
+pGeo.setAttribute('aTarget', new THREE.BufferAttribute(aTarget,3));
+pGeo.setAttribute('aColor',  new THREE.BufferAttribute(aColor,3));
+pGeo.setAttribute('aRand',   new THREE.BufferAttribute(aRand,1));
+
+const pMat=new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  uniforms:{
+    uTime:{value:0}, uProgress:{value:0},
+    uSize:{value: reduced?16:26}, uPixelRatio:{value:Math.min(devicePixelRatio,2)},
+    uBright:{value:0}
+  },
+  vertexShader:`
+    uniform float uTime,uProgress,uSize,uPixelRatio;
+    attribute vec3 aStart,aTarget,aColor; attribute float aRand;
+    varying vec3 vColor; varying float vAlpha;
+    void main(){
+      vColor=aColor;
+      float stagger=aRand*0.35;
+      float p=clamp((uProgress-stagger)/0.65,0.0,1.0);
+      float e=p*p*(3.0-2.0*p);
+      vec3 pos=mix(aStart,aTarget,e);
+
+      float drift=1.0-e;
+      pos.x+=sin(uTime*0.5+aRand*30.0)*0.7*drift;
+      pos.y+=cos(uTime*0.4+aRand*22.0)*0.7*drift;
+      pos.z+=sin(uTime*0.3+aRand*17.0)*0.7*drift;
+
+      // breathing when formed
+      pos*=1.0+0.035*sin(uTime*0.8+aRand*6.28)*e;
+
+      // wing flap at the finale (wings spread along x, body along y)
+      float flap=sin(uTime*1.5)*0.42*smoothstep(0.74,1.0,uProgress)*e;
+      float ang=flap*sign(aTarget.x);
+      float c=cos(ang), s=sin(ang);
+      float nx=c*pos.x + s*pos.z;
+      float nz=-s*pos.x + c*pos.z;
+      pos.x=nx; pos.z=nz;
+
+      vec4 mv=modelViewMatrix*vec4(pos,1.0);
+      gl_Position=projectionMatrix*mv;
+      gl_PointSize=uSize*mix(0.55,1.0,aRand)*uPixelRatio*(300.0/max(-mv.z,0.1));
+      vAlpha=mix(0.22,1.0,e);
+    }`,
+  fragmentShader:`
+    uniform float uBright;
+    varying vec3 vColor; varying float vAlpha;
+    void main(){
+      vec2 uv=gl_PointCoord-0.5;
+      float d=length(uv);
+      float a=smoothstep(0.5,0.0,d); a=pow(a,1.5);
+      vec3 col=vColor+vec3(0.12,0.08,0.0)*(1.0-d);
+      gl_FragColor=vec4(col, a*vAlpha*(1.0-uBright*0.25));
+    }`
+});
+const particles=new THREE.Points(pGeo,pMat);
+particles.frustumCulled=false;
+scene.add(particles);
+
+/* ---------- ambient dust (always alive) ---------- */
+const DN = reduced?700:1500;
+const dPos=new Float32Array(DN*3), dRand=new Float32Array(DN);
+for(let i=0;i<DN;i++){
+  dPos[i*3]=(Math.random()-0.5)*40;
+  dPos[i*3+1]=(Math.random()-0.5)*26;
+  dPos[i*3+2]=(Math.random()-0.5)*40-4;
+  dRand[i]=Math.random();
+}
+const dGeo=new THREE.BufferGeometry();
+dGeo.setAttribute('position',new THREE.BufferAttribute(dPos,3));
+dGeo.setAttribute('aRand',new THREE.BufferAttribute(dRand,1));
+const dMat=new THREE.ShaderMaterial({
+  transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+  uniforms:{uTime:{value:0},uPixelRatio:{value:Math.min(devicePixelRatio,2)}},
+  vertexShader:`
+    uniform float uTime,uPixelRatio; attribute float aRand; varying float vR;
+    void main(){ vR=aRand; vec3 p=position;
+      p.y+=sin(uTime*0.15+aRand*20.0)*0.8;
+      p.x+=cos(uTime*0.12+aRand*16.0)*0.8;
+      vec4 mv=modelViewMatrix*vec4(p,1.0);
+      gl_Position=projectionMatrix*mv;
+      gl_PointSize=(1.0+aRand*2.2)*uPixelRatio*(160.0/max(-mv.z,0.1)); }`,
+  fragmentShader:`
+    varying float vR;
+    void main(){ float d=length(gl_PointCoord-0.5);
+      float a=smoothstep(0.5,0.0,d)*(0.10+vR*0.18);
+      gl_FragColor=vec4(0.92,0.82,0.62,a); }`
+});
+scene.add(new THREE.Points(dGeo,dMat));
+
+/* =====================================================================
+   FLOATING GLASS PANELS — the "premium world" revealed behind the form.
+   Glassmorphism shards that drift from chaos into calm orbiting rings.
+   ===================================================================== */
+const SHARDS = reduced?28:54;
+const shardGeo=new THREE.BoxGeometry(1,1.35,0.035);
+const shardMat=new THREE.MeshPhysicalMaterial({
+  color:0xf3e6cc, metalness:0.0, roughness:0.12,
+  transmission:0.92, thickness:0.5, ior:1.32,
+  transparent:true, opacity:0.5, clearcoat:0.6, clearcoatRoughness:0.2,
+  attenuationColor:new THREE.Color('#d9b878'), attenuationDistance:2.4,
+  envMapIntensity:1.1, side:THREE.DoubleSide
+});
+const shards=new THREE.InstancedMesh(shardGeo,shardMat,SHARDS);
+shards.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+const shardData=[];
+for(let i=0;i<SHARDS;i++){
+  // chaotic start
+  const cs=new THREE.Vector3((Math.random()-0.5)*26,(Math.random()-0.5)*18,-4-Math.random()*22);
+  // calm target on concentric rings, mostly framing/behind the butterfly
+  const ring=8.5+Math.random()*5.5;
+  const ang=Math.random()*Math.PI*2;
+  const ct=new THREE.Vector3(Math.cos(ang)*ring, (Math.random()-0.5)*7, -3-Math.random()*9 + Math.sin(ang)*2.0);
+  shardData.push({
+    cs, ct, scale:0.7+Math.random()*1.6,
+    rot:new THREE.Euler(Math.random()*6.28,Math.random()*6.28,Math.random()*6.28),
+    spin:(Math.random()-0.5)*0.0006, phase:Math.random()*6.28
+  });
+}
+scene.add(shards);
+const _m=new THREE.Matrix4(), _q=new THREE.Quaternion(),
+      _e=new THREE.Euler(), _v=new THREE.Vector3(), _s=new THREE.Vector3();
+
+/* ---------- finale pulse ring ---------- */
+const ringMat=new THREE.ShaderMaterial({
+  transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,
+  uniforms:{uOpacity:{value:0}},
+  vertexShader:`varying vec2 vUv; void main(){vUv=uv;
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader:`varying vec2 vUv; uniform float uOpacity;
+    void main(){ float d=length(vUv-0.5);
+      float ring=smoothstep(0.5,0.46,d)*smoothstep(0.30,0.46,d);
+      gl_FragColor=vec4(0.95,0.85,0.6, ring*uOpacity); }`
+});
+const ring=new THREE.Mesh(new THREE.PlaneGeometry(6,6), ringMat);
+ring.position.set(0,0.2,2); scene.add(ring);
+let pulseT=0;
+
+/* =====================================================================
+   POST PROCESSING — bloom for volumetric golden glow
+   ===================================================================== */
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),
+  reduced?0.55:0.9, 0.7, 0.0);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* =====================================================================
+   TIMELINE — scroll-driven progress with eased smoothing + idle life
+   ===================================================================== */
+let targetP=0, P=0, idle=0, lastScroll=performance.now();
+function readScroll(){
+  const max=document.body.scrollHeight - innerHeight;
+  targetP = max>0 ? THREE.MathUtils.clamp(scrollY/max,0,1) : 0;
+  lastScroll=performance.now();
+  cue.classList.toggle('show', scrollY < 40);
+}
+addEventListener('scroll', readScroll, {passive:true});
+
+// pointer parallax
+let px=0,py=0,tpx=0,tpy=0;
+addEventListener('pointermove',e=>{
+  tpx=(e.clientX/innerWidth-0.5);
+  tpy=(e.clientY/innerHeight-0.5);
+},{passive:true});
+
+const clock=new THREE.Clock();
+function frame(){
+  const dt=Math.min(clock.getDelta(),0.05);
+  const time=clock.elapsedTime;
+
+  // smooth progress
+  P += (targetP - P) * Math.min(dt*3.2,1);
+  // gentle idle breathing if the visitor pauses early on
+  if(performance.now()-lastScroll>2600 && targetP<0.02){
+    idle += dt*0.25;
+  }
+  const pEff = THREE.MathUtils.clamp(P + Math.sin(idle)*0.012, 0, 1);
+
+  pMat.uniforms.uTime.value=time;
+  pMat.uniforms.uProgress.value=pEff;
+  dMat.uniforms.uTime.value=time;
+
+  // brighten world toward the finale ("warm golden sunlight fills the space")
+  const bright=THREE.MathUtils.smoothstep(pEff,0.62,1.0);
+  pMat.uniforms.uBright.value=bright;
+  bgMat.uniforms.uBright.value=bright;
+  scene.fog.color.copy(COL.fogDk).lerp(COL.fogBr, bright);
+  scene.fog.density = THREE.MathUtils.lerp(0.034, 0.012, bright);
+  scene.background.copy(COL.ink).lerp(COL.brightBg, bright*0.9);
+  renderer.toneMappingExposure = 1.05 + bright*0.25;
+  spot.intensity = bright*3.4;
+  bloom.strength = (reduced?0.55:0.9) + bright*0.55;
+  vignette.style.opacity = 1 - bright*0.55;
+
+  // camera dolly forward + settle, plus parallax
+  px+=(tpx-px)*Math.min(dt*2.5,1); py+=(tpy-py)*Math.min(dt*2.5,1);
+  const dolly=THREE.MathUtils.lerp(17, 9.2, THREE.MathUtils.smoothstep(pEff,0,0.85));
+  camera.position.x = px*2.2;
+  camera.position.y = 0.4 - py*1.4;
+  camera.position.z = dolly + Math.sin(time*0.25)*0.25;
+  camera.lookAt(0,0.25,0);
+
+  // butterfly gentle yaw drift
+  particles.rotation.y = Math.sin(time*0.18)*0.12*pEff;
+
+  // glass shards: chaos -> calm rings, then slow orbit
+  const sp=THREE.MathUtils.smoothstep(pEff,0.08,0.78);
+  for(let i=0;i<SHARDS;i++){
+    const d=shardData[i];
+    _v.lerpVectors(d.cs,d.ct,sp);
+    // drift + slow orbit once settled
+    _v.x+=Math.cos(time*0.1+d.phase)*0.5*(0.4+sp*0.6);
+    _v.y+=Math.sin(time*0.12+d.phase)*0.5;
+    _e.set(d.rot.x+time*0.05, d.rot.y+time*0.04, d.rot.z);
+    _q.setFromEuler(_e);
+    const sc=d.scale*(0.4+sp*0.7);
+    _s.set(sc,sc,sc);
+    _m.compose(_v,_q,_s);
+    shards.setMatrixAt(i,_m);
+  }
+  shards.instanceMatrix.needsUpdate=true;
+  shardMat.opacity = 0.18 + sp*0.4;
+
+  // finale pulse of light — recurring gentle expansion when fully formed
+  if(pEff>0.9){
+    pulseT += dt*0.5;
+    const ph=(pulseT%1.0);
+    const sc=1+ph*5.5;
+    ring.scale.set(sc,sc,1);
+    ringMat.uniforms.uOpacity.value=(1-ph)*0.5*THREE.MathUtils.smoothstep(pEff,0.9,1.0);
+  } else {
+    ringMat.uniforms.uOpacity.value=0;
+  }
+
+  composer.render();
+  requestAnimationFrame(frame);
+}
+
+/* ---------- resize ---------- */
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+  composer.setSize(innerWidth,innerHeight);
+  bloom.setSize(innerWidth,innerHeight);
+  pMat.uniforms.uPixelRatio.value=Math.min(devicePixelRatio,2);
+});
+
+/* ---------- go ---------- */
+readScroll();
+requestAnimationFrame(frame);
+// reveal: fade loader once first frames are warm
+setTimeout(()=>{
+  document.getElementById('loader').classList.add('hidden');
+  cue.classList.add('show');
+}, 900);
+</script>
+</body>
+</html>
