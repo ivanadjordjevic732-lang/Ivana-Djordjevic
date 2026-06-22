@@ -69,6 +69,18 @@
     filter:blur(2px);animation:drift 14s ease-in-out infinite}
   @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-26px)}}
 
+  /* notice if 3D libraries cannot load (e.g. offline) */
+  #notice{position:fixed;inset:0;z-index:7;display:none;align-items:center;
+    justify-content:center;background:radial-gradient(130% 100% at 50% 35%,#241a0e,#0d0a07 72%);
+    padding:24px;text-align:center}
+  #notice.show{display:flex}
+  #notice .nbox{max-width:420px}
+  #notice .ndot{width:9px;height:9px;border-radius:50%;margin:0 auto 22px;
+    background:radial-gradient(circle,var(--champagne),var(--gold));
+    box-shadow:0 0 22px 5px rgba(199,154,78,.45);animation:bloom 2.4s ease-in-out infinite}
+  #notice p{color:var(--ivory);font-size:22px;line-height:1.5;letter-spacing:.3px;opacity:.92}
+  #notice .nsmall{font-size:16px;opacity:.6;margin-top:14px}
+
   @media (prefers-reduced-motion: reduce){
     #grain{animation:none} #loader .pulse{animation:none}
   }
@@ -81,7 +93,30 @@
   <div id="fallback"></div>
   <div id="cue"><div class="thread"></div><div class="dot"></div></div>
   <div id="loader"><div class="pulse"></div></div>
+  <div id="notice">
+    <div class="nbox">
+      <div class="ndot"></div>
+      <p>Diese Animation braucht eine aktive Internetverbindung,<br>
+         um ihre 3D-Bausteine zu laden.</p>
+      <p class="nsmall">Bitte verbinde dich mit dem Internet und lade die Seite neu.</p>
+    </div>
+  </div>
   <div id="track"></div>
+
+  <!-- Wächter: zeigt eine Meldung, falls die 3D-Bausteine nicht laden -->
+  <script>
+    window.__mindeaReady = false;
+    setTimeout(function(){
+      if(!window.__mindeaReady){
+        var n=document.getElementById('notice');
+        var l=document.getElementById('loader');
+        var fb=document.getElementById('fallback');
+        if(n) n.classList.add('show');
+        if(l) l.classList.add('hidden');
+        if(fb && !fb.classList.contains('show')) fb.classList.add('show');
+      }
+    }, 6000);
+  </script>
 
 <script type="importmap">
 {
@@ -126,7 +161,7 @@ try {
     canvas: document.getElementById('scene'),
     antialias: true, alpha: false, powerPreference:'high-performance'
   });
-} catch(e){ showFallback(); throw e; }
+} catch(e){ window.__mindeaReady=true; showFallback(); throw e; }
 
 /* ---------- palette ---------- */
 const COL = {
@@ -418,13 +453,25 @@ composer.addPass(new OutputPass());
    TIMELINE — scroll-driven progress with eased smoothing + idle life
    ===================================================================== */
 let targetP=0, P=0, idle=0, lastScroll=performance.now();
+let userScrolled=false, autoT=0;
 function readScroll(){
   const max=document.body.scrollHeight - innerHeight;
+  if(scrollY>6) userScrolled=true;          // visitor took control
   targetP = max>0 ? THREE.MathUtils.clamp(scrollY/max,0,1) : 0;
   lastScroll=performance.now();
   cue.classList.toggle('show', scrollY < 40);
 }
 addEventListener('scroll', readScroll, {passive:true});
+
+// Auto-play: if nobody scrolls, gently play the whole story on a loop so
+// the experience is alive on its own. Scrolling instantly takes over.
+function autoTimeline(t){
+  const RISE=13, HOLD=4.5, FALL=3.5, total=RISE+HOLD+FALL;
+  const u=t % total;
+  if(u<RISE){ const x=u/RISE; return x*x*(3-2*x); }     // chaos -> butterfly
+  if(u<RISE+HOLD) return 1;                              // finale glow
+  const x=(u-RISE-HOLD)/FALL; return 1-(x*x*(3-2*x));    // soft return
+}
 
 // pointer parallax
 let px=0,py=0,tpx=0,tpy=0;
@@ -437,6 +484,13 @@ const clock=new THREE.Clock();
 function frame(){
   const dt=Math.min(clock.getDelta(),0.05);
   const time=clock.elapsedTime;
+
+  // drive the timeline automatically until the visitor scrolls
+  if(!userScrolled){
+    autoT += dt;
+    if(autoT>1.2) targetP = autoTimeline(autoT-1.2);   // brief calm opening first
+    cue.classList.add('show');
+  }
 
   // smooth progress
   P += (targetP - P) * Math.min(dt*3.2,1);
@@ -503,6 +557,10 @@ function frame(){
   }
 
   composer.render();
+  if(!window.__mindeaReady){           // first frame is up — cancel offline notice
+    window.__mindeaReady = true;
+    document.getElementById('loader').classList.add('hidden');
+  }
   requestAnimationFrame(frame);
 }
 
