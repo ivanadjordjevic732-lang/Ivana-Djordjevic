@@ -170,7 +170,7 @@ const COL = {
   glowLo: new THREE.Color('#2c2110'),
   brightBg:new THREE.Color('#c49a52'),
   fogDk:  new THREE.Color('#17110a'),
-  fogBr:  new THREE.Color('#c9a368'),
+  fogBr:  new THREE.Color('#6b4d27'),
   gold:   new THREE.Color('#c79a4e'),
   champ:  new THREE.Color('#e6c98a'),
   ivory:  new THREE.Color('#f6ecd6'),
@@ -233,7 +233,7 @@ const bgMat = new THREE.ShaderMaterial({
       // warm core glow toward center
       float core = smoothstep(0.75,0.2,length(normalize(vP).xy));
       c += vec3(0.20,0.13,0.05)*core*(0.5+uBright*0.6);
-      c = mix(c, vec3(0.72,0.55,0.30), uBright*0.6);   // warm gold finale, not white
+      c = mix(c, vec3(0.55,0.40,0.20), uBright*0.28);   // deep warm amber finale, not white
       gl_FragColor = vec4(c,1.0);
     }`
 });
@@ -310,7 +310,7 @@ const pMat=new THREE.ShaderMaterial({
   transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
   uniforms:{
     uTime:{value:0}, uProgress:{value:0},
-    uSize:{value: reduced?16:26}, uPixelRatio:{value:Math.min(devicePixelRatio,2)},
+    uSize:{value: reduced?5:7}, uPixelRatio:{value:Math.min(devicePixelRatio,2)},
     uBright:{value:0}
   },
   vertexShader:`
@@ -342,8 +342,8 @@ const pMat=new THREE.ShaderMaterial({
 
       vec4 mv=modelViewMatrix*vec4(pos,1.0);
       gl_Position=projectionMatrix*mv;
-      gl_PointSize=uSize*mix(0.55,1.0,aRand)*uPixelRatio*(300.0/max(-mv.z,0.1));
-      vAlpha=mix(0.22,1.0,e);
+      gl_PointSize=uSize*mix(0.55,1.0,aRand)*uPixelRatio*(10.0/max(-mv.z,0.1));
+      vAlpha=mix(0.14,0.5,e);
     }`,
   fragmentShader:`
     uniform float uBright;
@@ -382,7 +382,7 @@ const dMat=new THREE.ShaderMaterial({
       p.x+=cos(uTime*0.12+aRand*16.0)*0.8;
       vec4 mv=modelViewMatrix*vec4(p,1.0);
       gl_Position=projectionMatrix*mv;
-      gl_PointSize=(1.0+aRand*2.2)*uPixelRatio*(160.0/max(-mv.z,0.1)); }`,
+      gl_PointSize=(1.0+aRand*2.2)*uPixelRatio*(16.0/max(-mv.z,0.1)); }`,
   fragmentShader:`
     varying float vR;
     void main(){ float d=length(gl_PointCoord-0.5);
@@ -402,7 +402,7 @@ const shardMat=new THREE.MeshPhysicalMaterial({
   transmission:0.92, thickness:0.5, ior:1.32,
   transparent:true, opacity:0.5, clearcoat:0.6, clearcoatRoughness:0.2,
   attenuationColor:new THREE.Color('#d9b878'), attenuationDistance:2.4,
-  envMapIntensity:1.1, side:THREE.DoubleSide
+  envMapIntensity:0.7, side:THREE.DoubleSide
 });
 const shards=new THREE.InstancedMesh(shardGeo,shardMat,SHARDS);
 shards.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -445,7 +445,7 @@ let pulseT=0;
 const composer=new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene,camera));
 const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),
-  reduced?0.55:0.9, 0.7, 0.0);
+  reduced?0.4:0.5, 0.5, 0.22);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
@@ -511,15 +511,15 @@ function frame(){
   bgMat.uniforms.uBright.value=bright;
   scene.fog.color.copy(COL.fogDk).lerp(COL.fogBr, bright);
   scene.fog.density = THREE.MathUtils.lerp(0.034, 0.016, bright);
-  scene.background.copy(COL.ink).lerp(COL.brightBg, bright*0.6);
-  renderer.toneMappingExposure = 1.05 + bright*0.1;
-  spot.intensity = bright*3.0;
-  bloom.strength = (reduced?0.55:0.9) + bright*0.12;
+  scene.background.copy(COL.ink).lerp(COL.brightBg, bright*0.25);
+  renderer.toneMappingExposure = 1.05 + bright*0.05;
+  spot.intensity = bright*1.2;
+  bloom.strength = (reduced?0.4:0.5) + bright*0.1;
   vignette.style.opacity = 1 - bright*0.4;
 
   // camera dolly forward + settle, plus parallax
   px+=(tpx-px)*Math.min(dt*2.5,1); py+=(tpy-py)*Math.min(dt*2.5,1);
-  const dolly=THREE.MathUtils.lerp(17, 9.2, THREE.MathUtils.smoothstep(pEff,0,0.85));
+  const dolly=THREE.MathUtils.lerp(16, 12.0, THREE.MathUtils.smoothstep(pEff,0,0.85));
   camera.position.x = px*2.2;
   camera.position.y = 0.4 - py*1.4;
   camera.position.z = dolly + Math.sin(time*0.25)*0.25;
@@ -544,7 +544,7 @@ function frame(){
     shards.setMatrixAt(i,_m);
   }
   shards.instanceMatrix.needsUpdate=true;
-  shardMat.opacity = 0.18 + sp*0.4;
+  shardMat.opacity = 0.14 + sp*0.26;
 
   // finale pulse of light — recurring gentle expansion when fully formed
   if(pEff>0.9){
