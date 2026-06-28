@@ -168,9 +168,9 @@ const COL = {
   ink:    new THREE.Color('#0d0a07'),
   warmDk: new THREE.Color('#1c140b'),
   glowLo: new THREE.Color('#2c2110'),
-  brightBg:new THREE.Color('#f4e8cf'),
+  brightBg:new THREE.Color('#c49a52'),
   fogDk:  new THREE.Color('#17110a'),
-  fogBr:  new THREE.Color('#efe2c6'),
+  fogBr:  new THREE.Color('#c9a368'),
   gold:   new THREE.Color('#c79a4e'),
   champ:  new THREE.Color('#e6c98a'),
   ivory:  new THREE.Color('#f6ecd6'),
@@ -232,8 +232,8 @@ const bgMat = new THREE.ShaderMaterial({
       c = mix(c, uTop, smoothstep(0.5,1.0,h));
       // warm core glow toward center
       float core = smoothstep(0.75,0.2,length(normalize(vP).xy));
-      c += vec3(0.20,0.13,0.05)*core*(0.5+uBright);
-      c = mix(c, vec3(0.95,0.88,0.74), uBright*0.85);
+      c += vec3(0.20,0.13,0.05)*core*(0.5+uBright*0.6);
+      c = mix(c, vec3(0.72,0.55,0.30), uBright*0.6);   // warm gold finale, not white
       gl_FragColor = vec4(c,1.0);
     }`
 });
@@ -353,7 +353,7 @@ const pMat=new THREE.ShaderMaterial({
       float d=length(uv);
       float a=smoothstep(0.5,0.0,d); a=pow(a,1.5);
       vec3 col=vColor+vec3(0.12,0.08,0.0)*(1.0-d);
-      gl_FragColor=vec4(col, a*vAlpha*(1.0-uBright*0.25));
+      gl_FragColor=vec4(col, a*vAlpha);   // keep the butterfly fully luminous, even in the bright finale
     }`
 });
 const particles=new THREE.Points(pGeo,pMat);
@@ -505,16 +505,17 @@ function frame(){
   dMat.uniforms.uTime.value=time;
 
   // brighten world toward the finale ("warm golden sunlight fills the space")
-  const bright=THREE.MathUtils.smoothstep(pEff,0.62,1.0);
+  // — but keep it a warm GOLD glow, never a white-out, so the butterfly stays clearly visible
+  const bright=THREE.MathUtils.smoothstep(pEff,0.8,1.0);
   pMat.uniforms.uBright.value=bright;
   bgMat.uniforms.uBright.value=bright;
   scene.fog.color.copy(COL.fogDk).lerp(COL.fogBr, bright);
-  scene.fog.density = THREE.MathUtils.lerp(0.034, 0.012, bright);
-  scene.background.copy(COL.ink).lerp(COL.brightBg, bright*0.9);
-  renderer.toneMappingExposure = 1.05 + bright*0.25;
-  spot.intensity = bright*3.4;
-  bloom.strength = (reduced?0.55:0.9) + bright*0.55;
-  vignette.style.opacity = 1 - bright*0.55;
+  scene.fog.density = THREE.MathUtils.lerp(0.034, 0.016, bright);
+  scene.background.copy(COL.ink).lerp(COL.brightBg, bright*0.6);
+  renderer.toneMappingExposure = 1.05 + bright*0.1;
+  spot.intensity = bright*3.0;
+  bloom.strength = (reduced?0.55:0.9) + bright*0.12;
+  vignette.style.opacity = 1 - bright*0.4;
 
   // camera dolly forward + settle, plus parallax
   px+=(tpx-px)*Math.min(dt*2.5,1); py+=(tpy-py)*Math.min(dt*2.5,1);
