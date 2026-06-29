@@ -86,7 +86,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;transition:padding .4s,bac
   -webkit-backdrop-filter:blur(18px) saturate(1.3);border:1px solid rgba(255,255,255,.5);
   box-shadow:0 10px 30px -18px rgba(120,86,30,.4);width:calc(100% - 32px)}
 .brand{display:flex;align-items:center;gap:11px}
-.brand .mark{width:30px;height:30px}
+.brand .mark{width:auto;height:30px;display:block}
 .brand .name{font-family:var(--serif);font-size:21px;font-weight:600;letter-spacing:.04em}
 .brand .name b{font-weight:600}
 .nav-links{display:flex;align-items:center;gap:30px}
@@ -154,7 +154,9 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;transition:padding .4s,bac
 .pcard:hover{transform:translateY(-12px) rotateX(4deg) rotateY(-3deg)}
 .pbox{height:150px;border-radius:16px;margin-bottom:26px;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4),var(--shadow-soft)}
-.pbox .bf{width:64px;height:64px;filter:drop-shadow(0 6px 12px rgba(120,80,20,.4))}
+.pbox::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 44%,rgba(232,207,159,.28),transparent 62%)}
+.pbox .bf{width:auto;height:62px;position:relative;z-index:1;filter:drop-shadow(0 6px 14px rgba(120,80,20,.45))}
 .pbox.cream{background:linear-gradient(150deg,#fbf4e6,#ead9bb)}
 .pbox.black{background:linear-gradient(150deg,#2a2118,#171109)}
 .pbox.silver{background:linear-gradient(150deg,#e9e6df,#c3bdb1)}
@@ -344,7 +346,7 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
 <header>
   <nav class="nav wrap">
     <a class="brand" href="#top">
-      <svg class="mark"><use href="#bfly"/></svg>
+      <img class="mark" src="assets/mindea-butterfly.png" alt="Mindéa">
       <span class="name">MINDÉA</span>
     </a>
     <div class="nav-links" id="navlinks">
@@ -385,7 +387,7 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
       <div class="halo"></div>
       <div class="glass glass-pane gp1"></div>
       <div class="glass glass-pane gp2"></div>
-      <svg class="hero-bfly" viewBox="0 0 600 600" id="heroBfly"><use href="#bfly"/></svg>
+      <img class="hero-bfly" id="heroBfly" src="assets/mindea-logo-full.png" alt="Mindéa Schmetterling">
     </div>
   </div>
 </section>
@@ -412,7 +414,7 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
   </div>
   <div class="cards">
     <article class="glass pcard reveal d1">
-      <div class="pbox cream"><svg class="bf"><use href="#bfly"/></svg></div>
+      <div class="pbox cream"><img class="bf" src="assets/mindea-butterfly.png" alt=""></div>
       <span class="tag">01 — Identität</span>
       <h3>Brand Presence</h3>
       <p>Deine visuelle Identität: Logo, Farbwelt, Typografie und ein Designsystem,
@@ -421,7 +423,7 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </article>
     <article class="glass pcard reveal d2">
-      <div class="pbox black"><svg class="bf"><use href="#bfly"/></svg></div>
+      <div class="pbox black"><img class="bf" src="assets/mindea-butterfly.png" alt=""></div>
       <span class="tag">02 — Narrativ</span>
       <h3>Brand Story</h3>
       <p>Deine Geschichte, klar erzählt. Positionierung, Tonalität und Botschaften,
@@ -430,7 +432,7 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </article>
     <article class="glass pcard reveal d3">
-      <div class="pbox silver"><svg class="bf"><use href="#bfly"/></svg></div>
+      <div class="pbox silver"><img class="bf" src="assets/mindea-butterfly.png" alt=""></div>
       <span class="tag">03 — Wirkung</span>
       <h3>Brand Impact</h3>
       <p>Markenfilme und Content, die Emotion in Wirkung verwandeln — cinematisch
@@ -459,7 +461,7 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
       </div>
     </div>
     <div class="glass reveal d2" style="padding:34px;min-height:340px;display:flex;align-items:center;justify-content:center">
-      <svg viewBox="0 0 600 600" style="width:70%;filter:drop-shadow(0 20px 36px rgba(150,110,40,.35));animation:floaty 9s ease-in-out infinite"><use href="#bfly"/></svg>
+      <img src="assets/mindea-butterfly.png" alt="Mindéa" style="width:74%;filter:drop-shadow(0 20px 36px rgba(150,110,40,.35));animation:floaty 9s ease-in-out infinite">
     </div>
   </div>
 </section>
@@ -597,7 +599,7 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
   <div class="foot">
     <div class="col">
       <a class="brand" href="#top" style="margin-bottom:6px">
-        <svg class="mark"><use href="#bfly"/></svg><span class="name">MINDÉA</span></a>
+        <img class="mark" src="assets/mindea-butterfly.png" alt="Mindéa"><span class="name">MINDÉA</span></a>
       <p class="lead">Quiet Luxury Branding, Storytelling & Markenfilme. Sichtbar gemacht.</p>
     </div>
     <div class="col"><h4>Studio</h4>
