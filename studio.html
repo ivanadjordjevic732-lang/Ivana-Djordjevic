@@ -305,27 +305,36 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
     </filter>
     <symbol id="bfly" viewBox="0 0 600 600">
       <g filter="url(#soft)">
-        <!-- body -->
-        <ellipse cx="300" cy="335" rx="8" ry="92" fill="url(#goldHi)"/>
-        <circle cx="300" cy="232" r="11" fill="url(#goldHi)"/>
+        <!-- light sparkle above -->
+        <path d="M300 116 L300 198" stroke="url(#goldHi)" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
+        <path d="M289 150 C295 168 300 178 300 192 C300 178 305 168 311 150" fill="none" stroke="#ecd093" stroke-width="1.8" opacity=".5"/>
+        <!-- slender body + head -->
+        <ellipse cx="300" cy="298" rx="6" ry="72" fill="url(#goldHi)"/>
+        <circle cx="300" cy="232" r="9" fill="url(#goldHi)"/>
         <!-- antennae -->
-        <path d="M300 228 C285 196 268 178 252 168" stroke="#bd924a" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M300 228 C315 196 332 178 348 168" stroke="#bd924a" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <circle cx="251" cy="167" r="5" fill="#caa157"/><circle cx="349" cy="167" r="5" fill="#caa157"/>
-        <!-- right wings -->
+        <path d="M300 230 C285 201 271 185 257 177" stroke="#bd924a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <path d="M300 230 C315 201 329 185 343 177" stroke="#bd924a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <circle cx="256" cy="176" r="4.2" fill="#caa157"/><circle cx="344" cy="176" r="4.2" fill="#caa157"/>
+        <!-- RIGHT wings (elongated, logo-like) -->
         <g>
-          <path d="M300 300 C332 196 446 150 514 188 C556 212 548 286 506 308 C462 330 360 322 300 308 Z" fill="url(#gold)" stroke="#8c6824" stroke-width="2"/>
-          <path d="M300 322 C362 332 442 366 452 420 C460 470 408 492 364 470 C326 451 306 388 300 350 Z" fill="url(#gold)" stroke="#8c6824" stroke-width="2"/>
-          <path d="M330 250 C390 230 450 232 492 252" stroke="#fff3d8" stroke-width="2" fill="none" opacity=".5"/>
-          <path d="M340 360 C376 372 410 392 424 420" stroke="#fff3d8" stroke-width="2" fill="none" opacity=".45"/>
+          <path d="M303 256 C356 206 466 150 516 164 C533 206 505 258 470 280 C410 304 350 298 306 286 Z" fill="url(#gold)" stroke="#8c6824" stroke-width="1.6"/>
+          <path d="M306 300 C358 314 422 344 430 394 C434 428 403 448 372 434 C340 419 312 370 307 332 Z" fill="url(#gold)" stroke="#8c6824" stroke-width="1.6"/>
+          <path d="M338 250 C392 232 452 234 498 252" stroke="#fff3d8" stroke-width="1.5" fill="none" opacity=".5"/>
+          <path d="M342 350 C374 364 402 384 418 408" stroke="#fff3d8" stroke-width="1.5" fill="none" opacity=".45"/>
         </g>
-        <!-- left wings (mirror) -->
+        <!-- LEFT wings (mirror) -->
         <g transform="translate(600,0) scale(-1,1)">
-          <path d="M300 300 C332 196 446 150 514 188 C556 212 548 286 506 308 C462 330 360 322 300 308 Z" fill="url(#gold)" stroke="#8c6824" stroke-width="2"/>
-          <path d="M300 322 C362 332 442 366 452 420 C460 470 408 492 364 470 C326 451 306 388 300 350 Z" fill="url(#gold)" stroke="#8c6824" stroke-width="2"/>
-          <path d="M330 250 C390 230 450 232 492 252" stroke="#fff3d8" stroke-width="2" fill="none" opacity=".5"/>
-          <path d="M340 360 C376 372 410 392 424 420" stroke="#fff3d8" stroke-width="2" fill="none" opacity=".45"/>
+          <path d="M303 256 C356 206 466 150 516 164 C533 206 505 258 470 280 C410 304 350 298 306 286 Z" fill="url(#gold)" stroke="#8c6824" stroke-width="1.6"/>
+          <path d="M306 300 C358 314 422 344 430 394 C434 428 403 448 372 434 C340 419 312 370 307 332 Z" fill="url(#gold)" stroke="#8c6824" stroke-width="1.6"/>
+          <path d="M338 250 C392 232 452 234 498 252" stroke="#fff3d8" stroke-width="1.5" fill="none" opacity=".5"/>
+          <path d="M342 350 C374 364 402 384 418 408" stroke="#fff3d8" stroke-width="1.5" fill="none" opacity=".45"/>
         </g>
+        <!-- signature flourish lines beneath -->
+        <path d="M300 368 C374 370 462 360 556 322" fill="none" stroke="url(#gold)" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M300 380 C366 384 444 378 522 348" fill="none" stroke="#cda35a" stroke-width="1.7" stroke-linecap="round" opacity=".65"/>
+        <path d="M300 368 C226 370 138 360 44 322" fill="none" stroke="url(#gold)" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M300 380 C234 384 156 378 78 348" fill="none" stroke="#cda35a" stroke-width="1.7" stroke-linecap="round" opacity=".65"/>
+        <circle cx="300" cy="388" r="4.6" fill="url(#goldHi)"/>
       </g>
     </symbol>
   </defs>
