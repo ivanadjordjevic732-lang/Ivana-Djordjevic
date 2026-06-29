@@ -117,13 +117,21 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;transition:padding .4s,bac
   background:radial-gradient(circle, rgba(232,207,159,.6), rgba(232,207,159,0) 62%);
   filter:blur(6px);animation:pulse 7s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(.96);opacity:.85}50%{transform:scale(1.04);opacity:1}}
-.hero-bfly{width:min(78%,460px);filter:drop-shadow(0 30px 50px rgba(150,110,40,.4));
-  animation:floaty 8s ease-in-out infinite;transform-style:preserve-3d}
 @keyframes floaty{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-22px) rotate(1deg)}}
 #particles{position:absolute;inset:-10%;width:120%;height:120%;z-index:-1}
-.glass-pane{position:absolute;border-radius:26px}
-.gp1{width:150px;height:200px;right:4%;top:8%;animation:floaty 9s ease-in-out infinite}
-.gp2{width:120px;height:120px;left:2%;bottom:12%;animation:floaty 7.5s ease-in-out infinite reverse}
+/* fluttering butterfly: the image is split into two wings that flap in 3D */
+.flutter{position:relative;width:min(80%,440px);aspect-ratio:760/562;
+  filter:drop-shadow(0 26px 46px rgba(150,110,40,.42));
+  animation:floaty 8s ease-in-out infinite;transform-style:preserve-3d}
+.flutter .w{position:absolute;top:0;height:100%;width:50.5%;
+  background-image:url("assets/mindea-butterfly.png");background-size:200% 100%;
+  background-repeat:no-repeat;backface-visibility:hidden;will-change:transform}
+.flutter .wl{left:0;background-position:0% 50%;transform-origin:right center;
+  animation:flapL 1.1s ease-in-out infinite}
+.flutter .wr{right:0;background-position:100% 50%;transform-origin:left center;
+  animation:flapR 1.1s ease-in-out infinite}
+@keyframes flapL{0%,100%{transform:perspective(760px) rotateY(10deg)}50%{transform:perspective(760px) rotateY(46deg)}}
+@keyframes flapR{0%,100%{transform:perspective(760px) rotateY(-10deg)}50%{transform:perspective(760px) rotateY(-46deg)}}
 
 /* ---------- marquee trust ---------- */
 .trust{padding:18px 0 6px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
@@ -384,9 +392,10 @@ footer{padding:70px 0 40px;border-top:1px solid var(--line);margin-top:40px}
     <div class="hero-visual">
       <canvas id="particles"></canvas>
       <div class="halo"></div>
-      <div class="glass glass-pane gp1"></div>
-      <div class="glass glass-pane gp2"></div>
-      <img class="hero-bfly" id="heroBfly" src="assets/mindea-logo-full.png" alt="Mindéa Schmetterling">
+      <div class="flutter" id="heroBfly" role="img" aria-label="Mindéa Schmetterling">
+        <span class="w wl"></span>
+        <span class="w wr"></span>
+      </div>
     </div>
   </div>
 </section>
