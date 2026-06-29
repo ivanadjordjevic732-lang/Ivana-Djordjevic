@@ -12,7 +12,9 @@
     --ink:#0d0a07;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;background:var(--ink);overflow-x:hidden;
+  /* NOTE: do NOT set height:100% on html/body — it caps the document to one
+     screen and breaks page scrolling on iOS. #track provides the scroll height. */
+  html,body{margin:0;background:var(--ink);overflow-x:hidden;
     -webkit-font-smoothing:antialiased;color:var(--ivory);
     font-family:"Cormorant Garamond","Times New Roman",serif}
   /* tall scroll track that drives the timeline */
@@ -455,11 +457,13 @@ composer.addPass(new OutputPass());
 let targetP=0, P=0, idle=0, lastScroll=performance.now();
 let userScrolled=false, autoT=0;
 function readScroll(){
-  const max=document.body.scrollHeight - innerHeight;
-  if(scrollY>6) userScrolled=true;          // visitor took control
-  targetP = max>0 ? THREE.MathUtils.clamp(scrollY/max,0,1) : 0;
+  const doc=document.documentElement;
+  const max=Math.max(doc.scrollHeight, document.body.scrollHeight) - innerHeight;
+  const y=window.scrollY || doc.scrollTop || document.body.scrollTop || 0;
+  if(y>6) userScrolled=true;                 // visitor took control
+  targetP = max>0 ? THREE.MathUtils.clamp(y/max,0,1) : 0;
   lastScroll=performance.now();
-  cue.classList.toggle('show', scrollY < 40);
+  cue.classList.toggle('show', y < 40);
 }
 addEventListener('scroll', readScroll, {passive:true});
 
@@ -485,10 +489,11 @@ function frame(){
   const dt=Math.min(clock.getDelta(),0.05);
   const time=clock.elapsedTime;
 
-  // drive the timeline automatically until the visitor scrolls
+  // drive the timeline automatically until the visitor scrolls.
+  // Use real elapsed time (not accumulated dt) so it's robust to low frame rates.
   if(!userScrolled){
-    autoT += dt;
-    if(autoT>1.2) targetP = autoTimeline(autoT-1.2);   // brief calm opening first
+    autoT = time;
+    if(time>1.2) targetP = autoTimeline(time-1.2);   // brief calm opening first
     cue.classList.add('show');
   }
 
