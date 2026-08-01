@@ -3132,6 +3132,41 @@ button, .sb-item, .module-item, .quick-card, .stat-card, .hdr-btn, .gbtn {
 }
 </style>
 
+
+
+
+
+
+
+
+<!-- === MIDNIGHT GOLD · module completeness (pstart / studio + stray light chips) === -->
+<style>
+/* #pstart-root – flip its local palette to Midnight Gold */
+body.lux-dark #pstart-root{
+  --pbg:#13100B; --pcard:#211B12; --pink:#F2E8D2; --pink2:#B7A886;
+  --pg:#D8B468; --pgd:#C6A65E; --pline:rgba(216,180,104,.22); --pline2:rgba(216,180,104,.42);
+  background:radial-gradient(120% 80% at 50% -8%, rgba(216,180,104,.12), transparent 55%), #13100B !important;
+  color:#F2E8D2 !important;
+}
+body.lux-dark #pstart-root .fokus-heute .fh-track{ background:rgba(216,180,104,.16) !important; }
+
+/* #studio-root – same treatment */
+body.lux-dark #studio-root{
+  --sg:#D8B468; --sgd:#C6A65E; --sink:#F2E8D2; --sink2:#B7A886;
+  --sline:rgba(216,180,104,.22); --sline2:rgba(216,180,104,.42); --scard:#211B12;
+  background:radial-gradient(120% 70% at 50% -6%, rgba(216,180,104,.10), transparent 55%), #13100B !important;
+  color:#F2E8D2 !important;
+}
+body.lux-dark #studio-root .s-q{ color:#DACAA6 !important; }
+body.lux-dark #studio-root .s-intent{ background:linear-gradient(160deg,#241E16,#1A150F) !important; }
+
+/* stray hard-coded light chips / bubbles */
+body.lux-dark .pchip,
+body.lux-dark .pstat{ background:#211B12 !important; color:#D9C9A6 !important; }
+body.lux-dark .donez{ background:linear-gradient(135deg,#241E16,#1A150F) !important; }
+body.lux-dark .c-a{ background:#241E16 !important; color:#F2E8D2 !important; }
+</style>
+
 </head>
 <body>
 <!-- ===== MOBILE DRAWER STYLES ===== -->
@@ -37573,8 +37608,9 @@ body.lux-dark .gbtn:hover{ box-shadow:0 10px 32px rgba(216,180,104,.34), inset 0
     apply(cur==='light'?'dark':'light');
   };
   function init(){
-    try{ localStorage.setItem('mc-lux-mode','light'); }catch(e){}
-    apply('light');
+    var saved=null;
+    try{ saved=localStorage.getItem('mc-lux-mode'); }catch(e){}
+    apply(saved==='light' ? 'light' : 'dark');
   }
   if(document.body) init();
   else document.addEventListener('DOMContentLoaded', init);
