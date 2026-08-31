@@ -18,7 +18,9 @@ function webglOK() {
   } catch (e) { return false; }
 }
 
-var NO3D = FORCE_NO3D || REDUCED || !webglOK() || typeof THREE === 'undefined';
+var FORCE_3D = false;
+try { FORCE_3D = localStorage.getItem('mindea-3d') === 'on'; } catch (e) {}
+var NO3D = FORCE_NO3D || (REDUCED && !FORCE_3D) || !webglOK() || typeof THREE === 'undefined';
 var MOBILE = window.matchMedia('(max-width: 880px)').matches;
 
 /* ---------------- tiny math helpers ---------------- */
@@ -127,6 +129,18 @@ if (NO3D) {
   window.addEventListener('resize', measure);
   window.addEventListener('load', function () { measure(); onScrollLite(); });
   loader.classList.add('done');
+  // Fallback kam nur durch "Bewegung reduzieren": 3D als bewusste Wahl anbieten
+  if (REDUCED && !FORCE_NO3D && webglOK() && typeof THREE !== 'undefined') {
+    var btn = document.createElement('button');
+    btn.id = 'enable3d';
+    btn.type = 'button';
+    btn.textContent = '3D-Erlebnis aktivieren';
+    btn.addEventListener('click', function () {
+      try { localStorage.setItem('mindea-3d', 'on'); } catch (e) {}
+      location.reload();
+    });
+    body.appendChild(btn);
+  }
   return;
 }
 
