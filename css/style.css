@@ -271,11 +271,13 @@ body.scrolled .scroll-cue { opacity: 0; }
   text-align: left;
   box-shadow: 0 40px 120px rgba(0, 0, 0, 0.35);
 }
-@media (max-height: 820px) {
+@media (max-height: 980px) {
   .pkg-card li { padding: 4px 0 4px 26px; }
   .pkg-card { padding-top: 22px; padding-bottom: 22px; }
   .pkg-intro { margin-bottom: 16px; }
   .pkg-intro .h-big { font-size: clamp(30px, 4.6vw, 60px); margin-bottom: 10px; }
+  .pkg-intro .claim { font-size: clamp(16px, 1.8vw, 24px); }
+  .phase-card { padding-top: 70px; padding-bottom: 30px; }
 }
 .theme-paper .pkg-card, .theme-light .pkg-card {
   background: rgba(248, 245, 240, 0.72);

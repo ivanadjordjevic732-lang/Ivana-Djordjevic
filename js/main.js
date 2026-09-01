@@ -446,6 +446,56 @@ function glowTex(colA) {
 }
 var GLOW_TEX = null; // built after fonts load
 
+/* ---------------- echte Markenbilder ---------------- */
+var IMG_SOURCES = window.MINDEA_IMAGES || {
+  'impact-studio': 'assets/img/impact-studio.jpg',
+  'story-book': 'assets/img/story-book.jpg',
+  'presence-gallery': 'assets/img/presence-gallery.jpg',
+  'hero-panels': 'assets/img/hero-panels.jpg'
+};
+var texLoader = null;
+function loadImg(key, cb) {
+  if (!IMG_SOURCES[key]) return;
+  if (!texLoader) texLoader = new THREE.TextureLoader();
+  texLoader.load(IMG_SOURCES[key], function (t) {
+    t.anisotropy = 4;
+    cb(t);
+  });
+}
+function swapMap(mesh, t) {
+  mesh.material.map = t;
+  mesh.material.needsUpdate = true;
+}
+/* Foto mit Goldrahmen, Abdunklung unten und optionalem Schriftzug */
+function framedPhotoTex(img, label) {
+  var w = 1024, h = 600;
+  var c = makeCanvas(w, h), x = c.getContext('2d');
+  x.drawImage(img, 0, 0, w, h);
+  var g = x.createLinearGradient(0, h * 0.55, 0, h);
+  g.addColorStop(0, 'rgba(10,6,3,0)'); g.addColorStop(1, 'rgba(10,6,3,0.55)');
+  x.fillStyle = g; x.fillRect(0, 0, w, h);
+  x.strokeStyle = 'rgba(192,164,104,0.8)'; x.lineWidth = 6;
+  x.strokeRect(14, 14, w - 28, h - 28);
+  if (label) {
+    x.textAlign = 'center';
+    x.fillStyle = 'rgba(242,234,217,0.95)';
+    x.font = "300 44px 'Cormorant Garamond', Georgia, serif";
+    x.fillText(label, w / 2, h - 44);
+  }
+  return tex(c);
+}
+/* Ausschnitt als altes Foto mit Papierrand */
+function cropPhotoTex(img, fx, fy, fw, fh) {
+  var w = 360, h = 450;
+  var c = makeCanvas(w, h), x = c.getContext('2d');
+  x.fillStyle = '#f6f0e2'; x.fillRect(0, 0, w, h);
+  var b = 16;
+  x.drawImage(img, img.width * fx, img.height * fy, img.width * fw, img.height * fh,
+    b, b, w - 2 * b, h - 2 * b - 34);
+  addGrain(x, w, h, 0.05);
+  return tex(c);
+}
+
 /* ---------------- mesh factories ---------------- */
 function basicMat(o) {
   var m = new THREE.MeshBasicMaterial(o);
@@ -651,6 +701,7 @@ function addToWorld(g) { scene.remove(g); WORLD.add(g); }
 /* ====== 01 · HERO — aus Fragmenten wird ein Film ====== */
 function buildHero(g) {
   var photo = plane(1.5, 1.9, basicMat({ map: photoTex('#caa273', '#8a6a45', '#3c2a18'), side: THREE.DoubleSide }));
+  loadImg('presence-gallery', function (t) { swapMap(photo, cropPhotoTex(t.image, 0.39, 0.11, 0.09, 0.33)); });
   var film = plane(2.5, 0.82, basicMat({ map: filmTex(), side: THREE.DoubleSide }));
   var wave = waveGroup(26, 2.1, PAL.gold);
   var word = textPlane('Deine Geschichte', { italic: true, h: 0.42, color: '#efe6d2' });
@@ -658,6 +709,7 @@ function buildHero(g) {
   beam.position.y = 3.2;
   var masterGlow = glowSprite(5, 0);
   var master = plane(3.05, 1.75, basicMat({ map: cinemaTex(true), opacity: 0 }));
+  loadImg('hero-panels', function (t) { swapMap(master, t); });
   var dust = dustPoints(MOBILE ? 60 : 140, 12, 0.035, 0.35);
   g.add(photo, film, wave, word, beam, masterGlow, master, dust);
 
@@ -743,6 +795,7 @@ function buildProblem(g) {
     [-1.9, 1.25, 0, 0.45], [2.2, 1.4, 0, 0.45], [0, -1.55, 0, 0.55]
   ];
   var board = plane(2.9, 1.7, basicMat({ map: brandTex(), opacity: 0 }));
+  loadImg('presence-gallery', function (t) { swapMap(board, framedPhotoTex(t.image, 'MINDÉA')); });
   board.position.set(0, 0.25, -0.1);
   var boardGlow = glowSprite(5.4, 0);
   boardGlow.position.copy(board.position);
@@ -899,6 +952,12 @@ function buildStory(g) {
   var scenePlane = plane(2.4, 1.35, basicMat({ map: cinemaTex(false), opacity: 0 }));
   scenePlane.position.set(-1.4, 0.35, -0.5);
   g.add(oldPhoto, scenePlane);
+  loadImg('story-book', function (t) {
+    // das Kinderfoto aus dem Buch-Bild wird zum alten Foto auf der Seite …
+    swapMap(oldPhoto, cropPhotoTex(t.image, 0.31, 0.4, 0.19, 0.29));
+    // … und erwacht als ganze Szene zum Leben
+    swapMap(scenePlane, t);
+  });
 
   // WARUM? — Buchstaben schweben aus dem Papier
   var letters = [];
@@ -926,6 +985,7 @@ function buildStory(g) {
 
   // das große Filmfenster am Ende
   var filmScreen = makeScreen(3.3, 1.85, cinemaTex(true));
+  loadImg('hero-panels', function (t) { swapMap(filmScreen.userData.face, t); });
   filmScreen.position.set(0, 0.15, -2.6);
   g.add(filmScreen);
 
@@ -986,6 +1046,7 @@ function buildAction(g) {
   book.rotation.y = 0.15;
   g.add(book);
   var monitor = makeScreen(2.9, 1.7, cinemaTex(false));
+  loadImg('impact-studio', function (t) { swapMap(monitor.userData.face, t); });
   monitor.position.y = 0.25;
   var stand = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.3, 1.4, 14),
     stdMat({ color: 0x171009, roughness: 0.6, metalness: 0.3 }));
@@ -1031,6 +1092,7 @@ function buildImpact(g) {
   g.add(grid);
 
   var screen = makeScreen(3.6, 2.02, cinemaTex(true));
+  loadImg('impact-studio', function (t) { swapMap(screen.userData.face, t); });
   screen.position.set(0, 0.4, -2.8);
   g.add(screen);
 
@@ -1223,6 +1285,7 @@ function buildProcess(g) {
   var finalScreen;
   station(4, function (s) {
     finalScreen = makeScreen(3.4, 1.9, cinemaTex(true));
+    loadImg('story-book', function (t) { swapMap(finalScreen.userData.face, t); });
     finalScreen.position.y = 0.2;
     s.add(finalScreen);
     var beam = beamCone(6, 2.6, 0.1);
@@ -1288,6 +1351,7 @@ function buildCompare(g) {
   var imp = pedestal(gap);
   var iCam = makeFilmCamera(); iCam.scale.setScalar(0.5); iCam.position.set(-0.45, -1.12, 0.35); iCam.rotation.y = 0.6; imp.add(iCam);
   var iScreen = makeScreen(1.5, 0.86, cinemaTex(true)); iScreen.position.set(0.35, -0.05, -0.3); iScreen.userData.glow.material.opacity = 0.3; imp.add(iScreen);
+  loadImg('impact-studio', function (t) { swapMap(iScreen.userData.face, t); });
 
   compareItems = [
     { wrap: pres, pkg: 'presence', base: -gap },
@@ -1315,6 +1379,7 @@ function buildFinale(g) {
   beam.position.y = 3.4;
   var core = glowSprite(3, 0.4);
   var photo = plane(0.85, 1.05, basicMat({ map: photoTex('#caa273', '#8a6a45', '#3c2a18') }));
+  loadImg('presence-gallery', function (t) { swapMap(photo, cropPhotoTex(t.image, 0.78, 0.18, 0.13, 0.33)); });
   var film = plane(1.3, 0.44, basicMat({ map: filmTex() }));
   var wave = waveGroup(18, 1.2, PAL.gold);
   var word = textPlane('Story', { italic: true, h: 0.4, color: '#e8dcc2' });
