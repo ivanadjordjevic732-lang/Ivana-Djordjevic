@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /workspace.html
+
+Sitemap: https://mindea-studio.de/sitemap.xml
