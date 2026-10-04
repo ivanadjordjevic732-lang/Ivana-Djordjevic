@@ -71,7 +71,7 @@ function haengerKopieren(){ try{ var l=window._haengerListe?window._haengerListe
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-/* Tokens: siehe <style id="mindea-ds"> (einzige Quelle). */
+/* Tokens: siehe Style-Block mindea-ds (einzige Quelle). */
 /* Lumé Animations */
 @keyframes lume-wobble { 0%,100%{transform:rotate(0deg)} 25%{transform:rotate(-3deg)} 75%{transform:rotate(3deg)} }
 @keyframes lume-blink { 0%,92%,100%{opacity:1} 95%{opacity:0.3} }
@@ -3199,97 +3199,7 @@ body.focus-mode .akq-fab { display: flex !important; }
 
 /* Tokens: siehe mindea-ds */
 
-/* ─── BODY · Editorial typography defaults ─────────────────────── */
-body { font-family: 'Inter', 'DM Sans', system-ui, sans-serif !important; }
-@media(min-width:768px) { body { background: var(--cream-2) !important; } }
-#main-panel { background: var(--bg) !important; }
-
-/* ─── SIDEBAR · Deep warm black with gold accents ──────────────── */
-@media(min-width:768px) {
-  #sidebar {
-    background: var(--ink) !important;
-    border-right: 1px solid rgba(255,255,255,.05) !important;
-    color: #F2E6CC !important;
-  }
-  #sidebar > div:first-child {
-    border-bottom: 1px solid rgba(255,255,255,.05) !important;
-  }
-  #sidebar > div:last-child {
-    border-top: 1px solid rgba(255,255,255,.05) !important;
-  }
-  /* MINDÉA wordmark in sidebar */
-  #sidebar [style*="font-family:'Playfair Display',serif"][style*="font-size:14px"] {
-    color: #F2E6CC !important;
-    font-family: 'Cormorant Garamond', 'Playfair Display', serif !important;
-    font-size: 22px !important;
-    letter-spacing: 0.5px !important;
-    font-weight: 500 !important;
-    text-transform: none !important;
-  }
-  /* "WORKSPACE" subtitle under wordmark */
-  #sidebar [style*="font-size:9px;color:var(--tm)"] {
-    color: rgba(201,168,118,.55) !important;
-    letter-spacing: 2.2px !important;
-  }
-  /* Section labels: MEIN FOKUS · CONTENT · FÜR KUNDEN · SYSTEM */
-  #sidebar [style*="font-size:9px;color:var(--g)"],
-  #sidebar [style*="font-size:9px;color:var(--b)"],
-  #sidebar [style*="font-size:9px;color:var(--tm);font-weight:700"] {
-    color: rgba(201,168,118,.7) !important;
-    letter-spacing: 2.4px !important;
-  }
-  /* Sidebar nav items */
-  .sb-item {
-    color: rgba(242,230,204,.72) !important;
-    border-radius: 8px !important;
-    padding: 9px 12px !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 12.5px !important;
-    transition: all .15s ease !important;
-  }
-  .sb-item:hover {
-    background: rgba(255,255,255,.05) !important;
-    color: #F2E6CC !important;
-  }
-  .sb-item.active {
-    background: linear-gradient(135deg, rgba(201,168,118,.22), rgba(201,168,118,.06)) !important;
-    color: #D4B889 !important;
-    font-weight: 500 !important;
-  }
-  /* Countdown card in sidebar */
-  #sidebar-countdown {
-    background: linear-gradient(135deg, rgba(201,168,118,.16), rgba(201,168,118,.04)) !important;
-    border: 1px solid rgba(201,168,118,.22) !important;
-  }
-  #sidebar-countdown [style*="rgba(255,255,255,.6)"] {
-    color: rgba(201,168,118,.65) !important;
-  }
-  #sidebar-countdown [style*="rgba(255,255,255,.15)"] {
-    background: rgba(0,0,0,.20) !important;
-    border: 1px solid rgba(201,168,118,.12) !important;
-  }
-  #sidebar-countdown [style*="font-family:'Playfair Display',serif"] {
-    font-family: 'Cormorant Garamond', serif !important;
-    color: #D4B889 !important;
-  }
-  #sidebar-countdown [style*="rgba(255,255,255,.5)"] {
-    color: rgba(201,168,118,.50) !important;
-  }
-  /* Footer action buttons in sidebar */
-  #sidebar .hdr-btn {
-    background: rgba(255,255,255,.04) !important;
-    border: 1px solid rgba(255,255,255,.08) !important;
-    color: rgba(242,230,204,.8) !important;
-  }
-  #sidebar .hdr-btn:hover {
-    background: rgba(201,168,118,.12) !important;
-    border-color: rgba(201,168,118,.30) !important;
-    color: #D4B889 !important;
-  }
-  #sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,.08) !important;
-  }
-}
+/* Body, Seitenleiste: siehe mindea-ds (v10.0) */
 
 /* ─── HEADER · Main panel top bar ──────────────────────────────── */
 #app-header {
@@ -3797,67 +3707,67 @@ body[data-theme="cinematic"], body.dark {
   </div>
   <style>.sb-gap{display:none}</style>
   <div id="sb-scroll" style="flex:1;overflow-y:auto;padding:12px">
-    <!-- v9.9.59: Seitenleiste nach Taetigkeit gebuendelt: Mein Tag, Luna, Studio, Verkauf, Training, Sonstiges.
-         Jarvis-Zeile entfernt (Modul bleibt per Code erreichbar), Dublette Notizblock unter Notizen aufgehoben. -->
-    <div style="font-size:9px;color:var(--g);font-weight:700;letter-spacing:2px;margin-bottom:8px;margin-top:4px">MEIN TAG</div>
-    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
-      <button id="sb-heute" onclick="openMod('heute')" class="sb-item" data-mod-name="⚡ Heute" data-story-name="Heute">⚡ Heute</button>
-      <button onclick="openMod('termine')" class="sb-item" data-mod-name="📅 Termine" data-story-name="Kalender">📅 Termine</button>
-      <button onclick="openMod('wochenplan')" class="sb-item" data-mod-name="🗓 Wochenplan" data-story-name="Woche">🗓 Wochenplan</button>
-      <!-- v9.9.304: Mit "Planung & Rueckblick" waren auch die Wochen-Archive aus dem Menue
-           verschwunden, weil Rueckblick und Wochenreflexion darin steckten. Beide haben jetzt
-           einen eigenen Eintrag, der Sammel-Eintrag bleibt ausgeblendet. -->
-      <button onclick="openMod('rueckblick')" class="sb-item" data-mod-name="🗂 Rückblick &amp; Archiv" data-story-name="Archiv">🗂 Rückblick &amp; Archiv</button>
-      <button onclick="try{ closeSidebarDrawer(); }catch(e){} ueberblickOeffnen()" class="sb-item" data-mod-name="✨ Dein Überblick" data-story-name="Überblick">✨ Dein Überblick</button>   <!-- v9.9.638 -->
-      <!-- v9.9.366: Wochenreflexion aus dem Menue genommen. Die Woche laeuft ueber das Journal (Wochenzahlen, Fortschritt) und Lunas Wochenrueckblick im Wochenplan. Das Modul bleibt per openMod('wochenreflexion') erreichbar. -->
+    <!-- v10.0: Navigation nach Lebensbereichen gruppiert (Heute, Luna, Studio, Kunden, Verkauf, Training,
+         Leben, Archiv). Alle Module, IDs und openMod-Aufrufe sind unveraendert; nur Reihenfolge,
+         Gruppen und Beschriftung (ohne Emoji) sind neu. data-mod-name = sichtbarer Name (Story-Modus). -->
+    <div class="m-nav-h" style="font-size:9px;font-weight:700;letter-spacing:2px">HEUTE</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onclick="goHome()" class="sb-item m-nav-start" data-mod-name="Übersicht" data-story-name="Übersicht">Übersicht</button>
+      <button id="sb-heute" onclick="openMod('heute')" class="sb-item" data-mod-name="Heute" data-story-name="Heute">Heute</button>
+      <button onclick="openMod('termine')" class="sb-item" data-mod-name="Termine" data-story-name="Kalender">Termine</button>
+      <button onclick="openMod('wochenplan')" class="sb-item" data-mod-name="Wochenplan" data-story-name="Woche">Wochenplan</button>
+      <button onclick="try{ closeSidebarDrawer(); }catch(e){} ueberblickOeffnen()" class="sb-item" data-mod-name="Dein Überblick" data-story-name="Überblick">Dein Überblick</button>   <!-- v9.9.638 -->
+      <!-- v9.9.366: Wochenreflexion bleibt per openMod('wochenreflexion') erreichbar. -->
       <button onclick="openMod('wochenreflexion')" class="sb-item" data-mod-name="Wochenreflexion" data-story-name="Woche" style="display:none">Wochenreflexion</button>
-      <!-- v9.9.284: Planung und Rueckblick ist auf Ivanas Wunsch aus dem Menue. Das Modul bleibt im Code und ist per openMod('hub-planung') erreichbar. -->
-      <button onclick="openMod('hub-planung')" class="sb-item" style="display:none" data-mod-name="🗓️ Planung &amp; Rückblick" data-story-name="Chronik">🗓️ Planung &amp; Rückblick</button>
+      <!-- v9.9.284: Planung und Rueckblick bleibt per openMod('hub-planung') erreichbar. -->
+      <button onclick="openMod('hub-planung')" class="sb-item" style="display:none" data-mod-name="Planung &amp; Rückblick" data-story-name="Chronik">Planung &amp; Rückblick</button>
       <span id="sb-hubs" style="display:none"></span>
     </div>
-    <div style="font-size:9px;color:var(--g);font-weight:700;letter-spacing:2px;margin-bottom:8px">LUNA</div>
-    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
-      <button onclick="openMod('luna')" class="sb-item" data-mod-name="💬 Luna Coach" data-story-name="Luna">💬 Luna Coach</button>
+    <div class="m-nav-h" style="font-size:9px;font-weight:700;letter-spacing:2px">LUNA</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onclick="openMod('luna')" class="sb-item" data-mod-name="Luna" data-story-name="Luna">Luna</button>
+      <button onclick="openMod('autopilot')" class="sb-item" data-mod-name="Vorbereitung" data-story-name="Vorbereitung">Vorbereitung</button>
     </div>
-    <div style="font-size:9px;color:var(--g);font-weight:700;letter-spacing:2px;margin-bottom:8px">STUDIO</div>
-    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
-      <!-- v9.9.201: aus dem Menue genommen, Modul bleibt per Code erreichbar -->
-      <button onclick="openMod('reelplan')" class="sb-item" data-mod-name="🎬 Reel-Plan" data-story-name="Plan">🎬 Reel-Plan</button>
-      <button onclick="openMod('journal')" class="sb-item" data-mod-name="📓 Mindéa Journal" data-story-name="Journal">📓 Mindéa Journal</button>
-      <!-- v9.9.368: Business Audit aus dem Menue, die Gesamtanalyse macht das mit besseren Daten. -->
+    <div class="m-nav-h" style="font-size:9px;font-weight:700;letter-spacing:2px">STUDIO</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onclick="openMod('reelplan')" class="sb-item" data-mod-name="Reel-Plan" data-story-name="Plan">Reel-Plan</button>
+      <button onclick="openMod('skripte')" class="sb-item" data-mod-name="Meine Skripte" data-story-name="Skripte">Meine Skripte</button>
+      <button onclick="openMod('crew')" class="sb-item" data-mod-name="AI Studio" data-story-name="Atelier">AI Studio</button>
+      <!-- v9.9.368: Business Audit bleibt per Code erreichbar. -->
       <button onclick="openMod('audit')" class="sb-item" style="display:none" data-mod-name="Business Audit" data-story-name="Audit">Business Audit</button>
-      <button onclick="openMod('skripte')" class="sb-item" data-mod-name="📜 Meine Skripte" data-story-name="Skripte">📜 Meine Skripte</button>
-      <button onclick="openMod('zuhause')" class="sb-item" data-mod-name="🏡 Zuhause" data-story-name="Zuhause">🏡 Zuhause</button>
-      <!-- v9.9.201: aus dem Menue genommen, Modul bleibt per Code erreichbar -->
-      <!-- v9.9.201: aus dem Menue genommen, Modul bleibt per Code erreichbar -->
-      <button onclick="openMod('crew')" class="sb-item" data-mod-name="✨ Mindéa AI Studio" data-story-name="Atelier">✨ Mindéa AI Studio</button>
     </div>
-    <div style="font-size:9px;color:var(--g);font-weight:700;letter-spacing:2px;margin-bottom:8px">VERKAUF</div>
-    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
-      <button onclick="openMod('hub-kunden')" class="sb-item" data-mod-name="🤝 Kunden Zentrale" data-story-name="Klientel">🤝 Kunden Zentrale</button>
-      <button onclick="openMod('kundenprojekte')" class="sb-item">🗂️ Kundenprojekte</button>
-      <button onclick="openMod('sales-enhanced')" class="sb-item" data-mod-name="📞 Kundengespräche" data-story-name="Gespräche">📞 Kundengespräche</button>
-      <button onclick="openMod('testkunden')" class="sb-item" data-mod-name="🧪 Testkundinnen" data-story-name="Testkundinnen">🧪 Testkundinnen</button>   <!-- v9.9.371 -->
-      <div id="sb-akq-extra" style="display:none;flex-direction:column;gap:4px">
-      <button onclick="openMod('hub-akquise')" class="sb-item" data-mod-name="🎯 Akquise Werkstatt" data-story-name="Beziehungen">🎯 Akquise Werkstatt</button>
-      <button onclick="openMod('akquise')" class="sb-item" data-mod-name="🎯 Akquise" data-story-name="Sichtbarkeit">🎯 Akquise</button>
-      <button onclick="openMod('akquise-turbo')" class="sb-item" data-mod-name="⚡ Akquise Turbo" data-story-name="Ansprache">⚡ Akquise Turbo</button>
-      <button onclick="openMod('email-turbo')" class="sb-item" data-mod-name="📧 Email Turbo" data-story-name="Korrespondenz">📧 Email Turbo</button>
-      <button onclick="openMod('einwaende')" class="sb-item" data-mod-name="🛡️ Einwand-Bibliothek" data-story-name="Bibliothek">🛡️ Einwand-Bibliothek</button>
+    <div class="m-nav-h" style="font-size:9px;font-weight:700;letter-spacing:2px">KUNDEN</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onclick="openMod('hub-kunden')" class="sb-item" data-mod-name="Kunden Zentrale" data-story-name="Klientel">Kunden Zentrale</button>
+      <button onclick="openMod('kundenprojekte')" class="sb-item" data-mod-name="Kundenprojekte" data-story-name="Projekte">Kundenprojekte</button>
+      <button onclick="openMod('testkunden')" class="sb-item" data-mod-name="Testkundinnen" data-story-name="Testkundinnen">Testkundinnen</button>   <!-- v9.9.371 -->
+    </div>
+    <div class="m-nav-h" style="font-size:9px;font-weight:700;letter-spacing:2px">VERKAUF</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onclick="openMod('sales-enhanced')" class="sb-item" data-mod-name="Kundengespräche" data-story-name="Gespräche">Kundengespräche</button>
+      <div id="sb-akq-extra" style="display:none;flex-direction:column;gap:2px">
+      <button onclick="openMod('hub-akquise')" class="sb-item" data-mod-name="Akquise Werkstatt" data-story-name="Beziehungen">Akquise Werkstatt</button>
+      <button onclick="openMod('akquise')" class="sb-item" data-mod-name="Akquise" data-story-name="Sichtbarkeit">Akquise</button>
+      <button onclick="openMod('akquise-turbo')" class="sb-item" data-mod-name="Akquise Turbo" data-story-name="Ansprache">Akquise Turbo</button>
+      <button onclick="openMod('email-turbo')" class="sb-item" data-mod-name="Email Turbo" data-story-name="Korrespondenz">Email Turbo</button>
+      <button onclick="openMod('einwaende')" class="sb-item" data-mod-name="Einwand-Bibliothek" data-story-name="Bibliothek">Einwand-Bibliothek</button>
       </div>
     </div>
-    <div style="font-size:9px;color:var(--g);font-weight:700;letter-spacing:2px;margin-bottom:8px">TRAINING</div>
-    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
-      <button onclick="openMod('start-tag')" class="sb-item" data-mod-name="🔥 Brand Mastery" data-story-name="Handwerk">🔥 Brand Mastery</button>
-      <!-- v9.9.200: Brand Aufbau steckt jetzt im Reel-Plan, Modul bleibt ueber den Knopf dort erreichbar -->
-
+    <div class="m-nav-h" style="font-size:9px;font-weight:700;letter-spacing:2px">TRAINING</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onclick="openMod('start-tag')" class="sb-item" data-mod-name="Brand Mastery" data-story-name="Handwerk">Brand Mastery</button>
     </div>
-    <div style="font-size:9px;color:var(--tm);font-weight:700;letter-spacing:2px;margin-bottom:8px">SONSTIGES</div>
-    <div style="display:flex;flex-direction:column;gap:4px">
-      <button onclick="openMod('autopilot')" class="sb-item" data-mod-name="☀️ Autopilot" data-story-name="Vorbereitung">☀️ Autopilot</button>
-      <button onclick="openMod('hub-ablage')" class="sb-item" data-mod-name="🗂️ Notizen &amp; Ablage" data-story-name="Archiv">🗂️ Notizen &amp; Ablage</button>
-      <button onclick="openMod('news')" class="sb-item">🧠 KI News</button>
-      <button onclick="nutzungOeffnen()" class="sb-item">📊 Nutzung</button>
+    <div class="m-nav-h" style="font-size:9px;font-weight:700;letter-spacing:2px">LEBEN</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onclick="openMod('journal')" class="sb-item" data-mod-name="Journal" data-story-name="Journal">Journal</button>
+      <button onclick="openMod('zuhause')" class="sb-item" data-mod-name="Zuhause" data-story-name="Zuhause">Zuhause</button>
+    </div>
+    <div class="m-nav-h" style="font-size:9px;font-weight:700;letter-spacing:2px">ARCHIV</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onclick="openMod('rueckblick')" class="sb-item" data-mod-name="Rückblick &amp; Archiv" data-story-name="Archiv">Rückblick &amp; Archiv</button>
+      <button onclick="openMod('hub-ablage')" class="sb-item" data-mod-name="Notizen &amp; Ablage" data-story-name="Archiv">Notizen &amp; Ablage</button>
+      <button onclick="openMod('news')" class="sb-item" data-mod-name="KI News" data-story-name="Wissen">KI News</button>
+      <button onclick="nutzungOeffnen()" class="sb-item" data-mod-name="Nutzung" data-story-name="Nutzung">Nutzung</button>
     </div>
   </div>
   <div style="padding:12px;border-top:1px solid var(--bd);display:flex;gap:6px">
@@ -22803,7 +22713,7 @@ function sbArchivBauen(){
     var weg=[];
     btns.forEach(function(b){ var oc=String(b.getAttribute('onclick')||''); var m=/openMod\('([^']+)'\)/.exec(oc); if(m && SB_ARCHIV.indexOf(m[1])>=0){ weg.push(b); } });
     var wrap=document.createElement('div'); wrap.id='sb-archiv';
-    wrap.innerHTML='<div onclick="var w=document.getElementById(\'sb-archiv-liste\'); w.style.display=(w.style.display===\'none\'?\'flex\':\'none\');" style="font-size:9px;color:var(--g);font-weight:700;letter-spacing:2px;margin:6px 0 8px;cursor:pointer">ARCHIV \u00b7 '+weg.length+' WERKZEUGE \u25be</div><div id="sb-archiv-liste" style="display:none;flex-direction:column;gap:4px;margin-bottom:14px"></div>';
+    wrap.innerHTML='<div onclick="var w=document.getElementById(\'sb-archiv-liste\'); w.style.display=(w.style.display===\'none\'?\'flex\':\'none\');" style="font-size:9px;color:var(--g);font-weight:700;letter-spacing:2px;margin:6px 0 8px;cursor:pointer">WEITERE WERKZEUGE \u00b7 '+weg.length+' \u25be</div><div id="sb-archiv-liste" style="display:none;flex-direction:column;gap:4px;margin-bottom:14px"></div>';
     scroll.appendChild(wrap); var liste=wrap.querySelector('#sb-archiv-liste');
     weg.forEach(function(b){ b.style.display=''; liste.appendChild(b); });
   }catch(e){}
@@ -53799,10 +53709,10 @@ function azKalenderOeffnen(jahr){
 /* v4.9.48: Minimal-Modus. Zwei Orte: Jarvis und Kontakte. Rest ruht. */
 body.minimal-mode #sb-scroll > div { display:none; }
 body.minimal-mode #sb-scroll > div:has(.sb-item[data-mod-name="🦾 Jarvis"]),
-body.minimal-mode #sb-scroll > div:has(.sb-item[data-mod-name="📞 Kundengespräche"]) { display:flex; }
+body.minimal-mode #sb-scroll > div:has(.sb-item[data-mod-name="Kundengespräche"]) { display:flex; }
 body.minimal-mode #sb-scroll .sb-item { display:none; }
 body.minimal-mode #sb-scroll .sb-item[data-mod-name="🦾 Jarvis"],
-body.minimal-mode #sb-scroll .sb-item[data-mod-name="📞 Kundengespräche"] { display:block; }
+body.minimal-mode #sb-scroll .sb-item[data-mod-name="Kundengespräche"] { display:block; }
 
 #lux-toggle{
   display:none; /* v4.9.43: in die Einstellungen umgezogen */
@@ -54094,7 +54004,7 @@ body.dark .m-eyebrow.gold, body.dark .m-eyebrow--gold { color: var(--m-gold); }
 .m-body { font: 400 var(--m-t-body)/1.55 var(--m-sans); color: var(--m-ink); }
 .m-small { font: 400 var(--m-t-small)/1.5 var(--m-sans); color: var(--m-ink-2); }
 .m-micro { font: 500 var(--m-t-micro)/1.4 var(--m-sans); color: var(--m-ink-3); }
-.m-num { font-family: var(--m-serif); font-weight: 500; font-variant-numeric: lining-nums tabular-nums; letter-spacing: -.01em; }
+.m-num { font-family: var(--m-serif-2); font-weight: 500; font-variant-numeric: lining-nums tabular-nums; letter-spacing: -.01em; }
 
 /* ─── 4 · DER GOLDFADEN (Signatur) ───────────────────────────────────────── */
 .m-goldline { height: 1px; border: 0; margin: var(--m-s-6) 0; background: linear-gradient(90deg, transparent, var(--m-gold-line) 22%, var(--m-gold-line) 78%, transparent); }
@@ -54173,7 +54083,7 @@ body.dark .m-progress { background: rgba(242,233,218,.08); }
 .m-segs > i.on { background: var(--m-gold); }
 body.dark .m-segs > i { background: rgba(242,233,218,.08); } body.dark .m-segs > i.on { background: var(--m-gold); }
 .m-stat { min-width: 0; }
-.m-stat .v { font: 500 30px/1 var(--m-serif); font-variant-numeric: lining-nums tabular-nums; color: var(--m-ink); }
+.m-stat .v { font: 400 28px/1 var(--m-serif-2); font-variant-numeric: lining-nums tabular-nums; color: var(--m-ink); }
 .m-stat .l { margin-top: 6px; font: 500 12px/1.35 var(--m-sans); color: var(--m-ink-2); }
 .m-trend { font: 500 11.5px/1.3 var(--m-sans); color: var(--m-success); }
 .m-trend.down { color: var(--m-ink-3); }
@@ -54472,6 +54382,97 @@ body.dark .lume-tip-card { background: var(--m-surface) !important; }
 /* ─── 19 · Kleine frueher verstreute Hilfsregeln (hier gebuendelt) ────────── */
 body:not(.ps-ready) #home-screen { visibility: hidden !important; }
 #lux-toggle { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   21 · NAVIGATION · Feinschliff
+   ═══════════════════════════════════════════════════════════════════════════ */
+#sidebar .lux-wordmark { font: 500 21px/1.1 var(--m-serif) !important; letter-spacing: .14em !important; }
+#sidebar > div:first-child [style*="font-size:9px"] { color: var(--m-ink-3) !important; letter-spacing: .28em !important; }
+#sidebar .sb-item { min-height: 38px; }
+#sb-top { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 6px; }
+#sb-top > div:first-child { flex-basis: 100%; font: 600 10px/1.2 var(--m-sans) !important; letter-spacing: .24em !important; color: var(--m-ink-3) !important; margin: 2px 0 6px 12px !important; }
+#sb-top .sb-item { width: auto !important; min-height: 32px; padding: 6px 12px !important; border: 1px solid var(--m-line) !important; border-radius: var(--m-r-pill) !important; font-size: 12.5px !important; background: var(--m-surface) !important; }
+#sb-top .sb-item::before { display: none !important; }
+#sb-top > div:last-child { flex-basis: 100%; background: var(--m-line) !important; margin: 14px 0 0 !important; }
+#sb-archiv > div:first-child { font: 600 10px/1.2 var(--m-sans) !important; letter-spacing: .24em !important; color: var(--m-ink-3) !important; margin: 22px 0 8px 12px !important; }
+#sidebar > div:last-child .hdr-btn { border-radius: var(--m-r-sm) !important; width: auto !important; height: 40px !important; }
+@media (max-width: 767px) {
+  #copilot-fab { left: auto !important; right: 16px !important; bottom: calc(var(--m-tabbar-h) + 16px + env(safe-area-inset-bottom,0px)) !important; }
+}
+#copilot-fab { width: 46px !important; height: 46px !important; font-size: 0 !important; color: transparent !important;
+  background: var(--m-surface) !important; border: 1px solid var(--m-line-2) !important; box-shadow: var(--m-sh-2) !important;
+  transition: transform 160ms var(--m-ease), box-shadow var(--m-dur) var(--m-ease) !important; }
+#copilot-fab::after { content: ''; position: absolute; inset: 0; margin: auto; width: 20px; height: 20px; background: var(--m-gold);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='m15.5 8.5-2 5-5 2 2-5z'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='m15.5 8.5-2 5-5 2 2-5z'/></svg>") center/contain no-repeat; }
+#copilot-fab:active { transform: scale(.94) !important; }
+#lv-start-knopf { background: var(--m-ink) !important; color: var(--m-ink-inv) !important; border-radius: var(--m-r-pill) !important; box-shadow: none !important;
+  font: 600 14px/1 var(--m-sans) !important; letter-spacing: .03em !important; min-height: 52px; transition: transform 160ms var(--m-ease), box-shadow var(--m-dur) !important; }
+#lv-start-knopf:active { transform: scale(.98); }
+body.dark #lv-start-knopf { background: var(--m-gold) !important; color: #1B140E !important; }
+#lv-start-knopf span { font-size: 9px !important; color: var(--m-gold); }
+body.dark #lv-start-knopf span { color: #1B140E; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   22 · STARTSEITE · der Wow-Moment
+   ═══════════════════════════════════════════════════════════════════════════ */
+#pstart-root { padding: 0 !important; }
+#pstart-root .pwrap { max-width: var(--m-content-max); margin: 0 auto; padding: 0 20px 72px; }
+@media (min-width: 768px) { #pstart-root .pwrap { padding: 0 clamp(28px, 4vw, 56px) 96px; } }
+#pstart-root.m-dash-on .ptop, #pstart-root.m-dash-on .plogo-wrap, #pstart-root.m-dash-on .pstart-hero { display: none !important; }
+#detail-body > #lv-start-knopf { display: none !important; }
+#m-dash { padding-top: clamp(28px, 6vw, 64px); }
+#m-dash .m-dash-hero { max-width: 760px; }
+#m-dash .m-dash-hero .m-eyebrow { margin-bottom: 18px; }
+#m-dash .m-dash-hero .m-display { font-size: clamp(40px, 8.2vw, 64px); }
+#m-dash .m-dash-hero .m-lead { margin-top: 14px; max-width: 560px; font-size: clamp(19px, 2.4vw, 22px); }
+#m-dash .m-dash-cta { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+#m-dash .m-dash-cta #lv-start-knopf { width: auto !important; margin: 0 !important; padding: 0 24px !important; }
+#m-dash .m-dash-quote { margin-top: 22px; font: italic 400 15px/1.5 var(--m-serif); color: var(--m-ink-3); max-width: 520px; }
+#m-dash .m-dash-grid { margin-top: clamp(32px, 6vw, 56px); display: grid; gap: var(--m-s-4); grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 1000px) {
+  #m-dash .m-dash-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: var(--m-s-5); }
+  #m-dash .m-dash-grid > .m-col { display: flex; flex-direction: column; gap: var(--m-s-5); }
+}
+#m-dash .m-col { display: flex; flex-direction: column; gap: var(--m-s-4); min-width: 0; }
+#m-dash .m-card { margin: 0 !important; }
+#m-dash .m-card-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+#m-dash .m-wichtig .m-row { min-height: 64px; }
+#m-dash .m-wichtig .m-row-t { font-size: 16px; }
+#m-dash .m-wichtig .m-idx { flex: none; width: 22px; font: 400 17px/1 var(--m-serif-2); font-variant-numeric: lining-nums; color: var(--m-gold-deep); }
+body.dark #m-dash .m-wichtig .m-idx { color: var(--m-gold); }
+#m-dash .m-empty { padding: 6px 0 2px; }
+#m-dash .m-empty .m-h3 { font-weight: 500; }
+#m-dash .m-luna-sum { display: flex; gap: 0; margin: 16px 0 4px; border-top: 1px solid var(--m-line); border-bottom: 1px solid var(--m-line); }
+#m-dash .m-luna-sum > div { flex: 1; padding: 14px 4px; text-align: left; }
+#m-dash .m-luna-sum > div + div { border-left: 1px solid var(--m-line); padding-left: 14px; }
+#m-dash .m-luna-sum .v { font: 400 26px/1 var(--m-serif-2); font-variant-numeric: lining-nums; color: var(--m-ink); }
+#m-dash .m-luna-sum .l { margin-top: 6px; font: 500 11.5px/1.3 var(--m-sans); color: var(--m-ink-2); }
+#m-dash .m-luna-sum .is-wait .v { color: var(--m-warning); }
+#m-dash .m-handoff { padding-top: 16px; }
+#m-dash .m-prog-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+#m-dash .m-prog-big { font: 500 22px/1.2 var(--m-serif); color: var(--m-ink); }
+#m-dash .m-prog-big b { font-family: var(--m-serif-2); font-variant-numeric: lining-nums; font-weight: 400; font-size: .92em; color: var(--m-gold-deep); }
+body.dark #m-dash .m-prog-big b { color: var(--m-gold); }
+#m-dash .m-areas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+#m-dash .m-areas .m-chip { min-height: 28px; font-size: 11.5px; }
+#m-dash .m-areas .m-chip i { width: 5px; height: 5px; border-radius: 50%; background: var(--m-line-2); }
+#m-dash .m-areas .m-chip.is-on i { background: var(--m-gold); }
+#m-dash .m-week { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--m-line); }
+#m-dash .m-week .m-stats { margin-top: 12px; gap: 16px 12px; }
+#m-dash .m-week .m-stat .v { font-size: 24px; }
+#m-dash .m-week-note { margin-top: 14px; font: italic 400 15px/1.45 var(--m-serif); color: var(--m-ink-2); }
+#m-dash .m-insights .m-insight + .m-insight { border-top: 1px solid var(--m-line); }
+#m-dash .m-more { margin-top: clamp(40px, 7vw, 64px); }
+#pstart-root.m-dash-on .pcard, #pstart-root.m-dash-on .fokus-heute, #pstart-root.m-dash-on .phase-toggle {
+  background: var(--m-surface) !important; border: 1px solid var(--m-line) !important; border-radius: var(--m-r-lg) !important; box-shadow: var(--m-sh-1) !important; }
+#pstart-root.m-dash-on #p-ritual button { background: var(--m-ink) !important; color: var(--m-ink-inv) !important; border-radius: var(--m-r-pill) !important; min-height: 44px; box-shadow: none !important; }
+body.dark #pstart-root.m-dash-on #p-ritual button { background: var(--m-gold) !important; color: #1B140E !important; }
+@media (min-width: 1000px) {
+  #pstart-root.m-dash-on .m-more-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--m-s-5); align-items: start; }
+  #pstart-root.m-dash-on .m-more-grid > * { margin-top: 0 !important; }
+  #pstart-root.m-dash-on .m-more-grid > .fokus-heute, #pstart-root.m-dash-on .m-more-grid > .fh-lux { grid-column: 1 / -1; }
+}
 
 /* ─── 20 · BEWEGUNG REDUZIEREN ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -57253,4 +57254,318 @@ function azTagZeigen(el, t){
 })();
 </script>
 
+<script id="mindea-ui">
+/* ═══════════════════════════════════════════════════════════════════════════
+   MINDÉA UI · v10.0
+   Gemeinsame Bausteine fuer das neue Design: Tab-Leiste (iPhone), aktive
+   Navigation, "Erledigt."-Rueckmeldung, Meilenstein-Moment und die
+   editorialen Kopfbereiche einzelner Seiten. Alles haengt sich an bestehende
+   Funktionen (openMod, renderPremiumStart, ...) an, ohne sie zu ersetzen.
+   Jeder Schritt steckt in try/catch: faellt etwas aus, bleibt die alte Seite.
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  var M = window.MindeaUI = window.MindeaUI || {};
+
+  /* ─── Helfer ─────────────────────────────────────────────────────────── */
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function ls(k, d){ try{ if(typeof lsGet === 'function') return lsGet(k, d); var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } }
+  function today(){ try{ if(typeof _heuteLokal === 'function') return _heuteLokal(); }catch(e){} var d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function daysSince(iso){ if(!iso) return 999; var t = new Date(iso).getTime(); if(isNaN(t)) return 999; return Math.floor((Date.now() - t) / 864e5); }
+  function agoText(iso){
+    var t = new Date(iso).getTime(); if(isNaN(t)) return '';
+    var min = Math.round((Date.now() - t) / 60000);
+    if(min < 1) return 'gerade eben'; if(min < 60) return 'vor ' + min + ' Minute' + (min === 1 ? '' : 'n');
+    var h = Math.round(min / 60); if(h < 24) return 'vor ' + h + ' Stunde' + (h === 1 ? '' : 'n');
+    var d = Math.round(h / 24); return d === 1 ? 'gestern' : 'vor ' + d + ' Tagen';
+  }
+  function firstName(n){ return String(n || '').trim().split(/\s+/)[0] || ''; }
+  function privacy(){ return !!ls('mindea-privacy-mode', false); }
+  function wrap(name, after){
+    try{
+      var orig = window[name]; if(typeof orig !== 'function' || orig.__mWrapped) return;
+      var w = function(){ var r = orig.apply(this, arguments); try{ after.apply(this, arguments); }catch(e){ try{ _logErr && _logErr('mindea-ui:' + name, e); }catch(e2){} } return r; };
+      w.__mWrapped = true; window[name] = w;
+    }catch(e){}
+  }
+  M.esc = esc; M.ls = ls; M.wrap = wrap; M.agoText = agoText;
+
+  /* ─── 1 · Tab-Leiste fuer das iPhone ─────────────────────────────────── */
+  var ICON = {
+    start: '<svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h11v-9"/></svg>',
+    luna:  '<svg viewBox="0 0 24 24"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5Z"/></svg>',
+    kunden:'<svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><path d="M3.5 19c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"/><path d="M15.5 6.2a3 3 0 0 1 0 5.6M17.5 14.8c1.4.6 2.4 2 2.9 4.2"/></svg>',
+    studio:'<svg viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="2"/><path d="m10.5 9.5 4 2.5-4 2.5z"/></svg>',
+    mehr:  '<svg viewBox="0 0 24 24"><path d="M5 8h14M5 12h14M5 16h9"/></svg>'
+  };
+  var TABS = [
+    { k:'start',  l:'Heute',  go:function(){ goHome(); },                 mods:['premium-start','heute','termine','wochenplan'] },
+    { k:'luna',   l:'Luna',   go:function(){ openMod('luna'); },          mods:['luna','autopilot','jarvis'] },
+    { k:'kunden', l:'Kunden', go:function(){ openMod('hub-kunden'); },    mods:['hub-kunden','kundenprojekte','sales-enhanced','testkunden','hub-akquise','akquise','akquise-turbo','email-turbo','einwaende'] },
+    { k:'studio', l:'Studio', go:function(){ openMod('reelplan'); },      mods:['reelplan','skripte','crew','briefing','scriptdir','prompts','video-konzept','video-review'] },
+    { k:'mehr',   l:'Mehr',   go:function(){ toggleSidebarDrawer(); },    mods:[] }
+  ];
+  function buildTabbar(){
+    if(document.getElementById('m-tabbar')) return;
+    var nav = document.createElement('nav'); nav.id = 'm-tabbar'; nav.setAttribute('aria-label', 'Hauptnavigation');
+    TABS.forEach(function(t, i){
+      var b = document.createElement('button'); b.type = 'button'; b.dataset.tab = t.k;
+      b.innerHTML = ICON[t.k] + '<span>' + t.l + '</span>';
+      b.addEventListener('click', function(){ try{ t.go(); }catch(e){} });
+      nav.appendChild(b);
+    });
+    document.body.appendChild(nav);
+    document.body.classList.add('m-has-tabbar');
+    syncNav(window._curMod || 'premium-start');
+  }
+  function syncNav(id){
+    try{
+      var bar = document.getElementById('m-tabbar');
+      if(bar) bar.querySelectorAll('button').forEach(function(b){
+        var t = TABS.filter(function(x){ return x.k === b.dataset.tab; })[0];
+        b.classList.toggle('on', !!(t && t.mods.indexOf(id) >= 0));
+      });
+      var st = document.querySelector('#sb-scroll .m-nav-start');
+      if(st) st.classList.toggle('active', id === 'premium-start');
+    }catch(e){}
+  }
+  M.syncNav = syncNav;
+
+  /* ─── 2 · "Erledigt." · ruhige Bestaetigung ──────────────────────────── */
+  var LINES = ['Das bringt dich deinem Wochenziel näher.', 'Ein Schritt weiter.', 'Sauber abgeschlossen.', 'Das zählt.'];
+  M.done = function(title, sub){
+    try{
+      var el = document.getElementById('m-done');
+      if(!el){ el = document.createElement('div'); el.id = 'm-done'; el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite'); document.body.appendChild(el); }
+      el.innerHTML = '<i class="m-check"></i><div><b>' + esc(title || 'Erledigt.') + '</b>' + (sub === false ? '' : '<br><span>' + esc(sub || LINES[Math.floor(Math.random() * LINES.length)]) + '</span>') + '</div>';
+      el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+      setTimeout(function(){ var c = el.querySelector('.m-check'); if(c) c.classList.add('on'); }, 60);
+      clearTimeout(M._doneT); M._doneT = setTimeout(function(){ el.classList.remove('show'); }, 2600);
+    }catch(e){}
+  };
+
+  /* ─── 3 · Meilenstein · editorialer Vollbild-Moment ──────────────────── */
+  M.milestone = function(title, sub, eyebrow){
+    try{
+      var old = document.getElementById('m-milestone'); if(old) old.remove();
+      var el = document.createElement('div'); el.id = 'm-milestone'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
+      el.innerHTML = '<div class="in"><div class="ey">' + esc(eyebrow || 'MEILENSTEIN') + '</div><div class="ln"></div><h2>' + esc(title) + '</h2>'
+        + (sub ? '<p>' + esc(sub) + '</p>' : '') + '<button type="button">Weiter</button></div>';
+      document.body.appendChild(el);
+      var close = function(){ el.classList.remove('show'); setTimeout(function(){ el.remove(); }, 600); };
+      el.querySelector('button').addEventListener('click', close);
+      el.addEventListener('click', function(e){ if(e.target === el) close(); });
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('show'); }); });
+    }catch(e){}
+  };
+  window.mindeaMeilenstein = M.milestone;
+
+  /* ─── 4 · Daten, die mehrere Seiten brauchen ─────────────────────────── */
+  var WD = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  var MO = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  function isoOf(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function weekDates(offset){ var d = new Date(); var idx = (d.getDay()+6)%7; var mo = new Date(d); mo.setDate(d.getDate()-idx+(offset||0)*7); var out=[]; for(var i=0;i<7;i++){ var x=new Date(mo); x.setDate(mo.getDate()+i); out.push(isoOf(x)); } return out; }
+  M.fokus = function(){ try{ return (typeof buildHeuteFokus === 'function') ? (buildHeuteFokus() || []).filter(Boolean) : []; }catch(e){ return []; } };
+  M.kapazitaet = function(){ try{ var o = ls('mindea-lfj-' + today(), null); return (o && o.kap) || ''; }catch(e){ return ''; } };
+  M.luna = function(){
+    var r = { ap:null, prepared:[], decisions:[], due:[], doneN:0 };
+    try{ r.ap = ls('mindea-autopilot-' + today(), null); }catch(e){}
+    try{ r.due = (typeof getDueFollowups === 'function') ? (getDueFollowups() || []) : []; }catch(e){}
+    try{
+      var leads = ls('mindea-leads-enhanced', []) || [], inakt = ['gebucht','kein-fit','archiv','absage'];
+      r.decisions = leads.filter(function(l){ return l && l.dmResponse && inakt.indexOf(l.status) < 0 && !l.terminFix; });
+    }catch(e){}
+    if(r.ap){
+      (r.ap.followups || []).forEach(function(f){ if(f && f.name) r.prepared.push({ kind:'fu', name:f.name, msg:f.msg }); });
+      if(r.ap.content && r.ap.content.text && !/^\(/.test(r.ap.content.text)) r.prepared.push({ kind:'content', name:(typeof _apKindName === 'function' ? _apKindName(r.ap.content.kind) : 'Content') });
+      if(r.ap.briefing) r.doneN++;
+      if(r.ap.prios && r.ap.prios.length) r.doneN++;
+    }
+    r.status = r.decisions.length ? 'waiting' : 'ready';
+    return r;
+  };
+  M.woche = function(offset){
+    var ds = weekDates(offset), td = today(), w = { kontakte:0, gespraeche:0, reels:0, training:0 };
+    var rv = ls('mindea-reel-veroeff', {}) || {}, tt = ls('mindea-train-tage', {}) || {};
+    ds.forEach(function(d){
+      if(d > td) return;
+      w.kontakte += (+ls('mindea-dms-' + d, 0) || 0) + (+ls('mindea-emails-' + d, 0) || 0);
+      w.gespraeche += (+ls('mindea-termine-anfragen-' + d, 0) || 0);
+      if(rv[d]) w.reels++;
+      if(tt[d]) w.training++;
+    });
+    return w;
+  };
+  M.bereiche = function(tasks){
+    var td = today(), rv = ls('mindea-reel-veroeff', {}) || {}, tt = ls('mindea-train-tage', {}) || {}, lfj = ls('mindea-lfj-' + td, null) || {};
+    var cal = ls('mindea-cal-done', {}) || {};
+    return [
+      { k:'Fokus',    on: tasks.some(function(t){ return t.done; }) },
+      { k:'Kontakte', on: (+ls('mindea-dms-' + td, 0) || 0) + (+ls('mindea-emails-' + td, 0) || 0) > 0 },
+      { k:'Content',  on: !!rv[td] || !!cal[td] },
+      { k:'Training', on: !!tt[td] },
+      { k:'Reflexion',on: !!(lfj.kap || (lfj.morgen && lfj.morgen.antw && Object.keys(lfj.morgen.antw).length)) }
+    ];
+  };
+  M.insights = function(ctx){
+    var out = [];
+    try{
+      if(ctx.kap === 'wenig') out.push({ t:'Du hast heute wenig Zeit. Ich habe deinen Fokus auf das Wesentliche reduziert.', s:'Aus deiner Kapazität von heute Morgen' });
+      var lu = ctx.luna;
+      if(lu && lu.prepared.length && lu.prepared[0].kind === 'fu') out.push({ t: firstName(lu.prepared[0].name) + ' ist heute fällig. Luna hat den Entwurf vorbereitet.', s:'Follow-up' });
+      else if(lu && lu.due.length && !lu.ap) out.push({ t: (lu.due.length === 1 ? firstName(lu.due[0].name) + ' wartet' : lu.due.length + ' Kontakte warten') + ' auf ein Follow-up. Luna kann die Nachrichten vorbereiten.', s:'Follow-ups' });
+      var projs = ls('mindea-projekte', []) || [];
+      var stale = projs.filter(function(p){ return p && p.art !== 'test' && !/fertig|geliefert|abgeschlossen|archiv/i.test(String(p.status || '')) && daysSince(p.updatedAt || p.lastUpdate || p.date) >= 3 && daysSince(p.updatedAt || p.lastUpdate || p.date) < 60; })[0];
+      if(stale) out.push({ t:'„' + (privacy() ? 'Ein Kundenprojekt' : String(stale.name || 'Ein Kundenprojekt')) + '“ hat seit ' + daysSince(stale.updatedAt || stale.lastUpdate || stale.date) + ' Tagen keinen Fortschritt.', s:'Kundenprojekte', go:"openMod('projekte')" });
+      var abende = {}; try{ (typeof _wtAlle === 'function' ? _wtAlle() : []).forEach(function(x){ var e = new Date(x.end || x.lastTick || 0); if(daysSince(e.toISOString()) <= 6 && e.getHours() >= 20 && (x.end - x.start) > 20*60000) abende[isoOf(e)] = 1; }); }catch(e){}
+      var nA = Object.keys(abende).length;
+      if(nA >= 4) out.push({ t:'Du hast diese Woche bereits ' + nA + ' Abende gearbeitet. Heute würde ich keinen zusätzlichen Block planen.', s:'Rhythmus' });
+    }catch(e){}
+    return out.slice(0, 2);
+  };
+
+  /* ─── 5 · Startseite ─────────────────────────────────────────────────── */
+  M.toggleFokus = function(id, el){
+    try{
+      var row = el && el.closest ? el.closest('.m-row') : null;
+      var wasDone = row && row.classList.contains('is-done');
+      if(el) el.classList.toggle('on', !wasDone);
+      if(row) row.classList.toggle('is-done', !wasDone);
+      setTimeout(function(){
+        try{ premiumToggleFokus(id); }catch(e){}
+        if(!wasDone) M.done('Erledigt.');
+      }, 320);
+    }catch(e){}
+  };
+  function dashHTML(){
+    var d = new Date(), h = d.getHours();
+    var greet = h < 11 ? 'Guten Morgen' : (h < 18 ? 'Guten Tag' : 'Guten Abend');
+    var tasks = M.fokus(), open = tasks.filter(function(t){ return !t.done; }), doneN = tasks.length - open.length;
+    var kap = M.kapazitaet(), lu = M.luna();
+    var top = open.slice(0, kap === 'wenig' ? 2 : 3);
+    var lead;
+    if(!tasks.length) lead = 'Heute ist nichts Dringendes offen. Ein guter Tag für das, was dich langfristig trägt.';
+    else if(!open.length) lead = 'Alles Wichtige ist erledigt. Der Tag hat getragen.';
+    else if(kap === 'wenig') lead = 'Du hast heute wenig Zeit. Diese ' + (top.length === 1 ? 'eine Sache bewegt' : top.length + ' Dinge bewegen') + ' dich trotzdem weiter.';
+    else lead = 'Heute zählt nicht alles. ' + (top.length === 1 ? 'Diese eine Sache bewegt' : (top.length === 2 ? 'Diese zwei Dinge bewegen' : 'Diese drei Dinge bewegen')) + ' dich wirklich weiter.';
+    var quote = ''; try{ var q = document.querySelector('#pstart-root .pstart-hero h2'); if(q) quote = q.textContent; }catch(e){}
+
+    var H = '<section id="m-dash">';
+    // Hero
+    H += '<div class="m-dash-hero"><div class="m-eyebrow m-eyebrow--gold">' + WD[d.getDay()] + ' · ' + d.getDate() + '. ' + MO[d.getMonth()] + '</div>'
+      + '<h1 class="m-display">' + greet + ', Ivana.</h1>'
+      + '<p class="m-lead">' + esc(lead) + '</p>'
+      + '<div class="m-dash-cta" id="m-dash-cta"></div>'
+      + (quote ? '<div class="m-dash-quote">„' + esc(quote) + '“</div>' : '')
+      + '</div>';
+    H += '<div class="m-dash-grid"><div class="m-col">';
+    // Heute wichtig
+    H += '<div class="m-card m-card--feature m-wichtig"><div class="m-card-h"><span class="m-eyebrow">Heute wichtig</span>'
+      + (tasks.length ? '<span class="m-micro">' + doneN + ' von ' + tasks.length + ' erledigt</span>' : '') + '</div>';
+    if(top.length){
+      H += '<div class="m-list">' + top.map(function(t, i){
+        var mod = String(t.module || 'heute').replace(/[^a-z0-9-]/gi, '');
+        return '<div class="m-row" onclick="openMod(\'' + mod + '\')"><span class="m-idx">' + (i + 1) + '</span>'
+          + '<div class="m-row-main"><div class="m-row-t">' + esc(t.text) + '</div>' + (t.meta ? '<div class="m-row-s">' + esc(t.meta) + '</div>' : '') + '</div>'
+          + '<button type="button" class="m-check" aria-label="Erledigt" onclick="event.stopPropagation();MindeaUI.toggleFokus(\'' + esc(t.id) + '\', this)"></button></div>';
+      }).join('') + '</div>';
+      if(open.length > top.length) H += '<div style="margin-top:12px"><button type="button" class="m-btn m-btn--link" onclick="MindeaUI.zumFokus()">Alle ' + open.length + ' offenen Punkte <span class="m-arrow">→</span></button></div>';
+    } else {
+      H += '<div class="m-empty"><div class="m-h3">' + (tasks.length ? 'Alles erledigt.' : 'Freie Bahn.') + '</div><div class="m-small" style="margin-top:4px">' + (tasks.length ? 'Kein offener Punkt mehr. Feierabend ist Strategie.' : 'Kein dringender Punkt im Fokus.') + '</div></div>';
+    }
+    H += '</div>';
+    // Intelligente Hinweise
+    var ins = M.insights({ kap:kap, luna:lu });
+    if(ins.length) H += '<div class="m-card m-card--quiet m-insights" style="padding:0 4px">' + ins.map(function(x){
+      return '<div class="m-insight"' + (x.go ? ' style="cursor:pointer" onclick="' + x.go + '"' : '') + '><div><p>' + esc(x.t) + '</p><small>' + esc(x.s) + '</small></div></div>';
+    }).join('') + '</div>';
+    H += '</div><div class="m-col">';
+    // Luna
+    var nPrep = lu.prepared.length, nDec = lu.decisions.length;
+    H += '<div class="m-card m-card--luna"><div class="m-card-h"><span class="m-eyebrow m-eyebrow--gold">Luna hat für dich gearbeitet</span>'
+      + '<span class="m-status m-status--' + lu.status + '"><i></i>' + (lu.status === 'waiting' ? 'wartet auf dich' : 'bereit') + '</span></div>';
+    if(lu.ap || nDec){
+      H += '<div class="m-luna-sum"><div><div class="v">' + nPrep + '</div><div class="l">vorbereitet</div></div>'
+        + '<div><div class="v">' + lu.doneN + '</div><div class="l">erledigt</div></div>'
+        + '<div class="' + (nDec ? 'is-wait' : '') + '"><div class="v">' + nDec + '</div><div class="l">' + (nDec === 1 ? 'Entscheidung wartet' : 'Entscheidungen warten') + '</div></div></div>';
+    }
+    var first = lu.prepared.filter(function(p){ return p.kind === 'fu'; })[0];
+    if(first){
+      H += '<div class="m-handoff m-arrive"><div class="who">' + esc(privacy() ? 'Kontakt' : String(first.name).toUpperCase()) + ' · Follow-up</div>'
+        + '<div class="what">Follow-up heute fällig</div><div class="note">Ich habe eine passende Nachricht für dich vorbereitet.</div>'
+        + '<div class="act"><button type="button" class="m-btn m-btn--sm" onclick="openMod(\'autopilot\')">Ansehen <span class="m-arrow">→</span></button>'
+        + (lu.ap && lu.ap.preparedAt ? '<span class="by">' + esc(agoText(lu.ap.preparedAt)) + ' von Luna vorbereitet</span>' : '') + '</div></div>';
+    } else if(nDec){
+      var dc = lu.decisions[0];
+      H += '<div class="m-handoff m-arrive"><div class="who">' + esc(privacy() ? 'Kontakt' : String(dc.name || 'Kontakt').toUpperCase()) + ' · Antwort</div>'
+        + '<div class="what">Braucht deine Entscheidung</div><div class="note">Es liegt eine Antwort vor. Wie geht es weiter?</div>'
+        + '<div class="act"><button type="button" class="m-btn m-btn--sm" onclick="openMod(\'sales-enhanced\')">Öffnen <span class="m-arrow">→</span></button></div></div>';
+    } else if(!lu.ap){
+      H += '<div class="m-handoff"><div class="what" style="margin-top:2px">Soll ich deinen Tag vorbereiten?</div>'
+        + '<div class="note">Briefing, Content-Entwurf' + (lu.due.length ? ' und ' + lu.due.length + ' Follow-up' + (lu.due.length === 1 ? '' : 's') : '') + '. Du entscheidest danach.</div>'
+        + '<div class="act"><button type="button" class="m-btn m-btn--sm" onclick="openMod(\'autopilot\')">Vorbereiten <span class="m-arrow">→</span></button></div></div>';
+    } else {
+      H += '<div class="m-handoff"><div class="note">Briefing und Content liegen bereit.</div><div class="act"><button type="button" class="m-btn m-btn--sm" onclick="openMod(\'autopilot\')">Ansehen <span class="m-arrow">→</span></button>'
+        + (lu.ap.preparedAt ? '<span class="by">' + esc(agoText(lu.ap.preparedAt)) + ' von Luna vorbereitet</span>' : '') + '</div></div>';
+    }
+    H += '</div>';
+    // Fortschritt
+    var ber = M.bereiche(tasks), nOn = ber.filter(function(b){ return b.on; }).length;
+    var w = M.woche(0), wl = M.woche(-1);
+    var keys = ['kontakte','gespraeche','reels','training'], better = keys.filter(function(k){ return w[k] > wl[k]; }).length;
+    var segs = ''; if(tasks.length){ var n = Math.min(tasks.length, 12); for(var i = 0; i < n; i++) segs += '<i class="' + (i < Math.round(doneN / tasks.length * n) ? 'on' : '') + '"></i>'; }
+    H += '<div class="m-card"><div class="m-card-h"><span class="m-eyebrow">Tagesfortschritt</span></div>'
+      + '<div class="m-prog-big"><b>' + nOn + ' von 5</b> Bereichen bewegt</div>'
+      + (segs ? '<div class="m-segs" style="margin-top:14px">' + segs + '</div>' : '')
+      + '<div class="m-areas">' + ber.map(function(b){ return '<span class="m-chip' + (b.on ? ' is-on' : '') + '"><i></i>' + b.k + '</span>'; }).join('') + '</div>'
+      + '<div class="m-week"><div class="m-eyebrow">Diese Woche</div><div class="m-stats">'
+      + [['kontakte','Kontakte'],['gespraeche','Gespräche'],['reels','Reels'],['training','Trainingstage']].map(function(x){
+          return '<div class="m-stat"><div class="v">' + w[x[0]] + '</div><div class="l">' + x[1] + '</div></div>'; }).join('')
+      + '</div>' + (better ? '<div class="m-week-note">' + (better === 1 ? 'Ein Bereich' : better + ' Bereiche') + ' stärker als letzte Woche.</div>' : '') + '</div></div>';
+    H += '</div></div>';
+    H += '<div class="m-divider m-more"><span class="m-eyebrow">Weiteres</span></div>';
+    H += '</section>';
+    return H;
+  }
+  M.zumFokus = function(){
+    try{ var f = document.querySelector('#pstart-root .fokus-heute, #pstart-root .fh-lux'); if(f) f.scrollIntoView({ behavior:'smooth', block:'start' }); }catch(e){}
+  };
+  function enhanceStart(body){
+    try{
+      body = body || document.getElementById('detail-body');
+      var root = body && body.querySelector('#pstart-root'); if(!root) return;
+      var wrapEl = root.querySelector('.pwrap'); if(!wrapEl) return;
+      var old = wrapEl.querySelector('#m-dash'); if(old) old.remove();
+      root.classList.add('m-dash-on');
+      var tmp = document.createElement('div'); tmp.innerHTML = dashHTML();
+      var dash = tmp.firstChild;
+      // Restliche Startseiten-Karten in ein ruhiges Raster unter "Weiteres"
+      var grid = wrapEl.querySelector('.m-more-grid');
+      if(!grid){
+        grid = document.createElement('div'); grid.className = 'm-more-grid';
+        Array.prototype.slice.call(wrapEl.children).forEach(function(c){
+          if(c.matches && !c.matches('.ptop, .plogo-wrap, .pstart-hero')) grid.appendChild(c);
+        });
+        wrapEl.appendChild(grid);
+      }
+      wrapEl.insertBefore(dash, wrapEl.firstChild);
+      wrapEl.insertBefore(grid, dash.nextSibling);
+      var cta = dash.querySelector('#m-dash-cta'), kn = body.querySelector('#lv-start-knopf');
+      if(cta && kn) cta.appendChild(kn);
+    }catch(e){ try{ _logErr && _logErr('mindea-dash', e); }catch(e2){} }
+  }
+  M.enhanceStart = enhanceStart;
+
+  /* ─── 9 · Start ──────────────────────────────────────────────────────── */
+  function init(){
+    try{ buildTabbar(); }catch(e){}
+    wrap('openMod', function(id){ syncNav(id); });
+    wrap('goHome', function(){ syncNav('premium-start'); });
+    wrap('renderPremiumStart', function(b){ enhanceStart(b); });
+    if(window._curMod === 'premium-start') enhanceStart();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(init, 0); });
+  else setTimeout(init, 0);
+})();
+</script>
 </html>
