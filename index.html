@@ -54408,6 +54408,7 @@ body:not(.ps-ready) #home-screen { visibility: hidden !important; }
   -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='m15.5 8.5-2 5-5 2 2-5z'/></svg>") center/contain no-repeat;
           mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='m15.5 8.5-2 5-5 2 2-5z'/></svg>") center/contain no-repeat; }
 #copilot-fab:active { transform: scale(.94) !important; }
+@media (min-width: 768px) { #copilot-fab { left: auto !important; right: 24px !important; bottom: 24px !important; } }
 #lv-start-knopf { background: var(--m-ink) !important; color: var(--m-ink-inv) !important; border-radius: var(--m-r-pill) !important; box-shadow: none !important;
   font: 600 14px/1 var(--m-sans) !important; letter-spacing: .03em !important; min-height: 52px; transition: transform 160ms var(--m-ease), box-shadow var(--m-dur) !important; }
 #lv-start-knopf:active { transform: scale(.98); }
@@ -54423,7 +54424,10 @@ body.dark #lv-start-knopf span { color: #1B140E; }
 @media (min-width: 768px) { #pstart-root .pwrap { padding: 0 clamp(28px, 4vw, 56px) 96px; } }
 #pstart-root.m-dash-on .ptop, #pstart-root.m-dash-on .plogo-wrap, #pstart-root.m-dash-on .pstart-hero { display: none !important; }
 #detail-body > #lv-start-knopf { display: none !important; }
-#m-dash { padding-top: clamp(28px, 6vw, 64px); }
+#m-dash { padding-top: clamp(28px, 6vw, 64px); text-align: left; }
+#m-dash .m-status { white-space: nowrap; }
+#m-dash .m-week .m-stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+@media (min-width: 1280px) { #m-dash .m-week .m-stats { grid-template-columns: repeat(4, minmax(0,1fr)); } }
 #m-dash .m-dash-hero { max-width: 760px; }
 #m-dash .m-dash-hero .m-eyebrow { margin-bottom: 18px; }
 #m-dash .m-dash-hero .m-display { font-size: clamp(40px, 8.2vw, 64px); }
@@ -54538,6 +54542,7 @@ body.dark .m-luna-mark { color: var(--m-gold); }
 .m-q-k { display: block; font: 600 10.5px/1.3 var(--m-sans); letter-spacing: .2em; text-transform: uppercase; color: var(--m-gold-deep); margin-bottom: 10px; }
 body.dark .m-q-k { color: var(--m-gold); }
 .m-q-t { display: block; font: 500 clamp(24px, 5.6vw, 30px)/1.2 var(--m-serif); color: var(--m-ink); letter-spacing: -.005em; }
+.m-ab .m-q-t { font: 500 clamp(24px, 5.6vw, 30px)/1.22 var(--m-serif) !important; color: var(--m-ink) !important; margin: 4px 0 6px !important; }
 body .m-qflow textarea.m-q-input { min-height: 132px; padding: 16px 2px !important; border: 0 !important; border-bottom: 1px solid var(--m-line-2) !important; border-radius: 0 !important;
   background: transparent !important; box-shadow: none !important; font: 400 19px/1.6 var(--m-serif) !important; color: var(--m-ink) !important; resize: none !important; }
 body .m-qflow textarea.m-q-input:focus { border-bottom-color: var(--m-gold) !important; box-shadow: none !important; }
@@ -54609,6 +54614,16 @@ body .m-qflow textarea.m-q-input:focus { border-bottom-color: var(--m-gold) !imp
 .m-report-sec p { margin: 8px 0 0; font: italic 400 17px/1.45 var(--m-serif); color: var(--m-ink); }
 .m-report-sec ol { margin: 8px 0 0; padding-left: 20px; font: 400 14px/1.55 var(--m-sans); color: var(--m-ink); }
 .m-report-sec li + li { margin-top: 6px; }
+
+/* Journal-Abschnitte: Ich · Mindéa · Gesamtbild, nur ueber Typografie unterschieden */
+.m-ab { margin-top: 26px !important; }
+.m-ab .m-ab-l { margin-bottom: 8px; }
+.m-ab-privat .m-ab-l { font: italic 500 20px/1.2 var(--m-serif) !important; letter-spacing: 0 !important; text-transform: none !important; color: var(--m-ink) !important; }
+.m-ab-mindea .m-ab-l { font: 600 10.5px/1.2 var(--m-sans) !important; letter-spacing: .32em !important; color: var(--m-gold-deep) !important; }
+body.dark .m-ab-mindea .m-ab-l { color: var(--m-gold) !important; }
+.m-ab-gesamt .m-ab-l { display: flex; align-items: center; gap: 12px; font: 600 10.5px/1.2 var(--m-sans) !important; letter-spacing: .24em !important; color: var(--m-ink-3) !important; }
+.m-ab-gesamt .m-ab-l::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--m-line-2), transparent); }
+body.dark [style*="rgb(239, 224, 194)"], body.dark [style*="rgb(245, 239, 226)"], body.dark [style*="rgb(251, 247, 239)"], body.dark [style*="background: rgb(255, 255, 255)"] { background: var(--m-surface) !important; color: var(--m-ink) !important; }
 
 /* ─── 20 · BEWEGUNG REDUZIEREN ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -55985,7 +56000,7 @@ body .m-qflow textarea.m-q-input:focus { border-bottom-color: var(--m-gold) !imp
   function phase(){ return new Date().getHours() < 15 ? 'morgen' : 'abend'; }
   window.lfjKapazitaet = function(){ try{ return tag().kap || ''; }catch(e){ return ''; } };
   var KAP_TXT = { wenig:'Wenig', mittel:'Mittel', viel:'Viel' };
-  var ABSCHNITT = [['privat','Privat'], ['mindea','Mind\u00e9a'], ['gesamt','Gesamtbild']];
+  var ABSCHNITT = [['privat','Ich'], ['mindea','Mind\u00e9a'], ['gesamt','Gesamtbild']];   // v10.0: Privat heisst sichtbar Ich
   function anzahl(kap, ph){
     if(kap === 'wenig') return ph === 'abend' ? { privat:1, mindea:0, gesamt:1 } : { privat:0, mindea:0, gesamt:1 };   // v9.9.622: wenig morgens 1 Frage, abends 2
     if(ph === 'morgen') return { privat:1, mindea:1, gesamt:1 };
@@ -56074,7 +56089,7 @@ body .m-qflow textarea.m-q-input:focus { border-bottom-color: var(--m-gold) !imp
     h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:var(--tm);margin-top:10px"><span>' + (ph === 'morgen' ? 'Morgen' : 'Abend') + (p.fragen.quelle === 'luna' ? ' \u00b7 von Luna aus deinem Tag gew\u00e4hlt' : '') + '</span>' + (ph === phase() ? '<span onclick="lfjAndereFragen()" style="flex-shrink:0;text-decoration:underline;cursor:pointer;color:#A87E3D;font-weight:600">\u21bb Andere Fragen</span>' : '') + '</div>';   // v9.9.619/622
     ABSCHNITT.forEach(function(ab){
       var l = p.fragen[ab[0]] || []; if(!l.length) return;
-      h += '<div style="margin-top:14px"><div style="font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:#A87E3D;font-weight:700">' + ab[1] + '</div>';
+      h += '<div class="m-ab m-ab-' + ab[0] + '" style="margin-top:14px"><div class="m-ab-l" style="font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:#A87E3D;font-weight:700">' + ab[1] + '</div>';
       l.forEach(function(q, i){ var v = (p.antw || {})[ab[0] + i] || '';
         h += '<div style="font-size:13.5px;color:var(--tc);margin:7px 0 6px;line-height:1.45">' + esc(q) + '</div><textarea rows="2" onchange="lfjAntwort(\'' + ph + '\',\'' + ab[0] + '\',' + i + ',this)" style="width:100%;box-sizing:border-box;border:1.5px solid var(--bd);border-radius:10px;padding:9px;font-size:13px;color:var(--tc);background:var(--bc);font-family:inherit;line-height:1.45;resize:vertical">' + esc(v) + '</textarea>'; });
       h += '</div>';
@@ -57823,6 +57838,12 @@ function azTagZeigen(el, t){
       card.classList.add('m-qflow');
       blocks.forEach(function(b){
         b.classList.add('m-q');
+        if(b.classList.contains('m-ab')){
+          var ta0 = b.querySelector('textarea'), pv = ta0 && ta0.previousElementSibling;
+          if(pv && pv !== b.firstElementChild) pv.classList.add('m-q-t');
+          if(ta0){ ta0.classList.add('m-q-input'); ta0.setAttribute('rows', '4'); }
+          return;
+        }
         var lb = b.firstElementChild, raw = stripEmo(lb.textContent), parts = raw.split(/\s+·\s+/);
         lb.classList.add('m-q-label');
         var q = (parts[1] || parts[0]); q = q.charAt(0).toUpperCase() + q.slice(1);
