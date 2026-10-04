@@ -54523,6 +54523,27 @@ body.dark .m-luna-mark { color: var(--m-gold); }
 }
 @media (min-width: 1024px) and (max-width: 1279px) { #detail-body.m-page-luna { padding-left: 320px !important; } #detail-body.m-page-luna > #m-luna-board { width: 320px; } }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   25 · JOURNAL · editorial, eine Frage nach der anderen
+   ═══════════════════════════════════════════════════════════════════════════ */
+#detail-body.m-page-journal > * { max-width: var(--m-reading-max); margin-left: auto; margin-right: auto; }
+#detail-body.m-page-journal .kn-card { padding: 26px 22px !important; border-radius: var(--m-r-xl) !important; }
+@media (min-width: 768px) { #detail-body.m-page-journal .kn-card { padding: 36px 40px !important; } }
+.m-qflow:not(.m-qall) .m-q:not(.on) { display: none !important; }
+.m-qflow .m-q { margin: 22px 0 6px !important; animation: m-in var(--m-dur-slow) var(--m-ease) both; }
+.m-qflow.m-qall .m-q { margin: 28px 0 !important; }
+.m-q-label { margin: 0 0 14px !important; }
+.m-q-k { display: block; font: 600 10.5px/1.3 var(--m-sans); letter-spacing: .2em; text-transform: uppercase; color: var(--m-gold-deep); margin-bottom: 10px; }
+body.dark .m-q-k { color: var(--m-gold); }
+.m-q-t { display: block; font: 500 clamp(24px, 5.6vw, 30px)/1.2 var(--m-serif); color: var(--m-ink); letter-spacing: -.005em; }
+body .m-qflow textarea.m-q-input { min-height: 132px; padding: 16px 2px !important; border: 0 !important; border-bottom: 1px solid var(--m-line-2) !important; border-radius: 0 !important;
+  background: transparent !important; box-shadow: none !important; font: 400 19px/1.6 var(--m-serif) !important; color: var(--m-ink) !important; resize: none !important; }
+body .m-qflow textarea.m-q-input:focus { border-bottom-color: var(--m-gold) !important; box-shadow: none !important; }
+.m-q-nav { margin-top: 18px; }
+.m-q-row { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+.m-q-all { margin-top: 18px; }
+.m-qflow.m-qall .m-q-nav .m-segs, .m-qflow.m-qall .m-q-row { display: none; }
+
 /* ─── 20 · BEWEGUNG REDUZIEREN ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -57720,6 +57741,60 @@ function azTagZeigen(el, t){
       body.classList.add('m-page-luna');
     }catch(e){}
   }
+  /* ─── 8 · JOURNAL · eine Frage nach der anderen ──────────────────────── */
+  var EMO = /^[\s←-⯿☀-➿️‍⃣]+|^(?:[\uD83C-\uDBFF][\uDC00-\uDFFF]\s*)+/;
+  function stripEmo(t){ var s = String(t || ''), prev; do{ prev = s; s = s.replace(EMO, ''); }while(s !== prev); return s.trim(); }
+  M.stripEmo = stripEmo;
+  M._q = M._q || {};
+  function qflow(card, key){
+    try{
+      var blocks = Array.prototype.slice.call(card.children).filter(function(c){
+        var ta = c.querySelector(':scope > textarea'); var lb = c.firstElementChild;
+        return ta && lb && lb !== ta && !lb.querySelector('textarea');
+      });
+      if(blocks.length < 3 || card.classList.contains('m-qflow')) return;
+      card.classList.add('m-qflow');
+      blocks.forEach(function(b){
+        b.classList.add('m-q');
+        var lb = b.firstElementChild, raw = stripEmo(lb.textContent), parts = raw.split(/\s+·\s+/);
+        lb.classList.add('m-q-label');
+        var q = (parts[1] || parts[0]); q = q.charAt(0).toUpperCase() + q.slice(1);
+        lb.innerHTML = (parts[1] ? '<span class="m-q-k">' + esc(parts[0]) + '</span>' : '') + '<span class="m-q-t">' + esc(q) + '</span>';
+        var ta = b.querySelector('textarea'); ta.classList.add('m-q-input'); ta.setAttribute('rows', '4');
+      });
+      var first = blocks.findIndex(function(b){ return !b.querySelector('textarea').value.trim(); });
+      var idx = (M._q[key] != null) ? M._q[key] : (first < 0 ? 0 : first);
+      var nav = document.createElement('div'); nav.className = 'm-q-nav';
+      card.insertBefore(nav, blocks[blocks.length - 1].nextSibling);
+      function show(i){
+        idx = Math.max(0, Math.min(blocks.length - 1, i)); M._q[key] = idx;
+        blocks.forEach(function(b, k){ b.classList.toggle('on', k === idx); });
+        var filled = blocks.map(function(b){ return !!b.querySelector('textarea').value.trim(); });
+        nav.innerHTML = '<div class="m-segs">' + blocks.map(function(b, k){ return '<i class="' + (filled[k] || k === idx ? 'on' : '') + '"></i>'; }).join('') + '</div>'
+          + '<div class="m-q-row"><span class="m-micro">' + (idx + 1) + ' / ' + blocks.length + '</span><span style="flex:1"></span>'
+          + (idx > 0 ? '<button type="button" class="m-btn m-btn--quiet m-btn--sm" data-q="prev">Zurück</button>' : '')
+          + (idx < blocks.length - 1 ? '<button type="button" class="m-btn m-btn--sm" data-q="next">Nächste Frage <span class="m-arrow">→</span></button>' : '')
+          + '</div><button type="button" class="m-btn m-btn--link m-q-all" data-q="all">' + (card.classList.contains('m-qall') ? 'Eine Frage nach der anderen' : 'Alle Fragen zeigen') + '</button>';
+      }
+      nav.addEventListener('click', function(e){
+        var b = e.target.closest('[data-q]'); if(!b) return;
+        var a = b.getAttribute('data-q');
+        if(a === 'next'){ show(idx + 1); try{ var t = blocks[idx].querySelector('textarea'); t.focus({ preventScroll:true }); }catch(e2){} }
+        else if(a === 'prev') show(idx - 1);
+        else { card.classList.toggle('m-qall'); show(idx); }
+      });
+      show(idx);
+    }catch(e){}
+  }
+  function enhanceJournal(body){
+    try{
+      body = body || document.getElementById('detail-body'); if(!body) return;
+      body.classList.add('m-page-journal');
+      body.querySelectorAll('.kn-card, .card').forEach(function(c, i){ qflow(c, c.id || ('jc' + i)); });
+    }catch(e){}
+  }
+  M.enhanceJournal = enhanceJournal;
+
   function pageClass(id){
     try{
       var b = document.getElementById('detail-body'); if(!b) return;
@@ -57730,13 +57805,14 @@ function azTagZeigen(el, t){
   /* ─── 9 · Start ──────────────────────────────────────────────────────── */
   function init(){
     try{ buildTabbar(); }catch(e){}
-    wrap('openMod', function(id){ syncNav(id); });
+    wrap('openMod', function(id){ syncNav(id); try{ var t = document.getElementById('detail-title'); if(t) t.textContent = stripEmo(t.textContent); }catch(e){} });
     wrap('goHome', function(){ syncNav('premium-start'); });
     wrap('renderPremiumStart', function(b){ enhanceStart(b); });
     if(window._curMod === 'premium-start') enhanceStart();
     wrap('renderMod', function(id){ pageClass(id); });
     wrap('renderHeute', function(b){ enhanceHeute(b); });
     wrap('renderLuna', function(b){ enhanceLuna(b); });
+    wrap('renderJournal', function(b){ enhanceJournal(b); setTimeout(function(){ enhanceJournal(b); }, 400); });
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(init, 0); });
   else setTimeout(init, 0);
