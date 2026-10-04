@@ -3126,7 +3126,7 @@ body.focus-mode .akq-fab { display: flex !important; }
   width: 50px;
   height: 50px;
   border-radius: 25px;
-  background: linear-gradient(135deg, #2e7d5e, #4a9a6e);
+  background: var(--m-tone-sage);
   color: #fff;
   border: none;
   font-size: 22px;
@@ -3816,12 +3816,12 @@ body[data-theme="cinematic"], body.dark {
   <div class="akq-sheet-handle"></div>
   <div class="akq-sheet-title">Aktionen</div>
   <div class="akq-sheet-grid">
-    <button onclick="akqSheetAction('direct-dm')" style="background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff">✉️ Direkt-DM</button>
-    <button onclick="akqSheetAction('chat-analyze')" style="background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff">📝 Chat analysieren</button>
+    <button onclick="akqSheetAction('direct-dm')" style="background:var(--m-tone-terra);color:#fff">✉️ Direkt-DM</button>
+    <button onclick="akqSheetAction('chat-analyze')" style="background:var(--m-tone-espresso);color:#fff">📝 Chat analysieren</button>
     <button onclick="akqSheetAction('video-analyze')" style="background:linear-gradient(135deg,#8b6432,#c9a96e);color:#fff">🎬 Video analysieren</button>
-    <button onclick="akqSheetAction('daily-review')" style="background:#2e7d5e;color:#fff">📊 Tagesabschluss</button>
+    <button onclick="akqSheetAction('daily-review')" style="background:var(--m-tone-sage);color:#fff">📊 Tagesabschluss</button>
     <button onclick="akqSheetAction('links-analyze')" style="background:var(--bi);border:1.5px solid var(--bd);color:var(--tc)">🔗 Links analysieren</button>
-    <button onclick="akqSheetAction('save-contact')" style="background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff">📥 Kontakt speichern</button>
+    <button onclick="akqSheetAction('save-contact')" style="background:var(--m-tone-sage);color:#fff">📥 Kontakt speichern</button>
   </div>
 </div>
 
@@ -3931,7 +3931,7 @@ body[data-theme="cinematic"], body.dark {
       </div>
     </div>
 
-    <div onclick="openMod('start-tag')" style="cursor:pointer;background:linear-gradient(135deg,#b8490a,#d4630f);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <div onclick="openMod('start-tag')" style="cursor:pointer;background:var(--m-tone-terra);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px">
       <div style="font-size:22px">🔥</div>
       <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#fff" data-mod-name="Brand Mastery" data-story-name="Pitch & Positionierung">Brand Mastery</div><div style="font-size:11px;color:rgba(255,255,255,.8)" class="story-hide">Pitch · Positionierung · Sales Training</div></div>
       <span style="color:rgba(255,255,255,.6);font-size:14px">›</span>
@@ -6419,7 +6419,7 @@ function nfVorlageHTML(fokusId){
       + '<div style="font-size:12.5px;color:var(--tc);line-height:1.55">'+t.replace(/</g,'&lt;')+'</div>'
       + '<div style="display:flex;gap:7px;margin-top:9px">'
       +   '<button onclick="event.stopPropagation(); nfKopieren(\''+id+'\')" style="flex:1;padding:9px;border:1px solid var(--bd);border-radius:10px;background:none;font-size:11.5px;color:var(--tc);cursor:pointer;font-family:inherit">Kopieren</button>'
-      +   '<button onclick="event.stopPropagation(); nfGesendet(\''+id+'\',\''+fokusId+'\')" style="flex:1.2;padding:9px;border:none;border-radius:10px;background:#2e7d5e;color:#fff;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit">Gesendet</button>'
+      +   '<button onclick="event.stopPropagation(); nfGesendet(\''+id+'\',\''+fokusId+'\')" style="flex:1.2;padding:9px;border:none;border-radius:10px;background:var(--m-tone-sage);color:#fff;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit">Gesendet</button>'
       + '</div>'
       + '</div>';
   }catch(e){ return ''; }
@@ -17949,7 +17949,7 @@ function showStorageInfo() {
     + (pct>85 ? '<div style="font-size:12px;color:#b8490a;font-weight:600;margin-bottom:12px">Der Speicher ist fast voll. Das kann verhindern, dass neue Inhalte gespeichert werden. Tippe unten auf Aufräumen.</div>' : '<div style="font-size:12px;color:var(--tm);margin-bottom:12px">Alles im grünen Bereich. Ab etwa 85 Prozent solltest du aufräumen.</div>')
     + '<div style="font-size:12px;font-weight:700;color:var(--tc);margin-bottom:4px">Was am meisten Platz braucht</div>'
     + top
-    + '<button onclick="cleanupStorageNow()" style="width:100%;margin-top:16px;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#2e7d5e,#3a9270);color:#fff;font-weight:700;font-size:13px;cursor:pointer">🧹 Alte Sicherungen aufräumen</button>'
+    + '<button onclick="cleanupStorageNow()" style="width:100%;margin-top:16px;padding:14px;border:none;border-radius:12px;background:var(--m-tone-sage);color:#fff;font-weight:700;font-size:13px;cursor:pointer">🧹 Alte Sicherungen aufräumen</button>'
     + '<div style="font-size:11px;color:var(--tm);margin-top:8px;text-align:center">Entfernt Sicherungskopien und alte Archive. Deine Kontakte, Chats und die Cloud bleiben.</div>'
     + '</div></div>';
   document.body.appendChild(ov);
@@ -18324,7 +18324,7 @@ function openDuplicateModal() {
   if (groups.length > 0) {
     html += '<div style="padding:12px 14px 18px;border-top:1.5px solid var(--bd);background:var(--bc);flex-shrink:0;display:flex;gap:8px">';
     html += '<button onclick="closeDuplicateModal()" style="padding:12px 16px;background:var(--bi);color:var(--tc);border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;flex-shrink:0">Abbrechen</button>';
-    html += '<button onclick="runDuplicateMerge()" style="flex:1;padding:12px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:13px;font-weight:700">✓ Alle '+groups.length+' zusammenführen</button>';
+    html += '<button onclick="runDuplicateMerge()" style="flex:1;padding:12px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:13px;font-weight:700">✓ Alle '+groups.length+' zusammenführen</button>';
     html += '</div>';
   }
   
@@ -19888,7 +19888,7 @@ function openAkqArchiv() {
       return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-bottom:1px solid var(--bd)">'
         + '<div><div style="font-size:13px;font-weight:600;color:var(--tc)">'+human+heute+'</div>'
         + '<div style="font-size:11px;color:var(--tm);margin-top:2px">'+d.total+' Kontakte, davon '+d.aktiv+' aktiv</div></div>'
-        + '<button onclick="restoreAkqArchiv(\''+d.key+'\',\''+human+'\')" style="padding:8px 14px;background:linear-gradient(135deg,#2e7d5e,#3a9270);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;flex-shrink:0">Einfügen</button>'
+        + '<button onclick="restoreAkqArchiv(\''+d.key+'\',\''+human+'\')" style="padding:8px 14px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;flex-shrink:0">Einfügen</button>'
         + '</div>';
     }).join('');
   }
@@ -19968,7 +19968,7 @@ function _setModChat(id, arr) {
 }
 function archivBarHtml(id) {
   var extra = (id==='luna')
-    ? '<button onclick="lunaChatInWochenplan()" style="flex:1.4;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 11px;background:#6b5a8e;border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;color:#fff">📅 In Wochenplan</button>'
+    ? '<button onclick="lunaChatInWochenplan()" style="flex:1.4;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 11px;background:var(--m-tone-espresso);border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;color:#fff">📅 In Wochenplan</button>'
       + '<button onclick="lunaAbschlussJetzt()" title="Tagesabschluss jetzt ansehen" style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:9px 12px;background:var(--bc);border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-size:14px">🌙</button>'
       + '<button onclick="exportHeuteChats()" title="Heutige Chats exportieren" style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:9px 12px;background:var(--bc);border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-size:14px">⬇️</button>'
       + '<button onclick="openMod(\'chatbot\')" title="Private Gedanken" style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:9px 12px;background:var(--bc);border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-size:14px">💭</button>'   // v9.9.592: privater Gedanken-Chat direkt aus Luna
@@ -19981,7 +19981,7 @@ function archivBarHtml(id) {
   return '<div style="padding:8px 14px;border-bottom:1px solid var(--bd);display:flex;gap:8px;background:var(--bg)">'
     + neuBtn
     + '<button onclick="openModArchiv(\''+id+'\')" style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--bc);border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-size:11px;font-weight:600;color:var(--tc)"><span>🗂️ Archiv</span><span style="color:var(--tm);font-size:14px">›</span></button>'
-    + '<button onclick="endDayArchiveMod(\''+id+'\')" style="flex:1.4;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 11px;background:linear-gradient(135deg,#2e7d5e,#3a9270);border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;color:#fff">✅ Tag sichern</button>'
+    + '<button onclick="endDayArchiveMod(\''+id+'\')" style="flex:1.4;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 11px;background:var(--m-tone-sage);border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;color:#fff">✅ Tag sichern</button>'
     + extra
     + '</div>';
 }
@@ -20387,7 +20387,7 @@ function openModArchiv(id) {
   days.sort((a,b)=>b.date.localeCompare(a.date));
   let rows;
   if(!days.length) rows='<div style="padding:20px;text-align:center;color:var(--tm);font-size:12px">Noch keine gesicherten Tage. Tippe auf Tag sichern, um den heutigen Chatverlauf zu archivieren.</div>';
-  else rows=days.map(d=>{const p=d.date.split('-');const h=p.length===3?(p[2]+'.'+p[1]+'.'+p[0]):d.date;return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-bottom:1px solid var(--bd)"><div><div style="font-size:13px;font-weight:600;color:var(--tc)">'+h+(d.date===TD?' (heute)':'')+'</div><div style="font-size:11px;color:var(--tm);margin-top:2px">'+d.count+' Nachrichten</div></div>'+(String(d.key).indexOf('verlauf:')===0 ? '<button onclick="lunaTagLesen(\''+d.date+'\',\''+h+'\')" style="padding:8px 14px;background:var(--bc);color:var(--tc);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;flex-shrink:0">Lesen</button>' : '<button onclick="restoreModChat(\''+id+'\',\''+d.key+'\',\''+h+'\')" style="padding:8px 14px;background:linear-gradient(135deg,#2e7d5e,#3a9270);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;flex-shrink:0">Wiederherstellen</button>')+'</div>';}).join('');
+  else rows=days.map(d=>{const p=d.date.split('-');const h=p.length===3?(p[2]+'.'+p[1]+'.'+p[0]):d.date;return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-bottom:1px solid var(--bd)"><div><div style="font-size:13px;font-weight:600;color:var(--tc)">'+h+(d.date===TD?' (heute)':'')+'</div><div style="font-size:11px;color:var(--tm);margin-top:2px">'+d.count+' Nachrichten</div></div>'+(String(d.key).indexOf('verlauf:')===0 ? '<button onclick="lunaTagLesen(\''+d.date+'\',\''+h+'\')" style="padding:8px 14px;background:var(--bc);color:var(--tc);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;flex-shrink:0">Lesen</button>' : '<button onclick="restoreModChat(\''+id+'\',\''+d.key+'\',\''+h+'\')" style="padding:8px 14px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;flex-shrink:0">Wiederherstellen</button>')+'</div>';}).join('');
   const ov=document.createElement('div'); ov.id='mod-archiv-overlay'; ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:flex-end;justify-content:center'; ov.onclick=function(e){if(e.target===ov)ov.remove();};
   ov.innerHTML='<div style="background:var(--bg);width:100%;max-width:520px;max-height:80vh;border-radius:18px 18px 0 0;overflow:hidden;display:flex;flex-direction:column"><div style="padding:16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:15px;font-weight:700;color:var(--tc)">🗂️ Chat-Archiv</div><div style="font-size:11px;color:var(--tm);margin-top:3px">Wiederherstellen ersetzt den aktuellen Chatverlauf durch den gewaehlten Tag. Der aktuelle wird vorher gesichert.</div></div><button onclick="document.getElementById(\'mod-archiv-overlay\').remove()" style="background:none;border:none;font-size:22px;color:var(--tm);cursor:pointer;padding:0 4px">✕</button></div><div style="overflow-y:auto">'+rows+'</div>'
     +'<div style="padding:10px 12px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--bd);display:flex;gap:8px;flex-shrink:0">'
@@ -22422,7 +22422,7 @@ function renderContentPack() {
     card.style.cssText = 'background:var(--bc);border:1.5px solid '+(isPosted?'rgba(46,125,94,.3)':isReady?'rgba(139,100,50,.2)':'var(--bd)')+';border-radius:var(--cr);padding:12px;box-shadow:var(--sh)';
     
     // Status badge (verraet "WIRD GENERIERT" -> story-hide)
-    const status = isPosted ? '<span style="background:#2e7d5e;color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px" class="story-hide">GEPOSTET</span>'
+    const status = isPosted ? '<span style="background:var(--m-tone-sage);color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px" class="story-hide">GEPOSTET</span>'
       : isReady ? '<span style="background:var(--g);color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px" class="story-hide">BEREIT</span>'
       : '<span style="background:var(--bd);color:var(--ts);font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px" class="story-hide">LEER</span>';
     
@@ -22460,7 +22460,7 @@ function renderContentPack() {
       // v3.1: Auto-Generierung deaktiviert. Manueller Trigger statt automatischer Verbrauch.
       html += '<div style="font-size:10px;color:var(--tm);line-height:1.5;margin-bottom:6px;font-style:italic" class="story-hide">Auto-Generierung aus. Klick auf Generieren oder öffne das Modul.</div>';
       html += '<div style="display:flex;gap:5px" class="story-hide">';
-      html += '<button class="copy-btn" style="font-size:9px;padding:4px 8px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;border:none;font-weight:700" onclick="genAutoMod(\''+item.id+'\')">✨ Generieren (1 API Call)</button>';
+      html += '<button class="copy-btn" style="font-size:9px;padding:4px 8px;background:var(--m-tone-terra);color:#fff;border:none;font-weight:700" onclick="genAutoMod(\''+item.id+'\')">✨ Generieren (1 API Call)</button>';
       html += '<button class="copy-btn" style="font-size:9px;padding:4px 8px;border-color:var(--g);color:var(--g)" onclick="openMod(\''+item.id+'\')">Modul öffnen</button>';
       html += '</div>';
     }
@@ -22577,7 +22577,7 @@ function updateStats() {
     document.getElementById('rev-current').textContent = monthlyRev + '€';
     document.getElementById('rev-month-label').textContent = monthNames[mIdx] + ' ' + currentMonth.split('-')[0];
     document.getElementById('rev-bar').style.width = pct + '%';
-    document.getElementById('rev-bar').style.background = pct >= 100 ? 'linear-gradient(135deg,#2e7d5e,#4a9a6e)' : 'var(--gg)';
+    document.getElementById('rev-bar').style.background = pct >= 100 ? 'var(--m-tone-sage)' : 'var(--gg)';
     
     const gapBadge = document.getElementById('rev-gap-badge');
     if (gap > 0) {
@@ -23951,7 +23951,7 @@ function renderSalesTrainer(container) {
     const sc = SALES_SCENARIOS.find(s => s.id === salesScenario);
     const header = div('');
     header.style.cssText = 'padding:8px 14px;background:rgba(74,122,150,.06);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;flex-shrink:0';
-    header.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--b)">'+(sc?.label||'Sales')+'</div><div style="flex:1"></div><button onclick="endSalesScenario()" style="background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;padding:5px 11px;cursor:pointer;font-size:10px;font-weight:600" title="Training abschließen mit Feedback">✓ Abschließen</button><button onclick="if(confirm(\'Training ohne Feedback abbrechen?\')){salesScenario=\'\';localStorage.setItem(\'mindea-sales-scenario\',\'\');salesMsgs=[];lsSet(\'mindea-sales-msgs\',[]);renderMod(\'luna\')}" style="background:none;border:1px solid var(--bd);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:10px;color:var(--ts)" title="Ohne Feedback verlassen">✕</button>';
+    header.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--b)">'+(sc?.label||'Sales')+'</div><div style="flex:1"></div><button onclick="endSalesScenario()" style="background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;padding:5px 11px;cursor:pointer;font-size:10px;font-weight:600" title="Training abschließen mit Feedback">✓ Abschließen</button><button onclick="if(confirm(\'Training ohne Feedback abbrechen?\')){salesScenario=\'\';localStorage.setItem(\'mindea-sales-scenario\',\'\');salesMsgs=[];lsSet(\'mindea-sales-msgs\',[]);renderMod(\'luna\')}" style="background:none;border:1px solid var(--bd);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:10px;color:var(--ts)" title="Ohne Feedback verlassen">✕</button>';
     container.appendChild(header);
 
     const msgsEl = div('chat-msgs');
@@ -24117,7 +24117,7 @@ Ehrlich, direkt, ohne Floskeln. Maximal 250 Wörter.`;
             var _b2=document.createElement('button');
             _b2.textContent='▶ Block 2 starten: '+((typeof BM_LABELS!=='undefined'&&BM_LABELS[_bl[1]])||_bl[1]);
             _b2.setAttribute('onclick','bmBlockZwei(); this.remove();');
-            _b2.style.cssText='display:block;width:calc(100% - 24px);margin:10px 12px;padding:12px;border:none;border-radius:11px;background:#2e7d5e;color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit';
+            _b2.style.cssText='display:block;width:calc(100% - 24px);margin:10px 12px;padding:12px;border:none;border-radius:11px;background:var(--m-tone-sage);color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit';
             _ca2.appendChild(_b2); _ca2.scrollTop=_ca2.scrollHeight;
           }
         }
@@ -29001,7 +29001,7 @@ function renderHeute(body) {
       let html = '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">';
       html += '<div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:#6b5a8e">🌙 Fertig für heute?</div>';
       html += '<div style="font-size:10px;color:var(--tm);margin-top:2px">Tagesbilanz von Luna, Tag abschließen</div></div>';
-      html += '<button onclick="(async()=>{const b=await abschliessenMitBilanz();})()" style="padding:8px 12px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0">Tag abschließen</button>';
+      html += '<button onclick="(async()=>{const b=await abschliessenMitBilanz();})()" style="padding:8px 12px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;flex-shrink:0">Tag abschließen</button>';
       html += '</div>';
       fbCloseCard.innerHTML = html;
       slotAbschluss.appendChild(fbCloseCard);
@@ -29044,7 +29044,7 @@ function renderHeute(body) {
     // Buttons
     prepHtml += '<div style="display:flex;gap:6px;margin-top:8px">';
     prepHtml += '<button onclick="savePrepLinks()" style="flex:1;padding:9px;background:var(--bi);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;color:var(--tc)" title="Nur Links zwischenspeichern, ohne zu analysieren">💾 Links sichern</button>';
-    prepHtml += '<button onclick="generatePrepBatch()" style="flex:2;padding:9px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">🚀 Alle vorbereiten (Luna analysiert)</button>';
+    prepHtml += '<button onclick="generatePrepBatch()" style="flex:2;padding:9px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">🚀 Alle vorbereiten (Luna analysiert)</button>';
     prepHtml += '</div>';
     prepHtml += '<div style="font-size:9px;color:var(--tm);margin-top:5px;text-align:center;font-style:italic">"Alle vorbereiten" speichert die Links automatisch mit. Pipeline-Eintrag passiert erst nach dem Klick "In Pipeline übernehmen".</div>';
     
@@ -29075,7 +29075,7 @@ function renderHeute(body) {
           prepHtml += '<div style="margin-top:6px;padding:7px 9px;background:rgba(107,90,142,.06);border:1px solid rgba(107,90,142,.2);border-radius:6px;font-size:10px;color:var(--ts);line-height:1.45">';
           prepHtml += '<div style="font-size:8px;color:#6b5a8e;font-weight:700;letter-spacing:1px;margin-bottom:3px">🔍 LUNAS ANALYSE (Auszug)</div>';
           prepHtml += _escHtml(analysisSnippet);
-          prepHtml += '<button onclick="openPrepInAkquise('+idx+')" style="display:block;margin-top:5px;padding:4px 8px;background:#6b5a8e;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:9px;font-weight:600">→ Im Akquise Turbo besprechen</button>';
+          prepHtml += '<button onclick="openPrepInAkquise('+idx+')" style="display:block;margin-top:5px;padding:4px 8px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:9px;font-weight:600">→ Im Akquise Turbo besprechen</button>';
           prepHtml += '</div>';
         }
         if (g.kommentar) {
@@ -29094,7 +29094,7 @@ function renderHeute(body) {
         }
         prepHtml += '</div>';
       });
-      prepHtml += '<button onclick="addAllPrepToPipeline()" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">✓ Alle in Pipeline übernehmen (mit Tag "heute recherchiert")</button>';
+      prepHtml += '<button onclick="addAllPrepToPipeline()" style="width:100%;margin-top:8px;padding:10px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">✓ Alle in Pipeline übernehmen (mit Tag "heute recherchiert")</button>';
       prepHtml += '</div>';
     }
     
@@ -29162,7 +29162,7 @@ function renderHeute(body) {
   
   terminHtml += '<div style="display:flex;gap:4px;margin-top:6px">'
     +'<input id="termin-quick-input" placeholder="z.B. Lara Termin um 11 oder Di 14 Uhr Anna Call" onkeypress="if(event.key===\'Enter\')addQuickTermin()" style="flex:1;padding:8px 10px;border:1px solid var(--bd);border-radius:7px;font-size:11px;font-family:inherit;color:var(--tc);background:var(--bc);box-sizing:border-box">'
-    +'<button onclick="addQuickTermin()" style="padding:8px 14px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700">+ Hinzu</button>'
+    +'<button onclick="addQuickTermin()" style="padding:8px 14px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700">+ Hinzu</button>'
     +'</div>';
   
   // v4.3: Jahres-Kalender Toggle
@@ -29260,7 +29260,7 @@ function renderHeute(body) {
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
     // Zelle 1: DM
     +'<div style="display:flex;gap:3px">'
-    +'<button onclick="trackDM(\'+1\',\'dm\')" style="flex:1.6;padding:11px 6px;background:'+(dmsHeute>=dmZiel?'linear-gradient(135deg,#2e7d5e,#4a9a6e)':'var(--gg)')+';color:#fff;border:none;border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11.5px">'+(dmsHeute>=dmZiel?'🎉 +1 DM':'💬 +1 DM')+'</button>'
+    +'<button onclick="trackDM(\'+1\',\'dm\')" style="flex:1.6;padding:11px 6px;background:'+(dmsHeute>=dmZiel?'var(--m-tone-sage)':'var(--gg)')+';color:#fff;border:none;border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11.5px">'+(dmsHeute>=dmZiel?'🎉 +1 DM':'💬 +1 DM')+'</button>'
     +'<button onclick="trackDM(\'-1\',\'dm\')" style="flex:1;padding:11px 6px;background:rgba(184,73,10,.12);color:#b8490a;border:1.5px solid rgba(184,73,10,.3);border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11px">↩️ -1 DM</button>'
     +'</div>'
     // Zelle 2: FU
@@ -29270,12 +29270,12 @@ function renderHeute(body) {
     +'</div>'
     // Zelle 3: Email
     +'<div style="display:flex;gap:3px">'
-    +'<button onclick="trackEmail(\'+1\')" style="flex:1.6;padding:11px 6px;background:'+(emailsHeute>=emailZiel?'linear-gradient(135deg,#2e7d5e,#4a9a6e)':'linear-gradient(135deg,#4a7a96,#5a8aa6)')+';color:#fff;border:none;border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11.5px">'+(emailsHeute>=emailZiel?'🎉 +1 Email':'📧 +1 Email')+'</button>'
+    +'<button onclick="trackEmail(\'+1\')" style="flex:1.6;padding:11px 6px;background:'+(emailsHeute>=emailZiel?'var(--m-tone-sage)':'linear-gradient(135deg,#4a7a96,#5a8aa6)')+';color:#fff;border:none;border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11.5px">'+(emailsHeute>=emailZiel?'🎉 +1 Email':'📧 +1 Email')+'</button>'
     +'<button onclick="trackEmail(\'-1\')" style="flex:1;padding:11px 6px;background:rgba(184,73,10,.12);color:#b8490a;border:1.5px solid rgba(184,73,10,.3);border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11px">↩️ -1 Email</button>'
     +'</div>'
     // Zelle 4: Termin
     +'<div style="display:flex;gap:3px">'
-    +'<button onclick="trackTermin(\'+1\')" style="flex:1.6;padding:11px 6px;background:'+((lsGet('mindea-termine-anfragen-'+TD,0)>=2)?'linear-gradient(135deg,#2e7d5e,#4a9a6e)':'linear-gradient(135deg,#6b5a8e,#8b7aae)')+';color:#fff;border:none;border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11.5px">'+((lsGet('mindea-termine-anfragen-'+TD,0)>=2)?'🎉 +1 Termin':'📞 +1 Termin')+'</button>'
+    +'<button onclick="trackTermin(\'+1\')" style="flex:1.6;padding:11px 6px;background:'+((lsGet('mindea-termine-anfragen-'+TD,0)>=2)?'var(--m-tone-sage)':'var(--m-tone-espresso)')+';color:#fff;border:none;border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11.5px">'+((lsGet('mindea-termine-anfragen-'+TD,0)>=2)?'🎉 +1 Termin':'📞 +1 Termin')+'</button>'
     +'<button onclick="trackTermin(\'-1\')" style="flex:1;padding:11px 6px;background:rgba(184,73,10,.12);color:#b8490a;border:1.5px solid rgba(184,73,10,.3);border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:11px">↩️ -1 Termin</button>'
     +'</div>'
     +'</div>';
@@ -29975,7 +29975,7 @@ function saveContactFromChat(chatId) {
     
     +'<div style="display:flex;gap:8px">'
       +'<button onclick="closeContactModal()" style="flex:1;padding:12px;background:var(--bd);color:var(--tc);border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px">Abbrechen</button>'
-      +'<button onclick="saveContactFinal(\''+chatId+'\')" style="flex:2;padding:12px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px">✅ Jetzt speichern</button>'
+      +'<button onclick="saveContactFinal(\''+chatId+'\')" style="flex:2;padding:12px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px">✅ Jetzt speichern</button>'
     +'</div>'
     +'</div>';
   document.body.appendChild(modal);
@@ -31457,7 +31457,7 @@ function openLeadModal(leadId) {
   html += '<span style="font-size:10px;font-weight:600;color:var(--tm);background:var(--bi);padding:4px 10px;border-radius:6px;border:1px solid var(--bd)">'+statusLabel+'</span>';
   html += '</div>';
   if (href && isInsta) {
-    html += '<a href="'+_escHtml(href)+'" target="_blank" style="display:block;margin-top:10px;padding:10px;background:linear-gradient(135deg,#E1306C,#C13584);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;text-align:center">📸 Instagram Profil öffnen</a>';
+    html += '<a href="'+_escHtml(href)+'" target="_blank" style="display:block;margin-top:10px;padding:10px;background:var(--m-tone-caramel);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;text-align:center">📸 Instagram Profil öffnen</a>';
   }
   html += '</div>';
   
@@ -31470,13 +31470,13 @@ function openLeadModal(leadId) {
     // Action Buttons je nach Status
     html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
     if (nextAction.action === 'dm1') {
-      html += '<button onclick="quickMarkDM('+lead.id+',1)" style="flex:1;padding:10px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">✅ DM gesendet</button>';
+      html += '<button onclick="quickMarkDM('+lead.id+',1)" style="flex:1;padding:10px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">✅ DM gesendet</button>';
       html += '<button onclick="quickMarkReplied('+lead.id+')" style="padding:10px 14px;background:rgba(46,125,94,.15);color:#2e7d5e;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">💬 Geantwortet</button>';
     } else if (nextAction.action === 'fu1') {
       html += '<button onclick="quickMarkDM('+lead.id+',2)" style="flex:1;padding:10px;background:linear-gradient(135deg,#8b6432,#a67b45);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">✅ 1. Follow-up gesendet</button>';
       html += '<button onclick="quickMarkReplied('+lead.id+')" style="padding:10px 14px;background:rgba(46,125,94,.15);color:#2e7d5e;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">💬 Geantwortet</button>';
     } else if (nextAction.action === 'fu2') {
-      html += '<button onclick="quickMarkDM('+lead.id+',3)" style="flex:1;padding:10px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">✅ 2. Follow-up gesendet</button>';
+      html += '<button onclick="quickMarkDM('+lead.id+',3)" style="flex:1;padding:10px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">✅ 2. Follow-up gesendet</button>';
       html += '<button onclick="quickMarkReplied('+lead.id+')" style="padding:10px 14px;background:rgba(46,125,94,.15);color:#2e7d5e;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">💬 Geantwortet</button>';
     } else if (nextAction.action === 'wait') {
       html += '<button onclick="quickMarkReplied('+lead.id+')" style="flex:1;padding:10px;background:rgba(46,125,94,.15);color:#2e7d5e;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">💬 Hat geantwortet</button>';
@@ -31485,10 +31485,10 @@ function openLeadModal(leadId) {
         // Termin schon angefragt: Status zeigen, keine doppelte Anfrage
         const dStr = (lead.callRequestedDate || '').split('-').reverse().slice(0,2).join('.');
         html += '<div style="flex:1;padding:11px;background:rgba(107,90,142,.10);border:1px solid rgba(107,90,142,.3);border-radius:8px;font-size:12px;color:#6b5a8e;font-weight:600">📞 Termin angefragt'+(dStr ? ' am '+dStr : '')+' · auf Antwort warten<br><button onclick="removeTerminAngefragt('+lead.id+')" style="background:none;border:none;color:var(--tm);cursor:pointer;font-size:10.5px;text-decoration:underline;padding:3px 0 0;font-weight:400">↩️ zurücknehmen (vertippt)</button></div>';
-        html += '<button onclick="openReplyStrategy('+lead.id+');closeLeadModal()" style="padding:10px 14px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">✨ Antwort-Strategie</button>';
+        html += '<button onclick="openReplyStrategy('+lead.id+');closeLeadModal()" style="padding:10px 14px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">✨ Antwort-Strategie</button>';
       } else {
-        html += '<button onclick="openReplyStrategy('+lead.id+');closeLeadModal()" style="flex:1;padding:10px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">✨ Antwort-Strategie</button>';
-        html += '<button onclick="markTerminAngefragt('+lead.id+')" style="padding:10px 14px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">📞 Termin angefragt</button>';
+        html += '<button onclick="openReplyStrategy('+lead.id+');closeLeadModal()" style="flex:1;padding:10px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">✨ Antwort-Strategie</button>';
+        html += '<button onclick="markTerminAngefragt('+lead.id+')" style="padding:10px 14px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">📞 Termin angefragt</button>';
       }
       html += '<button onclick="undoReplied('+lead.id+')" style="flex-basis:100%;background:none;border:none;color:var(--tm);cursor:pointer;font-size:10.5px;text-decoration:underline;padding:4px 0 0;text-align:left">↩️ Hat doch nicht geantwortet, zurücknehmen</button>';
     } else if (nextAction.action === 'archive') {
@@ -31597,13 +31597,13 @@ function openLeadModal(leadId) {
   html += '<button onclick="addDmEntry('+lead.id+',\'received\')" style="flex:1;min-width:100px;padding:9px;background:rgba(184,73,10,.08);color:#b8490a;border:1.5px solid rgba(184,73,10,.25);border-radius:8px;cursor:pointer;font-weight:600;font-size:11px">+ Ihre Antwort</button>';
   html += '</div>';
   html += '<div style="display:flex;gap:6px;margin-top:6px">';
-  html += '<button onclick="genLunaDmSuggestion('+lead.id+')" style="flex:1;padding:10px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">🧠 DM-Entwurf</button>';
+  html += '<button onclick="genLunaDmSuggestion('+lead.id+')" style="flex:1;padding:10px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">🧠 DM-Entwurf</button>';
   html += '<button onclick="toggleAskLunaBox('+lead.id+')" style="flex:1;padding:10px;background:rgba(107,90,142,.1);color:#6b5a8e;border:1.5px solid rgba(107,90,142,.35);border-radius:8px;cursor:pointer;font-weight:700;font-size:11px">💬 Luna fragen</button>';
   html += '</div>';
   // v4.1 Chat-Analyse: nutzt direkt die gespeicherte dmHistory, kein Paste nötig.
   // Luna liefert 3 Bloecke: Feedback, Verbesserungsvorschlaege, komplette Neufassung.
   html += '<div style="margin-top:6px">';
-  html += '<button onclick="analyzeFullLeadChat('+lead.id+')" style="width:100%;padding:11px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11.5px">📝 Analysieren und Feedback</button>';
+  html += '<button onclick="analyzeFullLeadChat('+lead.id+')" style="width:100%;padding:11px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11.5px">📝 Analysieren und Feedback</button>';
   html += '</div>';
   // v4.7: Chat-Verlauf exportieren (Copy/Paste für ChatGPT-Zweitcheck)
   html += '<div style="margin-top:6px">';
@@ -31617,7 +31617,7 @@ function openLeadModal(leadId) {
   html += '<div style="font-size:10.5px;color:var(--ts);line-height:1.5;margin-bottom:7px">Stell Luna eine konkrete Frage zu '+(lead.name||'diesem Kontakt')+'. Beispiele: "Warum antwortet sie nicht?", "Was sagt der Tonfall hier aus?", "Welcher Einwand steckt dahinter?", "Wann sollte ich nachfassen?".</div>';
   html += '<textarea id="ask-luna-input-'+lead.id+'" placeholder="Deine Frage an Luna ..." style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:7px;font-size:12px;font-family:inherit;color:var(--tc);background:var(--bi);min-height:60px;resize:vertical;box-sizing:border-box;line-height:1.5"></textarea>';
   html += '<div style="display:flex;gap:6px;margin-top:6px">';
-  html += '<button onclick="askLunaAboutLead('+lead.id+')" style="flex:1;padding:8px;background:#6b5a8e;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700">Frage senden (1 API Call)</button>';
+  html += '<button onclick="askLunaAboutLead('+lead.id+')" style="flex:1;padding:8px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700">Frage senden (1 API Call)</button>';
   html += '<button onclick="toggleAskLunaBox('+lead.id+')" style="padding:8px 12px;background:var(--bc);color:var(--tc);border:1.5px solid var(--bd);border-radius:7px;cursor:pointer;font-size:11px;font-weight:600">Schließen</button>';
   html += '</div>';
   html += '<div id="ask-luna-output-'+lead.id+'" style="margin-top:8px"></div>';
@@ -31671,11 +31671,11 @@ function openLeadModal(leadId) {
     html += '<div style="padding:12px;background:var(--bi);border:1px solid rgba(107,90,142,.2);border-radius:8px;white-space:pre-wrap;font-size:12px;line-height:1.6;color:var(--tc);margin-bottom:8px">'+_escHtml(lead.callPrep.text)+'</div>';
     html += '<div style="display:flex;gap:6px">';
     html += '<button onclick="copyCallPrep('+lead.id+')" style="flex:1;padding:8px;background:rgba(107,90,142,.1);color:#6b5a8e;border:1.5px solid rgba(107,90,142,.3);border-radius:7px;cursor:pointer;font-size:10px;font-weight:600">📋 Kopieren</button>';
-    html += '<button onclick="genCallPrep('+lead.id+')" style="flex:1;padding:8px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700">🔄 Neu erstellen (API Call)</button>';
+    html += '<button onclick="genCallPrep('+lead.id+')" style="flex:1;padding:8px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700">🔄 Neu erstellen (API Call)</button>';
     html += '</div>';
   } else {
     html += '<div style="font-size:11px;color:var(--ts);margin-bottom:8px;line-height:1.5">Luna analysiert den gesamten DM-Verlauf und erstellt dir eine Gesprächs-Agenda mit wichtigen Punkten, möglichen Einwaenden und Abschluss-Strategie.</div>';
-    html += '<button onclick="genCallPrep('+lead.id+')" style="width:100%;padding:11px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">🎯 Call vorbereiten (API Call)</button>';
+    html += '<button onclick="genCallPrep('+lead.id+')" style="width:100%;padding:11px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">🎯 Call vorbereiten (API Call)</button>';
   }
   
   // Call Notizen (nach dem Call)
@@ -32217,7 +32217,7 @@ function buildPrepCard() {
     prepHtml += '<textarea id="prep-links-input" placeholder="https://instagram.com/profil1\nhttps://instagram.com/profil2\n@profil3\n..." style="width:100%;min-height:100px;padding:10px;border:1.5px solid var(--bd);border-radius:8px;font-size:11px;font-family:monospace;resize:vertical;box-sizing:border-box;color:var(--tc);background:var(--bi)">' + (prepData.links.join('\n') || '') + '</textarea>';
     prepHtml += '<div style="display:flex;gap:6px;margin-top:8px">';
     prepHtml += '<button onclick="savePrepLinks()" style="flex:1;padding:9px;background:var(--bi);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;color:var(--tc)" title="Nur Links zwischenspeichern">💾 Links sichern</button>';
-    prepHtml += '<button onclick="generatePrepBatch()" style="flex:2;padding:9px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">🚀 Alle vorbereiten</button>';
+    prepHtml += '<button onclick="generatePrepBatch()" style="flex:2;padding:9px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">🚀 Alle vorbereiten</button>';
     prepHtml += '</div>';
     if (prepData.status === 'generating') prepHtml += '<div style="margin-top:10px;padding:10px;background:rgba(184,73,10,.06);border-radius:8px;font-size:11px;color:#b8490a;text-align:center">⏳ Vorbereitung laeuft...</div>';
     if (prepData.generated.length > 0) {
@@ -32239,7 +32239,7 @@ function buildPrepCard() {
           prepHtml += '<div data-mask="name" style="margin-top:6px;padding:7px 9px;background:rgba(107,90,142,.06);border:1px solid rgba(107,90,142,.2);border-radius:6px;font-size:10px;color:var(--ts);line-height:1.45">';
           prepHtml += '<div style="font-size:8px;color:#6b5a8e;font-weight:700;letter-spacing:1px;margin-bottom:3px">🔍 ANALYSE (Auszug)</div>';
           prepHtml += _escHtml(analysisSnippet);
-          prepHtml += '<button onclick="openPrepInAkquise('+idx+')" style="display:block;margin-top:5px;padding:4px 8px;background:#6b5a8e;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:9px;font-weight:600">→ Im Akquise Turbo besprechen</button>';
+          prepHtml += '<button onclick="openPrepInAkquise('+idx+')" style="display:block;margin-top:5px;padding:4px 8px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:9px;font-weight:600">→ Im Akquise Turbo besprechen</button>';
           prepHtml += '</div>';
         }
         if (g.kommentar) {
@@ -32258,7 +32258,7 @@ function buildPrepCard() {
         }
         prepHtml += '</div>';
       });
-      prepHtml += '<button onclick="addAllPrepToPipeline()" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">✓ Alle in Pipeline übernehmen</button>';
+      prepHtml += '<button onclick="addAllPrepToPipeline()" style="width:100%;margin-top:8px;padding:10px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">✓ Alle in Pipeline übernehmen</button>';
       prepHtml += '</div>';
     }
     prepHtml += '</div>';
@@ -33116,7 +33116,7 @@ function renderJahresKalender() {
     let bg = 'var(--bi)';
     let color = 'var(--tc)';
     let border = '1px solid var(--bd)';
-    if (isSelected) { bg = 'linear-gradient(135deg,#6b5a8e,#8b7aae)'; color = '#fff'; border = '1px solid #6b5a8e'; }
+    if (isSelected) { bg = 'var(--m-tone-espresso)'; color = '#fff'; border = '1px solid #6b5a8e'; }
     else if (isToday) { bg = 'rgba(107,90,142,.12)'; border = '1.5px solid #6b5a8e'; color = '#6b5a8e'; }
     html += '<div onclick="selectJKDay(\''+dateStr+'\')" style="padding:6px 2px;background:'+bg+';border:'+border+';border-radius:7px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;color:'+color+';min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1">';
     html += '<div>'+d+'</div>';
@@ -33173,7 +33173,7 @@ function renderJahresKalender() {
       html += '<option value="'+l.id+'">'+_escHtml(label)+'</option>';
     });
     html += '</select>';
-    html += '<button onclick="addJKTermin()" style="width:100%;padding:9px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700">+ Termin speichern</button>';
+    html += '<button onclick="addJKTermin()" style="width:100%;padding:9px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700">+ Termin speichern</button>';
     html += '</div>';
     html += '</div>';
   }
@@ -33583,7 +33583,7 @@ function showHashtagsFor(idx) {
   html += '</div>';
   html += '<div style="display:flex;gap:6px;margin-bottom:8px">';
   html += '<button onclick="copyAllHashtags(' + idx + ')" style="flex:1;padding:6px 10px;background:rgba(46,125,94,.1);color:#2e7d5e;border:1px solid rgba(46,125,94,.3);border-radius:6px;cursor:pointer;font-size:10px;font-weight:600">📋 Alle 5 kopieren</button>';
-  html += '<button onclick="window.open(\'https://www.instagram.com/explore/tags/' + b.hashtags[0] + '/\',\'_blank\')" style="flex:1;padding:6px 10px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:600">→ Auf Instagram</button>';
+  html += '<button onclick="window.open(\'https://www.instagram.com/explore/tags/' + b.hashtags[0] + '/\',\'_blank\')" style="flex:1;padding:6px 10px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:600">→ Auf Instagram</button>';
   html += '</div>';
   html += '<div style="font-size:9px;color:var(--tm);font-style:italic;border-top:1px solid var(--bd);padding-top:6px;margin-top:4px">💡 Worauf achten: ' + b.worauf + '</div>';
   html += '</div>';
@@ -33652,7 +33652,7 @@ function openPipelineChatAnalyzer(escName) {
   html += '</div>';
 
   // Submit
-  html += '<button id="pipe-chat-submit-btn" onclick="submitPipelineChatAnalysis(\''+escName+'\')" style="width:100%;padding:13px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;margin-bottom:8px">🧠 Luna soll analysieren (1 API Call)</button>';
+  html += '<button id="pipe-chat-submit-btn" onclick="submitPipelineChatAnalysis(\''+escName+'\')" style="width:100%;padding:13px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;margin-bottom:8px">🧠 Luna soll analysieren (1 API Call)</button>';
 
   // Hidden context info (versteckter Hinweis für Luna)
   html += '<input id="pipe-chat-context" type="hidden" value="'+_escHtml(contactAnalyse).replace(/"/g,'&quot;')+'">';
@@ -33751,7 +33751,7 @@ REGELN für deine Sprache überall:
       out.innerHTML = `
         <div style="margin-top:6px;padding:14px;background:var(--bi);border:1.5px solid var(--bd);border-radius:11px;font-size:12px;color:var(--tc);line-height:1.65;white-space:pre-wrap">${html}</div>
         <div style="display:flex;gap:6px;margin-top:8px">
-          <button onclick="_copyStoredText('${_copyId}','✓ Alles kopiert')" style="flex:1;padding:9px;background:#6b5a8e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">📋 Komplette Analyse kopieren</button>
+          <button onclick="_copyStoredText('${_copyId}','✓ Alles kopiert')" style="flex:1;padding:9px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">📋 Komplette Analyse kopieren</button>
           <button onclick="document.getElementById('pipe-chat-analyzer-modal').remove()" style="padding:9px 14px;background:var(--bc);color:var(--tc);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">Schließen</button>
         </div>
       `;
@@ -33840,7 +33840,7 @@ REGELN für deine Sprache ueberall:
       out.innerHTML = `
         <div style="padding:14px;background:var(--bi);border:1.5px solid var(--bd);border-radius:11px;font-size:12px;color:var(--tc);line-height:1.65;white-space:pre-wrap">${formatted}</div>
         <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-          <button onclick="_copyStoredText('${_copyId}','✓ Komplette Analyse kopiert')" style="flex:1;min-width:140px;padding:9px;background:#6b5a8e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">📋 Alles kopieren</button>
+          <button onclick="_copyStoredText('${_copyId}','✓ Komplette Analyse kopiert')" style="flex:1;min-width:140px;padding:9px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">📋 Alles kopieren</button>
           <button onclick="document.getElementById('chat-analyse-${leadId}').innerHTML=''" style="padding:9px 14px;background:var(--bc);color:var(--tm);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">Schließen</button>
         </div>
       `;
@@ -34798,7 +34798,7 @@ function renderStartTag(body) {
       <button onclick="bmChatKopieren()" title="Ganzen Trainings-Chat kopieren" style="flex:0 0 auto;padding:6px 9px;background:var(--bc);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;font-size:13px">📋</button>
       <div style="flex:1;min-width:0"></div>
       <div id="dt-timer-display" style="font-size:14px;font-weight:700;color:#b8490a;font-variant-numeric:tabular-nums;flex-shrink:0">30:00</div>
-      <button id="dt-timer-btn" onclick="toggleTrainingTimer()" style="padding:6px 10px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:700;flex-shrink:0;white-space:nowrap">▶ Start</button>
+      <button id="dt-timer-btn" onclick="toggleTrainingTimer()" style="padding:6px 10px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:700;flex-shrink:0;white-space:nowrap">▶ Start</button>
       <button onclick="bmBlockFertig()" style="padding:6px 9px;background:rgba(46,125,94,.14);color:#2e7d5e;border:1px solid rgba(46,125,94,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:700;flex-shrink:0" title="Thema früher durch: Block beenden und direkt Feedback">✓ Block fertig</button>
       <button onclick="finishBrandMasteryTraining()" style="padding:6px 9px;background:linear-gradient(135deg,#8b6432,#a67b45);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:700;flex-shrink:0" title="Training abschließen mit Feedback und Archiv-Speicherung">✓ Feedback</button>
       <button onclick="showTrainingArchive()" style="padding:6px 8px;background:rgba(139,100,50,.1);color:var(--g);border:1px solid var(--bd);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;flex-shrink:0" title="Trainings-Archiv">📚</button>
@@ -34810,7 +34810,7 @@ function renderStartTag(body) {
       <button onclick="clearChatFile()" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--ts)">✕</button>
     </div>
     <div style="padding:7px 10px;border-top:1px solid var(--bd);display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--bc)">
-      <button onclick="triggerDailyTraining()" style="flex-shrink:0;white-space:nowrap;padding:7px 13px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">🔥 Tages-Training <span style=font-size:9px;opacity:.8>Lv${dt.types.tages.level} · ${dt.types.tages.xp} XP</span></button>
+      <button onclick="triggerDailyTraining()" style="flex-shrink:0;white-space:nowrap;padding:7px 13px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">🔥 Tages-Training <span style=font-size:9px;opacity:.8>Lv${dt.types.tages.level} · ${dt.types.tages.xp} XP</span></button>
       <button onclick="triggerStartTagThema('positionierung')" style="flex-shrink:0;white-space:nowrap;padding:7px 10px;background:rgba(184,73,10,.1);border:1.5px solid rgba(184,73,10,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;color:#b8490a">🎯 Positionierung <span style=font-size:9px>Lv${dt.types.positionierung.level}</span></button>
       <button onclick="triggerStartTagThema('sprechuebung')" style="flex-shrink:0;white-space:nowrap;padding:7px 10px;background:rgba(184,73,10,.1);border:1.5px solid rgba(184,73,10,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;color:#b8490a">🗣️ Pitch <span style=font-size:9px>Lv${dt.types.sprechuebung.level}</span></button>
       <button onclick="triggerStartTagThema('einwand')" style="flex-shrink:0;white-space:nowrap;padding:7px 10px;background:rgba(184,73,10,.1);border:1.5px solid rgba(184,73,10,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;color:#b8490a">💎 Einwände <span style=font-size:9px>Lv${dt.types.einwand.level}</span></button>
@@ -34818,7 +34818,7 @@ function renderStartTag(body) {
       <button onclick="triggerStartTagThema('followup')" style="flex-shrink:0;white-space:nowrap;padding:7px 10px;background:rgba(46,125,94,.1);border:1.5px solid rgba(46,125,94,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;color:#2e7d5e">🔄 Follow-up <span style=font-size:9px>Lv${dt.types.followup.level}</span></button>
       <button onclick="triggerStartTagThema('abschluss')" style="flex-shrink:0;white-space:nowrap;padding:7px 10px;background:rgba(46,125,94,.1);border:1.5px solid rgba(46,125,94,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;color:#2e7d5e">🎯 Abschluss <span style=font-size:9px>Lv${dt.types.abschluss.level}</span></button>
       <button onclick="triggerStartTagThema('preis')" style="flex-shrink:0;white-space:nowrap;padding:7px 10px;background:rgba(46,125,94,.1);border:1.5px solid rgba(46,125,94,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;color:#2e7d5e">💸 Preis <span style=font-size:9px>Lv${dt.types.preis.level}</span></button>
-      <button onclick="triggerWochentest()" style="flex-shrink:0;white-space:nowrap;padding:7px 10px;background:${new Date().getDay()===5?'linear-gradient(135deg,#6b5a8e,#8b7aae)':'rgba(107,90,142,.1)'};border:1.5px solid rgba(107,90,142,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;color:${new Date().getDay()===5?'#fff':'#6b5a8e'}">📝 Wochentest <span style=font-size:9px>Lv${dt.types.wochentest.level}</span></button>
+      <button onclick="triggerWochentest()" style="flex-shrink:0;white-space:nowrap;padding:7px 10px;background:${new Date().getDay()===5?'var(--m-tone-espresso)':'rgba(107,90,142,.1)'};border:1.5px solid rgba(107,90,142,.3);border-radius:8px;cursor:pointer;font-size:10.5px;font-weight:600;color:${new Date().getDay()===5?'#fff':'#6b5a8e'}">📝 Wochentest <span style=font-size:9px>Lv${dt.types.wochentest.level}</span></button>
     </div>
     <div class="chat-input-wrap">
       <div class="chat-input-row">
@@ -35612,7 +35612,7 @@ function bmWocheHTML(){
       if(on) anz++;
       return '<div style="flex:1;text-align:center">'
         + '<div style="width:26px;height:26px;margin:0 auto;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;'
-        +   (on?'background:#2e7d5e;color:#fff;':'background:rgba(168,126,61,.10);color:var(--tm);')
+        +   (on?'background:var(--m-tone-sage);color:#fff;':'background:rgba(168,126,61,.10);color:var(--tm);')
         +   (ist?'box-shadow:0 0 0 2px var(--g);':'')
         + '">'+(on?'\u2713':'')+'</div>'
         + '<div style="font-size:9px;color:var(--tm);margin-top:3px">'+kurz[i]+'</div>'
@@ -36519,13 +36519,13 @@ function toggleTrainingTimer() {
         if (window._trainStartTs && (Date.now() - window._trainStartTs) < 120000) {
           _trainSeconds = BM_BLOCK_MIN*60;
           btn.innerHTML = '▶ Start';
-          btn.style.background = 'linear-gradient(135deg,#2e7d5e,#3a9270)';
+          btn.style.background = 'var(--m-tone-sage)';
           if (display) display.textContent = ('0'+BM_BLOCK_MIN).slice(-2)+':00';
           if (typeof showToast==='function') showToast('Das war ein Fehlstart, der zählt nicht. Starte neu, wenn du bereit bist.');
           return;
         }
         btn.innerHTML = '✅ Fertig';
-        btn.style.background = 'linear-gradient(135deg,#2e7d5e,#4a9a6e)';
+        btn.style.background = 'var(--m-tone-sage)';
         display.textContent = '00:00';
         let dt = getDenktrainData();
         dt.xp += 10;
@@ -36566,13 +36566,13 @@ function toggleTrainingTimer() {
         if (window._trainStartTs && (Date.now() - window._trainStartTs) < 120000) {
           _trainSeconds = BM_BLOCK_MIN*60;
           btn.innerHTML = '▶ Start';
-          btn.style.background = 'linear-gradient(135deg,#2e7d5e,#3a9270)';
+          btn.style.background = 'var(--m-tone-sage)';
           if (display) display.textContent = ('0'+BM_BLOCK_MIN).slice(-2)+':00';
           if (typeof showToast==='function') showToast('Das war ein Fehlstart, der zählt nicht. Starte neu, wenn du bereit bist.');
           return;
         }
         btn.innerHTML = '✅ Fertig';
-        btn.style.background = 'linear-gradient(135deg,#2e7d5e,#4a9a6e)';
+        btn.style.background = 'var(--m-tone-sage)';
         display.textContent = '00:00';
         let dt = getDenktrainData();
         dt.xp += 10;
@@ -36678,7 +36678,7 @@ function renderChatMod(body, id) {
         +'<div><b>'+_tl+'</b> bei <b>'+_safeName+'</b></div>'
         +(_linkBtn?'<div style="margin-top:3px">'+_linkBtn+'</div>':'')
         +'</div>'
-        +'<button onclick="confirmActiveWarmTask()" style="padding:10px 14px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap">✓ Erledigt + tracken</button>'
+        +'<button onclick="confirmActiveWarmTask()" style="padding:10px 14px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap">✓ Erledigt + tracken</button>'
         +'<button onclick="cancelActiveWarmTask()" title="Aufgabe verwerfen ohne Tracking" style="padding:10px 11px;background:rgba(184,73,10,.1);color:#b8490a;border:1.5px solid rgba(184,73,10,.25);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">✕</button>'
         +'</div>';
     }
@@ -36690,7 +36690,7 @@ function renderChatMod(body, id) {
         <div style="font-size:16px;font-weight:700;color:${dmsHeute>=dmZiel?'#2e7d5e':'#b8490a'}">${dmsHeute}/<span style="font-size:12px">${dmZiel}</span></div>
         <div style="font-size:8px;letter-spacing:1px;color:var(--tm);font-weight:700">DMS HEUTE</div>
       </div>
-      <button onclick="trackDM('+1','dm')" style="flex:1;padding:8px;background:${dmsHeute>=dmZiel?'linear-gradient(135deg,#2e7d5e,#4a9a6e)':'var(--gg)'};color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px">💬 +1</button>
+      <button onclick="trackDM('+1','dm')" style="flex:1;padding:8px;background:${dmsHeute>=dmZiel?'var(--m-tone-sage)':'var(--gg)'};color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px">💬 +1</button>
       <button onclick="trackDM('+1','fu')" style="flex:1;padding:8px;background:linear-gradient(135deg,#8b6432,#a87a3e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px">🔄 +1 FU</button>
       <button onclick="trackDM('-1','dm')" style="width:50px;padding:8px;background:rgba(184,73,10,.15);color:#b8490a;border:1.5px solid rgba(184,73,10,.3);border-radius:8px;cursor:pointer;font-weight:600;font-size:12px">↩️ -1</button>
     </div>`;
@@ -36718,7 +36718,7 @@ function renderChatMod(body, id) {
         <span>🗂️ Archiv</span>
         <span style="color:var(--tm);font-size:14px">›</span>
       </button>
-      <button onclick="endDayArchive()" style="flex:1.4;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 11px;background:linear-gradient(135deg,#2e7d5e,#3a9270);border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;color:#fff">
+      <button onclick="endDayArchive()" style="flex:1.4;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 11px;background:var(--m-tone-sage);border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;color:#fff">
         ✅ Tag sichern
       </button>
     </div>`;
@@ -36873,7 +36873,7 @@ function renderChatMod(body, id) {
           dmCounterHtml += '</div>';
         } else if (isFu2Due) {
           dmCounterHtml += '<div style="display:flex;gap:4px">';
-          dmCounterHtml += '<button onclick="confirmSentWithText(\''+esc+'\',\'fu2\')" style="flex:1;padding:6px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:600">✅ 2. Follow-up gesendet</button>';
+          dmCounterHtml += '<button onclick="confirmSentWithText(\''+esc+'\',\'fu2\')" style="flex:1;padding:6px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:600">✅ 2. Follow-up gesendet</button>';
           dmCounterHtml += '<button onclick="markWarmPipeline(\''+esc+'\',\'replied\')" style="padding:6px 8px;background:rgba(46,125,94,.1);color:#2e7d5e;border:none;border-radius:6px;cursor:pointer;font-size:10px">💬</button>';
           dmCounterHtml += '</div>';
         } else if (isWaiting) {
@@ -36937,7 +36937,7 @@ function renderChatMod(body, id) {
           <span style="font-size:10px;color:var(--tm)">Heute schon versendet:</span>
           <span style="font-size:14px;font-weight:700;color:var(--tc)">${_emailsToday}</span>
           <span style="font-size:10px;color:var(--tm)">/ 5</span>
-          <button onclick="trackEmailSent()" style="margin-left:auto;padding:6px 11px;background:#2e7d5e;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700">+1 versendet</button>
+          <button onclick="trackEmailSent()" style="margin-left:auto;padding:6px 11px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700">+1 versendet</button>
         </div>
       </div>
     </div>`;
@@ -36959,8 +36959,8 @@ function renderChatMod(body, id) {
       <button onclick="clearChatFile()" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--ts)">✕</button>
     </div>
     <div class="akq-action-bar" style="padding:10px 14px;border-top:1px solid var(--bd);display:flex;gap:6px;flex-wrap:wrap;background:var(--bc)">
-      <button onclick="chatSend('${id}','Schreib mir eine direkte DM für diesen Kontakt. Modus: Direkt-DM.')" style="padding:8px 12px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">✉️ Direkt-DM</button>
-      ${id === 'akquise-turbo' ? `<button onclick="openDmChatAnalyzer()" style="padding:8px 12px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">📝 Chat analysieren</button>` : ''}
+      <button onclick="chatSend('${id}','Schreib mir eine direkte DM für diesen Kontakt. Modus: Direkt-DM.')" style="padding:8px 12px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">✉️ Direkt-DM</button>
+      ${id === 'akquise-turbo' ? `<button onclick="openDmChatAnalyzer()" style="padding:8px 12px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">📝 Chat analysieren</button>` : ''}
       <button onclick="openMod('video-review')" style="padding:8px 12px;background:linear-gradient(135deg,#8b6432,#c9a96e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">🎬 Video analysieren</button>
       <button onclick="startDailyReview('${id}')" style="padding:8px 12px;background:var(--gg);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">📊 Tagesabschluss</button>
       <button onclick="analyzeLinks('${id}')" style="padding:8px 12px;background:var(--bd);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">🔗 Links analysieren</button>
@@ -36970,7 +36970,7 @@ function renderChatMod(body, id) {
         const savedToday = lsGet('mindea-saved-'+TD, []);
         const badge = savedToday.length > 0 ? '<span onclick="showSavedTodayList()" style="margin-left:6px;padding:2px 7px;background:rgba(46,125,94,.2);color:#2e7d5e;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer">'+savedToday.length+' heute</span>' : '';
         const label = savedNow ? '✓ Gespeichert' : '📥 Kontakt speichern';
-        const bg = savedNow ? 'linear-gradient(135deg,#4a9a6e,#5fb585)' : 'linear-gradient(135deg,#2e7d5e,#4a9a6e)';
+        const bg = savedNow ? 'linear-gradient(135deg,#4a9a6e,#5fb585)' : 'var(--m-tone-sage)';
         return '<button onclick="saveContactFromChat(\''+id+'\')" style="padding:8px 12px;background:'+bg+';color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;display:flex;align-items:center">'+label+badge+'</button>';
       })()}
     </div>
@@ -37799,7 +37799,7 @@ Wenn Ivana heute trainiert hat, gib ihr abends konkretes Feedback zu ihren Ergeb
           card.innerHTML = '<div style="flex:1;min-width:140px;font-size:11.5px;color:var(--tc);line-height:1.45"><b>' + contactName + '</b>' + (exist ? ' ist schon in deinen Kontakten' : ' erkannt (' + window._pendingWarmSaves[pendId].paketLabel + ')') + '</div>'
             + (exist
               ? '<button onclick="openLeadModal(' + exist.id + ')" style="padding:7px 12px;background:var(--gg);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">👤 Öffnen</button>'
-              : '<button onclick="confirmWarmSave(\'' + pendId + '\')" style="padding:7px 12px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">💾 Als Kontakt speichern</button>')
+              : '<button onclick="confirmWarmSave(\'' + pendId + '\')" style="padding:7px 12px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">💾 Als Kontakt speichern</button>')
             + '<button onclick="document.getElementById(\'card-' + pendId + '\').remove()" style="padding:7px 10px;background:none;border:1px solid var(--bd);border-radius:8px;cursor:pointer;font-size:11px;color:var(--tm)">✕</button>';
           ca2.appendChild(card);
           ca2.scrollTop = ca2.scrollHeight;
@@ -38006,8 +38006,8 @@ function renderLeadItem(l) {
   let fuBadge = '';
   if (l.contactDate && !['gebucht','kein-fit'].includes(l.status)) {
     const daysSince = Math.floor((new Date() - new Date(l.contactDate)) / 864e5);
-    if (daysSince >= 14 && !l.fu2Done) fuBadge = '<span style="background:#b8490a;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;margin-left:6px">FU2</span>';
-    else if (daysSince >= 7 && !l.fu1Done) fuBadge = '<span style="background:#d4641a;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;margin-left:6px">FU1</span>';
+    if (daysSince >= 14 && !l.fu2Done) fuBadge = '<span style="background:var(--m-tone-terra);color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;margin-left:6px">FU2</span>';
+    else if (daysSince >= 7 && !l.fu1Done) fuBadge = '<span style="background:var(--m-tone-terra);color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;margin-left:6px">FU1</span>';
   }
   const safeName = l.name.replace(/</g,'&lt;');
   const curPkg = l.paket||'bp';
@@ -38031,7 +38031,7 @@ function renderLeadItem(l) {
       <button onclick="genFollowUp(${l.id},'fu2','${safeName}')" class="copy-btn" style="flex:1;color:#b8490a;border-color:#b8490a">📩 FU2</button>
     </div>
     <div style="margin-top:6px">
-      <button onclick="genKundenKonzept(${l.id},'${safeName}')" style="width:100%;padding:9px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">🎬 Konzept für Kundin erstellen</button>
+      <button onclick="genKundenKonzept(${l.id},'${safeName}')" style="width:100%;padding:9px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">🎬 Konzept für Kundin erstellen</button>
     </div>
     <div id="dm-${l.id}" style="margin-top:8px"></div>
   </div>`;
@@ -38120,7 +38120,7 @@ KEIN Markdown. Keine Sterne. Keine Rauten. Keine Listen. Keine Tabellen. Nur sch
     btnRow.style.cssText = 'display:flex;gap:6px;margin-top:10px';
     
     const cpBtn = document.createElement('button');
-    cpBtn.style.cssText = 'flex:1;padding:8px;background:#6b5a8e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700';
+    cpBtn.style.cssText = 'flex:1;padding:8px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700';
     cpBtn.textContent = '📋 Kopieren & senden';
     cpBtn.onclick = async () => { 
       try { await navigator.clipboard.writeText(r); showToast('📋 Konzept kopiert! Jetzt in Instagram einfügen.'); } 
@@ -38208,7 +38208,7 @@ function renderProjekte(body) {
   _row.style.cssText='display:flex;gap:7px;margin-top:7px';
   var _bt=document.createElement('button');
   _bt.textContent='+ Testkundin';
-  _bt.style.cssText='flex:1;padding:11px;border-radius:11px;border:none;background:linear-gradient(135deg,#4a7a96,#3a5f75);color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit';
+  _bt.style.cssText='flex:1;padding:11px;border-radius:11px;border:none;background:var(--m-tone-taupe);color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit';
   _bt.addEventListener('click', function(){ addProj('test'); });
   var _bk=document.createElement('button');
   _bk.textContent='+ Zahlende Kundin';
@@ -38428,7 +38428,7 @@ function skrLeisteHTML(mod){
       +   '<b style="color:var(--tc)">'+String(ap.name||'').replace(/</g,'&lt;')+'</b>'
       +   (sk?(' \u00b7 Skript vom '+String(sk.stand||'').slice(8)+'.'+String(sk.stand||'').slice(5,7)+'. liegt bereit'):' \u00b7 noch kein Skript gesichert')
       + '</div>'
-      + '<button onclick="skrAusChat(\''+mod+'\')" style="flex:0 0 auto;padding:8px 11px;border:none;border-radius:9px;background:#4a7a96;color:#fff;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit">Als Skript sichern</button>'
+      + '<button onclick="skrAusChat(\''+mod+'\')" style="flex:0 0 auto;padding:8px 11px;border:none;border-radius:9px;background:var(--m-tone-taupe);color:#fff;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit">Als Skript sichern</button>'
       + (sk?'<button onclick="skrZeigen()" style="flex:0 0 auto;padding:8px 10px;border:1px solid var(--bd);border-radius:9px;background:none;color:var(--tm);font-size:10.5px;cursor:pointer;font-family:inherit">Ansehen</button>':'')
       + '</div>';
   }catch(e){ return ''; }
@@ -38598,7 +38598,7 @@ function fdKarte(id, d){
     +'<div style="font-size:9px;letter-spacing:1.6px;color:#b8490a;font-weight:700;text-transform:uppercase;margin-bottom:6px">Film-Direktor'+(letzte?(' \u00b7 Version '+letzte.version+(letzte.score!==null?(' \u00b7 '+letzte.score+'/10'):'')):'')+'</div>'
     +'<div style="font-size:11px;color:var(--tm);line-height:1.5;margin-bottom:8px">Fertigen Film hochladen. Er wird in Bilder mit Zeitcode zerlegt, der Direktor pr\u00fcft ihn nach dem Paket, ohne Ton, aber mit dem Voice-over-Text aus dem Konzept. Jede Version wird mit der vorigen verglichen.</div>'
     +'<div style="display:flex;gap:6px;margin-bottom:8px">'+['bp','bs','bi'].map(function(k){ var an=(String(d.filmpaket||'')===k); return '<button onclick="(function(){ var x=fbProj('+id+'); x.filmpaket=\''+k+'\'; lsSet(fbProjKey('+id+'), x); renderMod(\'projekte\'); })()" style="flex:1;padding:7px 4px;border:1px solid '+(an?'#b8490a':'var(--bd)')+';border-radius:9px;background:'+(an?'rgba(184,73,10,.12)':'none')+';color:'+(an?'#b8490a':'var(--tm)')+';font-size:10.5px;font-weight:'+(an?'700':'500')+';font-family:inherit;cursor:pointer">'+FD_PAKETE[k].name+'</button>'; }).join('')+'</div>'
-    +'<label style="display:block;text-align:center;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;font-size:12px;font-weight:700;cursor:pointer">'+(letzte?'Neue Version pr\u00fcfen':'Film pr\u00fcfen')+'<input type="file" accept="video/*" onchange="fdPruefen('+id+', this)" style="display:none"></label>'
+    +'<label style="display:block;text-align:center;padding:11px;border:none;border-radius:10px;background:var(--m-tone-terra);color:#fff;font-size:12px;font-weight:700;cursor:pointer">'+(letzte?'Neue Version pr\u00fcfen':'Film pr\u00fcfen')+'<input type="file" accept="video/*" onchange="fdPruefen('+id+', this)" style="display:none"></label>'
     +'<div id="fd-hin-'+id+'" style="display:none;font-size:11px;color:var(--tm);margin-top:6px"></div>';
   if(letzte){
     h+='<div onclick="window._fdOffen=(window._fdOffen==='+id+'?null:'+id+'); renderMod(\'projekte\');" style="margin-top:10px;font-size:11px;color:var(--tc);cursor:pointer;text-decoration:underline">'+(offen?'Analyse zuklappen':'Letzte Analyse lesen')+'</div>';
@@ -39502,7 +39502,7 @@ function bfAlleCardHTML(){
       + '<textarea id="bf-alle-text" rows="8" placeholder="1. Was machst du und fuer wen?\n2. Was war der Moment, in dem du wusstest, das ist mein Weg?\n3. Beschreibe eine Kundin vorher und nachher..." class="field-input" style="height:150px;resize:vertical;margin-top:9px"></textarea>'
       + '<div style="display:flex;gap:6px;margin-top:8px">'
       +   '<button onclick="bfAlleAuf()" style="flex:1;padding:10px;border:1.5px solid var(--bd);border-radius:9px;background:none;color:var(--tm);font-size:11.5px;cursor:pointer;font-family:inherit">Abbrechen</button>'
-      +   '<button onclick="bfAlleSortieren()" style="flex:1.6;padding:10px;border:none;border-radius:9px;background:#4a7a96;color:#fff;font-weight:700;font-size:11.5px;cursor:pointer;font-family:inherit">Sortieren und speichern</button>'
+      +   '<button onclick="bfAlleSortieren()" style="flex:1.6;padding:10px;border:none;border-radius:9px;background:var(--m-tone-taupe);color:#fff;font-weight:700;font-size:11.5px;cursor:pointer;font-family:inherit">Sortieren und speichern</button>'
       + '</div></div>';
   }catch(e){ return ''; }
 }
@@ -42670,7 +42670,7 @@ function renderBriefingFlow(body) {
     +'<input type="hidden" id="br-pkg" value="bp">';
   const genBtn = document.createElement('button');
   genBtn.textContent = '🚀 Komplett generieren';
-  genBtn.style.cssText = 'width:100%;padding:13px;border-radius:var(--cr);border:none;background:linear-gradient(135deg,#4a7a96,#5a90b0);color:#fff;font-weight:700;cursor:pointer;font-size:13px;margin-top:4px';
+  genBtn.style.cssText = 'width:100%;padding:13px;border-radius:var(--cr);border:none;background:var(--m-tone-taupe);color:#fff;font-weight:700;cursor:pointer;font-size:13px;margin-top:4px';
   genBtn.onclick = genFromBriefing;
   form.appendChild(genBtn);
   body.appendChild(form);
@@ -43975,7 +43975,7 @@ function openDmChatAnalyzer() {
   html += '</div>';
   
   // Submit Button
-  html += '<button onclick="submitDmChatAnalysis()" style="width:100%;padding:13px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;margin-bottom:8px">🧠 Luna soll analysieren (API Call)</button>';
+  html += '<button onclick="submitDmChatAnalysis()" style="width:100%;padding:13px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px;margin-bottom:8px">🧠 Luna soll analysieren (API Call)</button>';
   
   // Cancel
   html += '<button onclick="document.getElementById(\'dm-chat-analyzer-modal\').remove()" style="width:100%;padding:10px;background:var(--bi);color:var(--tm);border:1px solid var(--bd);border-radius:10px;cursor:pointer;font-size:11px">Abbrechen</button>';
@@ -44829,9 +44829,9 @@ function renderSalesEnhanced(body) {
         +'<div style="display:flex;align-items:center;gap:8px">'
         +'<div onclick="openLeadModal('+l.id+')" style="flex:1;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:rgba(139,100,50,.15);padding:4px 6px;margin:-4px -6px;border-radius:6px"><div style="font-size:12px;font-weight:600;color:'+(isUrgent?'#b8490a':'var(--tc)')+'"><span data-mask="name">'+(l.name||'Unbenannt')+'</span> <span style="font-size:9px;color:var(--tm);font-weight:500">›</span></div>'
         +'<div style="font-size:10px;color:'+(isUrgent?'#b8490a':'var(--tm)')+'"><span data-mask="name">'+(l.beruf||'')+'</span>'+(l.beruf?' · ':'')+statusLabel+'</div></div>'
-        +'<button onclick="event.stopPropagation();markFuDone('+l.id+',\''+fuTypeId+'\')" style="background:#2e7d5e;color:#fff;border:none;border-radius:7px;padding:5px 8px;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation">✓</button>'
+        +'<button onclick="event.stopPropagation();markFuDone('+l.id+',\''+fuTypeId+'\')" style="background:var(--m-tone-sage);color:#fff;border:none;border-radius:7px;padding:5px 8px;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation">✓</button>'
         +'<button onclick="event.stopPropagation();genFuInline('+l.id+',\''+((l.name||'').replace(/'/g,"\\'"))+'\')" style="background:'+(isUrgent?'linear-gradient(135deg,#b8490a,#c0392b)':'var(--gg)')+';color:#fff;border:none;border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation">'+(isUrgent?'⚠️ ':'')+stepLabel+'</button>'
-        +(instaLink?'<a href="'+instaLink+'" target="_blank" onclick="event.stopPropagation()" style="padding:5px 8px;background:linear-gradient(135deg,#E1306C,#C13584);color:#fff;border-radius:7px;font-size:9px;font-weight:700;text-decoration:none;touch-action:manipulation">📸</a>':'')
+        +(instaLink?'<a href="'+instaLink+'" target="_blank" onclick="event.stopPropagation()" style="padding:5px 8px;background:var(--m-tone-caramel);color:#fff;border-radius:7px;font-size:9px;font-weight:700;text-decoration:none;touch-action:manipulation">📸</a>':'')
         +(l.link && !instaLink?'<a href="'+(l.link.startsWith('http')?l.link:'https://'+l.link)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:14px;text-decoration:none;touch-action:manipulation">🔗</a>':'')
         +'</div>'
         +'<div id="fu-inline-'+l.id+'" style="margin-top:6px"></div>'
@@ -44977,7 +44977,7 @@ function renderSalesEnhanced(body) {
     if (_dupGroups.length > 0) {
       const _dupBtn = document.createElement('button');
       _dupBtn.setAttribute('onclick', 'openDuplicateModal()');
-      _dupBtn.style.cssText = 'padding:5px 10px;background:linear-gradient(135deg,#b8490a,#d4630f);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:.5px;flex-shrink:0';
+      _dupBtn.style.cssText = 'padding:5px 10px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:.5px;flex-shrink:0';
       const totalDupes = _dupGroups.reduce((s,g)=>s+(g.leads.length-1),0);
       _dupBtn.textContent = '🔍 '+_dupGroups.length+' Duplikat'+(_dupGroups.length>1?'e':'')+' prüfen';
       _dupBtn.title = totalDupes+' überflüssige Einträge';
@@ -45067,8 +45067,8 @@ function renderSalesEnhanced(body) {
       // Urgency badge
       const cDays = lead.contactDate ? Math.floor((new Date() - new Date(lead.contactDate)) / 864e5) : 0;
       let urgBadge = '';
-      if (lead.dmResponse) urgBadge = '<span style="font-size:8px;font-weight:700;color:#fff;background:#2e7d5e;padding:2px 6px;border-radius:4px">💬 GEANTWORTET</span>';
-      else if (!lead.dm1Done && cDays >= 2) urgBadge = '<span style="font-size:8px;font-weight:700;color:#fff;background:#b8490a;padding:2px 6px;border-radius:4px">✉️ DM FÄLLIG</span>';
+      if (lead.dmResponse) urgBadge = '<span style="font-size:8px;font-weight:700;color:#fff;background:var(--m-tone-sage);padding:2px 6px;border-radius:4px">💬 GEANTWORTET</span>';
+      else if (!lead.dm1Done && cDays >= 2) urgBadge = '<span style="font-size:8px;font-weight:700;color:#fff;background:var(--m-tone-terra);padding:2px 6px;border-radius:4px">✉️ DM FÄLLIG</span>';
       else if (lead.dm1Done && !lead.fu1Done && cDays >= 3) urgBadge = '<span style="font-size:8px;font-weight:700;color:#fff;background:#d4630f;padding:2px 6px;border-radius:4px">1.FU FÄLLIG</span>';
       else if (lead.fu1Done && !lead.fu2Done && cDays >= 5) urgBadge = '<span style="font-size:8px;font-weight:700;color:#fff;background:#8b6432;padding:2px 6px;border-radius:4px">2.FU FÄLLIG</span>';
       else if (!lead.dm1Done && cDays < 2) urgBadge = '<span style="font-size:8px;font-weight:600;color:var(--tm);background:var(--bi);padding:2px 6px;border-radius:4px;border:1px solid var(--bd)">⏳ Aufwärmen</span>';
@@ -45131,8 +45131,8 @@ function renderSalesEnhanced(body) {
         +'<button onclick="archiveLead('+lead.id+')" class="copy-btn" style="flex:1;color:var(--tm)">📭 Keine Antwort (Archiv)</button>'
         +'<button onclick="deleteSalesLead('+lead.id+')" class="copy-btn" style="color:#c0392b">✕</button>'
         +'</div>'
-        +(linkUrl && linkUrl.includes('instagram') ? '<a href="'+(linkUrl.startsWith('http')?linkUrl:'https://'+linkUrl)+'" target="_blank" style="display:block;width:100%;margin-top:6px;padding:9px;background:linear-gradient(135deg,#E1306C,#C13584);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;text-decoration:none">📸 Instagram Profil öffnen</a>' : '')
-        +'<button onclick="genKundenKonzept('+lead.id+',\''+(lead.name||'').replace(/'/g,"\\'")+'\')" style="width:100%;margin-top:6px;padding:9px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">🎬 Konzept für Kundin erstellen</button>'
+        +(linkUrl && linkUrl.includes('instagram') ? '<a href="'+(linkUrl.startsWith('http')?linkUrl:'https://'+linkUrl)+'" target="_blank" style="display:block;width:100%;margin-top:6px;padding:9px;background:var(--m-tone-caramel);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;text-decoration:none">📸 Instagram Profil öffnen</a>' : '')
+        +'<button onclick="genKundenKonzept('+lead.id+',\''+(lead.name||'').replace(/'/g,"\\'")+'\')" style="width:100%;margin-top:6px;padding:9px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700">🎬 Konzept für Kundin erstellen</button>'
         +'<div id="sales-dm-'+lead.id+'" style="margin-top:8px"></div>'
         +(lead.status==='gebucht'?'<div style="margin-top:10px">'+renderTimeTracker(lead.id, lead.name||'Kunde', (lead.bp?398:0)+(lead.bs?598:0)+(lead.bi?898:0))+'</div><div style="margin-top:10px">'+renderOnboardingCard(lead.id, lead.name||'Kunde')+'</div>':'')
         +'</div>';
@@ -45289,8 +45289,8 @@ Schreibe NUR den DM-Text. Nichts davor, nichts danach. Keine Überschrift, keine
         +'<div style="font-size:8px;font-weight:700;color:#b8490a;letter-spacing:1px;margin-bottom:4px">'+fuType.toUpperCase()+' FOLLOW-UP (TAG '+days+')</div>'
         +r
         +'<div style="display:flex;gap:6px;margin-top:8px">'
-        +'<button onclick="copyStored('+idx+')" style="flex:1;padding:7px;background:#b8490a;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700">📋 Kopieren</button>'
-        +(instaLink ? '<a href="'+instaLink+'" target="_blank" style="flex:1;padding:7px;background:linear-gradient(135deg,#E1306C,#C13584);color:#fff;border:none;border-radius:6px;font-size:10px;font-weight:700;text-align:center;text-decoration:none">📸 Profil öffnen</a>' : '')
+        +'<button onclick="copyStored('+idx+')" style="flex:1;padding:7px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700">📋 Kopieren</button>'
+        +(instaLink ? '<a href="'+instaLink+'" target="_blank" style="flex:1;padding:7px;background:var(--m-tone-caramel);color:#fff;border:none;border-radius:6px;font-size:10px;font-weight:700;text-align:center;text-decoration:none">📸 Profil öffnen</a>' : '')
         +'</div></div>';
     }
   } catch(e) {
@@ -46724,7 +46724,7 @@ async function checkForUpdate() {
     if (liveBuild && liveBuild !== APP_BUILD && !document.getElementById('update-banner')) {
       const bar = document.createElement('div');
       bar.id = 'update-banner';
-      bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:10000;background:linear-gradient(135deg,#2e7d5e,#3a9270);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 -4px 20px rgba(0,0,0,.25)';
+      bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:10000;background:var(--m-tone-sage);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 -4px 20px rgba(0,0,0,.25)';
       bar.innerHTML = '<div style="font-size:13px;font-weight:600">Neue Version verfügbar ('+liveBuild.split(' ')[0]+')</div><div style="display:flex;gap:8px;flex-shrink:0"><button onclick="hartNeuLaden()" style="padding:8px 14px;background:#fff;color:#2e7d5e;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer">Aktualisieren</button><button onclick="document.getElementById(\'update-banner\').remove()" style="padding:8px 10px;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer">Später</button></div>';
       document.body.appendChild(bar);
     }
@@ -46987,7 +46987,7 @@ Tage seitdem: ${lastSentDays}`;
     out.innerHTML = `
       <div style="background:rgba(74,122,150,.06);border:1px solid rgba(74,122,150,.3);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--tc);line-height:1.6;white-space:pre-wrap;margin-top:6px">${_escHtml(r)}</div>
       <div style="display:flex;gap:6px;margin-top:6px">
-        <button onclick="_copyStoredText('${_copyId}','✓ Kopiert')" style="flex:1;padding:8px;background:#4a7a96;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600">📋 Kopieren</button>
+        <button onclick="_copyStoredText('${_copyId}','✓ Kopiert')" style="flex:1;padding:8px;background:var(--m-tone-taupe);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600">📋 Kopieren</button>
         <button onclick="genReadCheckMessage(${id})" style="flex:1;padding:8px;background:var(--bc);color:var(--tc);border:1.5px solid var(--bd);border-radius:7px;cursor:pointer;font-size:11px;font-weight:600">↻ Neu</button>
       </div>
     `;
@@ -47447,7 +47447,7 @@ function renderAkquise(body) {
       Lade einen Screenshot deines Instagram-Chats hoch und Luna sagt dir, was du als Nächstes schreiben sollst.
     </div>
     <input type="file" id="dm-screenshot-inp" accept="image/*" onchange="handleDMScreenshot(event)" style="display:none">
-    <button onclick="document.getElementById('dm-screenshot-inp').click()" style="width:100%;padding:10px;background:linear-gradient(135deg,#4a7a96,#5a90b0);color:#fff;border:none;border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:12px">📱 Screenshot hochladen</button>
+    <button onclick="document.getElementById('dm-screenshot-inp').click()" style="width:100%;padding:10px;background:var(--m-tone-taupe);color:#fff;border:none;border-radius:var(--cr);cursor:pointer;font-weight:700;font-size:12px">📱 Screenshot hochladen</button>
     <div id="dm-analysis-result" style="margin-top:10px"></div>
   `;
   body.appendChild(dmCard);
@@ -48376,7 +48376,7 @@ function renderOnboardingCard(leadId, leadName) {
   
   let html = '<div style="font-size:9px;font-weight:700;color:#2e7d5e;letter-spacing:1.5px;margin:10px 0 6px">🎬 KUNDEN-PORTAL: '+leadName+'</div>';
   // Progress bar
-  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="flex:1;height:6px;background:rgba(46,125,94,.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:#2e7d5e;border-radius:3px;transition:width .3s"></div></div><span style="font-size:10px;font-weight:600;color:#2e7d5e">'+done+'/'+total+'</span></div>';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="flex:1;height:6px;background:rgba(46,125,94,.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--m-tone-sage);border-radius:3px;transition:width .3s"></div></div><span style="font-size:10px;font-weight:600;color:#2e7d5e">'+done+'/'+total+'</span></div>';
   
   // Group by phase
   phases.forEach(phase => {
@@ -51176,7 +51176,7 @@ function renderJarvis(body) {
         + '<div style="font-size:12px;color:var(--tc);line-height:1.55">' + s + '</div></div>';
     });
     h += '<div style="display:flex;gap:8px;margin-top:13px">';
-    if (cur.cta) h += '<button onclick="' + cur.cta.js + '" style="flex:1.4;padding:11px;background:linear-gradient(135deg,#2e7d5e,#4a9a6e);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700">' + cur.cta.label + '</button>';
+    if (cur.cta) h += '<button onclick="' + cur.cta.js + '" style="flex:1.4;padding:11px;background:var(--m-tone-sage);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700">' + cur.cta.label + '</button>';
     h += '<button onclick="jarvisDone(\'' + cur.id + '\')" style="flex:1;padding:11px;background:var(--gg);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700">✓ Erledigt</button>';
     h += '<button onclick="jarvisSkip(\'' + cur.id + '\')" style="padding:11px 12px;background:var(--bc);color:var(--tm);border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-size:11px">Später</button>';
     h += '</div>';
@@ -51213,7 +51213,7 @@ function renderJarvis(body) {
       + '<div id="jv-agent-status" style="font-size:9.5px;color:var(--tm)">' + (A.running ? 'Aktiv' : 'Aus') + '</div></div>'
       + '<div style="font-size:11px;color:var(--tm);line-height:1.55;margin-bottom:9px">Jarvis schaut in Intervallen auf deinen geteilten Bildschirm, erkennt Vermeidung (z.B. Code statt offener DMs nach 11 Uhr) und sagt dir ruhig und bestimmt, was zu tun ist. Jeder Check kostet einen Vision-API-Call.</div>'
       + '<div style="display:flex;gap:7px;align-items:center">'
-      + '<button id="jv-agent-btn" onclick="jarvisAgentToggle()" style="flex:1;padding:10px;background:' + (A.running ? '#c0392b' : 'linear-gradient(135deg,#2e7d5e,#4a9a6e)') + ';color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700">' + (A.running ? '⏹ Agent stoppen' : '▶ Agent starten') + '</button>'
+      + '<button id="jv-agent-btn" onclick="jarvisAgentToggle()" style="flex:1;padding:10px;background:' + (A.running ? '#c0392b' : 'var(--m-tone-sage)') + ';color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700">' + (A.running ? '⏹ Agent stoppen' : '▶ Agent starten') + '</button>'
       + '<select id="jv-agent-interval" onchange="window._jvAgent.intervalMin=parseInt(this.value)" style="padding:9px;border:1.5px solid var(--bd);border-radius:9px;background:var(--bc);color:var(--tc);font-size:11px">'
       + '<option value="3"' + (A.intervalMin === 3 ? ' selected' : '') + '>alle 3 Min</option>'
       + '<option value="5"' + (A.intervalMin === 5 || !A.intervalMin ? ' selected' : '') + '>alle 5 Min</option>'
@@ -51538,7 +51538,7 @@ function _jvAgentUI() {
   const A = window._jvAgent;
   if (btn) {
     btn.textContent = A.running ? '⏹ Agent stoppen' : '▶ Agent starten';
-    btn.style.background = A.running ? '#c0392b' : 'linear-gradient(135deg,#2e7d5e,#4a9a6e)';
+    btn.style.background = A.running ? '#c0392b' : 'var(--m-tone-sage)';
   }
   if (st) st.textContent = A.running ? 'Aktiv · prüft alle ' + A.intervalMin + ' Min' + (A.lastCheck ? ' · zuletzt ' + A.lastCheck + ' Uhr' : '') : 'Aus';
 }
@@ -51979,7 +51979,7 @@ function renderPeriodReflexion(body, period) {
   h += '</div></div>';
   h += '<div style="font-size:9px;letter-spacing:1.5px;color:#6b5a8e;font-weight:700;margin-bottom:8px">✍️ EHRLICHE ANTWORTEN</div>';
   fragen.forEach((q, i) => { const qid = 'q'+(i+1); h += '<div style="margin-bottom:12px"><div style="font-size:12px;color:var(--tc);font-weight:600;margin-bottom:5px;line-height:1.4">'+q+'</div><textarea id="prf-'+qid+'" rows="2" style="width:100%;padding:10px;border-radius:9px;border:1.5px solid var(--bd);background:var(--bi);color:var(--tc);font-size:12px;box-sizing:border-box;resize:vertical;font-family:inherit">'+((ans[qid]||'').replace(/</g,'&lt;'))+'</textarea></div>'; });
-  h += '<button onclick="savePeriodReflexion(\''+period+'\',\''+keyId+'\')" style="width:100%;padding:13px;border-radius:11px;border:none;background:#6b5a8e;color:#fff;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px">Reflexion speichern</button>';
+  h += '<button onclick="savePeriodReflexion(\''+period+'\',\''+keyId+'\')" style="width:100%;padding:13px;border-radius:11px;border:none;background:var(--m-tone-espresso);color:#fff;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px">Reflexion speichern</button>';
   wrap.innerHTML = h;
   body.appendChild(wrap);
 }
@@ -52118,7 +52118,7 @@ function renderWochenreflexion(body) {
 
   // Buttons
   html += '<div style="display:flex;gap:8px;margin-bottom:18px">';
-  html += '<button onclick="saveWochenreflexion(\''+wkKey+'\')" style="flex:1;padding:13px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:700;font-size:13px">💾 Reflexion speichern</button>';
+  html += '<button onclick="saveWochenreflexion(\''+wkKey+'\')" style="flex:1;padding:13px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:700;font-size:13px">💾 Reflexion speichern</button>';
   html += '<button onclick="exportWochenreflexionMd(\''+wkKey+'\')" style="padding:13px 16px;background:var(--bc);color:var(--tc);border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-weight:600;font-size:12px" title="Als Markdown-Text in Zwischenablage">📋 Als Text</button>';
   html += '</div>';
 
@@ -52415,7 +52415,7 @@ function renderTagesreflexion(body) {
 
   // Buttons
   html += '<div style="display:flex;gap:8px;margin-bottom:18px">';
-  html += '<button onclick="saveTagesreflexion(\''+dateKey+'\')" style="flex:1;padding:13px;background:linear-gradient(135deg,#6b5a8e,#8b7aae);color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:700;font-size:13px">💾 Tagesreflexion speichern</button>';
+  html += '<button onclick="saveTagesreflexion(\''+dateKey+'\')" style="flex:1;padding:13px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:700;font-size:13px">💾 Tagesreflexion speichern</button>';
   html += '<button onclick="exportTagesreflexionMd(\''+dateKey+'\')" style="padding:13px 16px;background:var(--bc);color:var(--tc);border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-weight:600;font-size:12px" title="Als Markdown-Text in Zwischenablage">📋 Als Text</button>';
   html += '</div><div style="margin-top:10px">';
   html += '<button onclick="gelerntMonatOeffnen()" style="width:100%;padding:12px;background:rgba(46,125,94,.08);color:#2e7d5e;border:1.5px solid rgba(46,125,94,.3);border-radius:9px;cursor:pointer;font-weight:700;font-size:12.5px">📚 Was ich diesen Monat gelernt habe</button>';
@@ -52624,7 +52624,7 @@ function buildStaleLeadBanner() {
 
   let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
     <div style="font-size:10px;letter-spacing:2px;font-weight:700;color:#b8490a">🔥 KALT GEWORDEN · ${stale.length} LEAD${stale.length>1?'S':''}</div>
-    <button onclick="openMod('sales-enhanced')" style="padding:6px 11px;background:#b8490a;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10.5px;font-weight:700">Pipeline öffnen</button>
+    <button onclick="openMod('sales-enhanced')" style="padding:6px 11px;background:var(--m-tone-terra);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10.5px;font-weight:700">Pipeline öffnen</button>
   </div>`;
   html += `<div style="font-size:11.5px;color:var(--tc);line-height:1.55;margin-bottom:11px"><b>Bevor du irgendetwas anderes tust:</b> diese ${stale.length===1?'Person hat':'Personen haben'} seit Tagen nichts mehr von dir gehört. Schreib ${stale.length===1?'sie':'sie'} jetzt an.</div>`;
   stale.forEach(({l, days}) => {
@@ -52708,7 +52708,7 @@ function buildWochenreflexionReminder() {
       '<div style="font-size:9px;letter-spacing:1.5px;color:#6b5a8e;font-weight:700">WOCHENREFLEXION FAELLIG · KW '+kw+'</div>'+
       '<div style="font-size:11px;color:var(--ts);margin-top:2px;line-height:1.4">10 Minuten ehrlich, was lief, was nicht, was nächste Woche anders.</div>'+
     '</div>'+
-    '<button onclick="event.stopPropagation();openMod(\'wochenreflexion\')" style="padding:7px 12px;background:#6b5a8e;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;flex-shrink:0">Starten</button>'+
+    '<button onclick="event.stopPropagation();openMod(\'wochenreflexion\')" style="padding:7px 12px;background:var(--m-tone-espresso);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;flex-shrink:0">Starten</button>'+
     '<button onclick="event.stopPropagation();lsSet(\'mindea-wr-dismissed-'+wkKey+'\', true);renderMod(\'heute\')" title="Heute ausblenden" style="background:none;border:none;font-size:14px;color:var(--tm);cursor:pointer;padding:2px 4px;flex-shrink:0;opacity:.6">×</button>';
   return banner;
 }
@@ -54143,7 +54143,7 @@ body.dark .m-handoff .who { color: var(--m-gold); }
 .m-steps .st.done i { background: var(--m-gold-line); }
 .m-steps .st.now i { background: var(--m-gold); box-shadow: 0 0 0 3px var(--m-gold-soft); }
 .m-steps .st.now span { color: var(--m-ink); }
-@media (max-width: 520px) { .m-steps .st span { display: none; } .m-steps .st.now span { display: block; position: absolute; } .m-steps { position: relative; padding-bottom: 20px; } }
+@media (max-width: 520px) { .m-steps .st span { display: none; } .m-steps .st.now span { display: block; position: absolute; left: 0; bottom: 0; } .m-steps { position: relative; padding-bottom: 20px; } }
 
 /* ─── 14 · FEEDBACK · "Erledigt." und Meilenstein ────────────────────────── */
 #m-done { position: fixed; left: 50%; bottom: calc(28px + var(--m-tabbar-h) + env(safe-area-inset-bottom,0px)); transform: translate(-50%, 12px); z-index: 10050;
@@ -54306,6 +54306,8 @@ body.dark .msg-wrap.user .msg-bubble { background: var(--m-champagne) !important
 #toast { background: var(--m-hero) !important; color: var(--m-ink-inv) !important; border: 0 !important; border-radius: var(--m-r-pill) !important; padding: 11px 18px !important; font: 500 13px/1.4 var(--m-sans) !important; box-shadow: var(--m-sh-3) !important; }
 #settings-modal .apikey-sheet { max-height: 88vh !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
 
+.ban { background: var(--m-surface) !important; border: 1px solid var(--m-line) !important; border-radius: var(--m-r-md) !important; box-shadow: none !important; }
+.ban .ban-sub { color: var(--m-ink-2) !important; }
 /* Fortschrittsbalken (alt) → duenne Linie */
 .rev-bar-wrap, .zs-bar, .fh-track { height: 4px !important; background: var(--m-sunken) !important; box-shadow: none !important; border-radius: 4px !important; }
 .rev-bar-fill, .zs-fill, .fh-fill { background: linear-gradient(90deg, var(--m-gold-deep), var(--m-gold)) !important; box-shadow: none !important; border-radius: 4px !important; }
@@ -54543,6 +54545,25 @@ body .m-qflow textarea.m-q-input:focus { border-bottom-color: var(--m-gold) !imp
 .m-q-row { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
 .m-q-all { margin-top: 18px; }
 .m-qflow.m-qall .m-q-nav .m-segs, .m-qflow.m-qall .m-q-row { display: none; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   26 · KUNDENPROJEKTE · Client Workspace
+   ═══════════════════════════════════════════════════════════════════════════ */
+#detail-body.m-page-projekte > * { max-width: 880px; margin-left: auto; margin-right: auto; }
+.m-client { margin-bottom: 16px; }
+.m-client-name { margin: 14px 0 0; font: 500 clamp(40px, 9vw, 60px)/1 var(--m-serif); letter-spacing: .02em; text-transform: uppercase; color: var(--m-ink); }
+.m-client-name span { display: block; margin-top: 6px; font: 400 clamp(18px, 4vw, 24px)/1.2 var(--m-serif); letter-spacing: .32em; color: var(--m-ink-2); }
+.m-client-meta { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) minmax(0,.8fr); gap: 12px; margin-top: 26px; }
+.m-client-meta b { display: block; margin-top: 6px; font: 500 15px/1.25 var(--m-sans); overflow-wrap: anywhere; color: var(--m-ink); }
+.m-client-meta b.m-num { font: 400 22px/1 var(--m-serif-2); font-variant-numeric: lining-nums; }
+.m-client-now { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--m-line); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.m-client-now .m-eyebrow { flex-basis: 100%; }
+.m-client-admin > div:nth-child(1), .m-client-admin > div:nth-child(2), .m-client-admin > div:nth-child(3) { display: none !important; }
+.m-client-admin::before { content: 'Verwaltung'; display: block; font: 600 10.5px/1.3 var(--m-sans); letter-spacing: .2em; text-transform: uppercase; color: var(--m-ink-3); margin-bottom: 4px; }
+.m-proj-mini { margin: 4px 0 14px; }
+.m-proj-mini-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.m-proj-mini .m-steps .st span { display: none; }
+.m-proj-card > div:first-child > span:first-child { font: 500 21px/1.2 var(--m-serif) !important; text-decoration: none !important; }
 
 /* ─── 20 · BEWEGUNG REDUZIEREN ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -57795,6 +57816,83 @@ function azTagZeigen(el, t){
   }
   M.enhanceJournal = enhanceJournal;
 
+  /* ─── 10 · KUNDENPROJEKTE · Premium Client Workspace ─────────────────── */
+  var PHASEN = ['Strategie','Script','Material','Produktion','Review','Auslieferung'];
+  var PH_STATUS = ['Strategie','Script','Material','Filmproduktion','Review','Ausgeliefert'];
+  function phaseOf(p){
+    if(p && typeof p.phase === 'number' && p.phase >= 0 && p.phase < PHASEN.length) return p.phase;
+    return { offen:0, arbeit:3, feedback:4, final:5 }[p && p.status] || 0;
+  }
+  function stepsHTML(idx, pid){
+    return '<div class="m-steps">' + PHASEN.map(function(n, i){
+      return '<div class="st ' + (i < idx ? 'done' : (i === idx ? 'now' : '')) + '"' + (pid != null ? ' role="button" tabindex="0" onclick="event.stopPropagation();MindeaUI.projPhase(' + pid + ',' + i + ')" style="cursor:pointer"' : '') + '><i></i><span>' + n + '</span></div>';
+    }).join('') + '</div>';
+  }
+  M.projPhase = function(id, i){
+    try{
+      var projs = ls('mindea-projekte', []) || [], name = '';
+      projs = projs.map(function(p){ if(p.id === id){ name = p.name; return Object.assign({}, p, { phase:i, updatedAt:new Date().toISOString(), status: i === 5 ? 'final' : (i === 4 ? 'feedback' : (i === 0 ? (p.status === 'final' ? 'offen' : p.status) : 'arbeit')) }); } return p; });
+      lsSet('mindea-projekte', projs);
+      renderMod('projekte');
+      if(i === 5) M.milestone('Projekt ausgeliefert.', (privacy() ? 'Ein Kundenprojekt' : String(name)) + ' ist fertig. Das ist ein Stück Arbeit, das bleibt.');
+      else M.done(PHASEN[i] + '.', 'Phase gesetzt.');
+    }catch(e){}
+  };
+  function enhanceProjekte(body){
+    try{
+      body = body || document.getElementById('detail-body'); if(!body) return;
+      body.classList.add('m-page-projekte');
+      var projs = ls('mindea-projekte', []) || [];
+      if(window._projDetail){
+        var p = projs.filter(function(x){ return x.id === window._projDetail; })[0]; if(!p || body.querySelector('.m-client')) return;
+        var idx = phaseOf(p), pct = Math.round((idx + 1) / PHASEN.length * 100);
+        var nm = String(p.name || '').trim(), parts = nm.split(/\s+/), first = parts.shift() || nm, rest = parts.join(' ');
+        if(privacy()){ first = 'Kundin'; rest = ''; }
+        var hero = document.createElement('div');
+        hero.className = 'm-card m-card--hero m-client';
+        hero.innerHTML = '<div class="m-eyebrow m-eyebrow--gold">' + (p.art === 'test' ? 'Testkundin' : 'Client Workspace') + '</div>'
+          + '<h1 class="m-client-name">' + esc(first) + (rest ? '<span>' + esc(rest) + '</span>' : '') + '</h1>'
+          + '<div class="m-client-meta"><div><span class="m-eyebrow">Status</span><b>' + PH_STATUS[idx] + '</b></div>'
+          + '<div><span class="m-eyebrow">Fortschritt</span><b class="m-num">' + pct + ' %</b></div>'
+          + '<div><span class="m-eyebrow">Seit</span><b>' + esc(String(p.date || '').slice(8, 10) + '.' + String(p.date || '').slice(5, 7) + '.') + '</b></div></div>'
+          + '<div class="m-progress" style="margin:20px 0 22px"><i style="width:' + pct + '%"></i></div>'
+          + stepsHTML(idx, p.id)
+          + '<div class="m-client-now"><span class="m-eyebrow">Aktueller Schritt</span><div class="m-h2">' + PHASEN[idx] + '</div>'
+          + (idx < 5 ? '<button type="button" class="m-btn m-btn--sm" onclick="MindeaUI.projPhase(' + p.id + ',' + (idx + 1) + ')">' + PHASEN[idx + 1] + ' beginnen <span class="m-arrow">→</span></button>' : '<span class="m-small">Fertig ausgeliefert.</span>') + '</div>';
+        var inner = body.firstElementChild || body;
+        var adminCard = inner.querySelector('.kn-card');
+        if(adminCard){ inner.insertBefore(hero, adminCard); adminCard.classList.add('m-client-admin'); }
+        else inner.insertBefore(hero, inner.firstChild);
+      } else {
+        body.querySelectorAll('.card').forEach(function(card){
+          var sp = card.querySelector('[onclick^="projOeffnen("]'); if(!sp || card.querySelector('.m-steps')) return;
+          var id = +((/projOeffnen\((\d+)\)/.exec(sp.getAttribute('onclick')) || [])[1]);
+          var p = projs.filter(function(x){ return x.id === id; })[0]; if(!p) return;
+          var idx = phaseOf(p), w = document.createElement('div'); w.className = 'm-proj-mini';
+          w.innerHTML = '<div class="m-proj-mini-h"><span class="m-eyebrow">' + PH_STATUS[idx] + '</span><span class="m-micro m-num">' + Math.round((idx + 1) / PHASEN.length * 100) + ' %</span></div>' + stepsHTML(idx, null);
+          card.insertBefore(w, card.children[1] || null);
+          card.classList.add('m-proj-card');
+        });
+      }
+    }catch(e){}
+  }
+
+  /* ─── 11 · MEILENSTEINE aus echten Ereignissen ───────────────────────── */
+  function watchMilestones(){
+    try{
+      var orig = window.lsSet; if(typeof orig !== 'function' || orig.__mMs) return;
+      var gebucht = function(arr){ return (Array.isArray(arr) ? arr : []).filter(function(l){ return l && l.status === 'gebucht'; }).length; };
+      var w = function(k, v){
+        var before = -1;
+        if(k === 'mindea-leads-enhanced'){ try{ before = gebucht(JSON.parse(localStorage.getItem(k) || '[]')); }catch(e){} }
+        var r = orig.apply(this, arguments);
+        if(before === 0){ try{ if(gebucht(v) > 0 && !ls('mindea-ms-erster-auftrag', false)){ orig('mindea-ms-erster-auftrag', new Date().toISOString()); M.milestone('Dein erster zahlender Mindéa-Auftrag.', 'Jemand hat entschieden, dir zu vertrauen. Das ist der Anfang von etwas Echtem.'); } }catch(e){} }
+        return r;
+      };
+      w.__mMs = true; window.lsSet = w;
+    }catch(e){}
+  }
+
   function pageClass(id){
     try{
       var b = document.getElementById('detail-body'); if(!b) return;
@@ -57812,6 +57910,8 @@ function azTagZeigen(el, t){
     wrap('renderMod', function(id){ pageClass(id); });
     wrap('renderHeute', function(b){ enhanceHeute(b); });
     wrap('renderLuna', function(b){ enhanceLuna(b); });
+    wrap('renderProjekte', function(b){ enhanceProjekte(b); });
+    watchMilestones();
     wrap('renderJournal', function(b){ enhanceJournal(b); setTimeout(function(){ enhanceJournal(b); }, 400); });
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(init, 0); });
