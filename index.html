@@ -54495,7 +54495,7 @@ body.dark #pstart-root.m-dash-on #p-ritual button { background: var(--m-gold) !i
    24 · LUNA · Digital Chief of Staff
    ═══════════════════════════════════════════════════════════════════════════ */
 #m-luna-board { flex: none; order: -1; background: var(--m-bg); border-bottom: 1px solid var(--m-line); }
-body:has(#detail-body.m-page-luna) #copilot-fab { display: none !important; }
+body:has(#detail-body.m-page-luna) #copilot-fab, body:has(#detail-body.m-page-start-tag) #copilot-fab { display: none !important; }
 .m-luna-head { display: flex; align-items: center; gap: 12px; padding: 12px 18px; }
 .m-luna-id { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
 .m-luna-mark { flex: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -54564,6 +54564,20 @@ body .m-qflow textarea.m-q-input:focus { border-bottom-color: var(--m-gold) !imp
 .m-proj-mini-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 .m-proj-mini .m-steps .st span { display: none; }
 .m-proj-card > div:first-child > span:first-child { font: 500 21px/1.2 var(--m-serif) !important; text-decoration: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   27 · VERKAUF · BRAND MASTERY · LUMÉ
+   ═══════════════════════════════════════════════════════════════════════════ */
+#m-sales { margin-bottom: 18px; }
+#m-sales .m-row { min-height: 62px; }
+.m-master { order: -1; flex: none; display: flex; align-items: center; gap: 16px; padding: 16px 18px; border-bottom: 1px solid var(--m-line); background: linear-gradient(180deg, var(--m-gold-soft), transparent); }
+.m-master-l { flex: 1; min-width: 0; }
+.m-master-t { margin-top: 6px; font: 500 21px/1.2 var(--m-serif); color: var(--m-ink); }
+.m-master-t .m-num { font-size: .95em; }
+#detail-body.m-page-start-tag #dt-level-header, #detail-body.m-page-start-tag #dt-timer-bar { background: transparent !important; border-bottom: 1px solid var(--m-line) !important; }
+#dt-timer-display { color: var(--m-ink-2) !important; }
+.lume-tip-card { border: 1px solid var(--m-line-2) !important; border-radius: var(--m-r-lg) !important; background: var(--m-surface-2) !important; box-shadow: var(--m-sh-3) !important; }
+.lume-tip-card::after { border-color: var(--m-line-2) !important; border-width: 0 1px 1px 0 !important; background: var(--m-surface-2) !important; }
 
 /* ─── 20 · BEWEGUNG REDUZIEREN ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -57893,6 +57907,61 @@ function azTagZeigen(el, t){
     }catch(e){}
   }
 
+  /* ─── 12 · VERKAUF · Heute lohnen sich diese Kontakte ────────────────── */
+  function salesHTML(){
+    var lu = M.luna(), picks = [], seen = {};
+    lu.decisions.forEach(function(l){ if(picks.length < 3 && !seen[l.id]){ seen[l.id] = 1; picks.push({ l:l, why:'Hat geantwortet · Gespräch vorschlagen' }); } });
+    var drafted = {}; lu.prepared.forEach(function(p){ if(p.kind === 'fu') drafted[String(p.name).toLowerCase()] = 1; });
+    lu.due.forEach(function(l){ if(picks.length < 3 && !seen[l.id]){ seen[l.id] = 1; picks.push({ l:l, why: drafted[String(l.name).toLowerCase()] ? 'Follow-up · Entwurf liegt bereit' : (l.dm1Done || l.status === 'angeschrieben' ? 'Follow-up · heute ein guter Moment' : 'Erste Nachricht') }); } });
+    if(!picks.length) return '';
+    var nDraft = picks.filter(function(p){ return drafted[String(p.l.name).toLowerCase()]; }).length;
+    var H = '<div id="m-sales" class="m-card m-card--feature"><div class="m-eyebrow m-eyebrow--gold">Heute lohnen sich ' + (picks.length === 1 ? 'dieser Kontakt' : 'diese ' + picks.length + ' Kontakte') + '</div>'
+      + '<div class="m-list" style="margin-top:8px">' + picks.map(function(p){
+        var nm = privacy() ? 'Kontakt' : String(p.l.name || 'Kontakt');
+        return '<button type="button" class="m-row" onclick="MindeaUI.salesFind(' + JSON.stringify(String(p.l.name || '')).replace(/"/g, '&quot;') + ')"><div class="m-row-main"><div class="m-row-t" style="font-family:var(--m-serif);font-size:20px;font-weight:500">' + esc(nm) + '</div><div class="m-row-s">' + esc(p.why) + '</div></div><span class="m-chev">›</span></button>';
+      }).join('') + '</div>'
+      + (nDraft ? '<div class="m-insight" style="padding-bottom:0"><div><p>Luna hat ' + (nDraft === 1 ? 'eine Nachricht' : (nDraft === 2 ? 'zwei Nachrichten' : nDraft + ' Nachrichten')) + ' vorbereitet.</p><small><a href="javascript:void(0)" onclick="openMod(\'autopilot\')" style="color:inherit">Ansehen</a></small></div></div>' : '')
+      + '</div>';
+    return H;
+  }
+  M.salesFind = function(name){
+    try{ var i = document.getElementById('sales-search-inp'); if(i){ i.value = name; if(typeof onSalesSearchInput === 'function') onSalesSearchInput(name); setTimeout(function(){ var j = document.getElementById('sales-search-inp'); if(j) j.scrollIntoView({ behavior:'smooth', block:'start' }); }, 120); } }catch(e){}
+  };
+  function enhanceSales(body){
+    try{
+      body = body || document.getElementById('detail-body'); if(!body || window._curMod === 'testkunden') return;
+      var old = body.querySelector('#m-sales'); if(old) old.remove();
+      var h = salesHTML(); if(!h) return;
+      var t = document.createElement('div'); t.innerHTML = h;
+      body.insertBefore(t.firstChild, body.firstChild);
+    }catch(e){}
+  }
+
+  /* ─── 13 · BRAND MASTERY · Private Masterclass ───────────────────────── */
+  function enhanceMastery(body){
+    try{
+      body = body || document.getElementById('detail-body'); if(!body || typeof getDenktrainData !== 'function') return;
+      var old = body.querySelector('#m-master'); if(old) old.remove();
+      var dt = getDenktrainData() || {}, types = dt.types || {};
+      var typ = (typeof _trainActiveType !== 'undefined' && types[_trainActiveType]) ? _trainActiveType : null;
+      try{ var th = (typeof getDailyTrainingThema === 'function') ? getDailyTrainingThema() : null; if(!typ && th && types[th]) typ = th; }catch(e){}
+      if(!typ && types.tages) typ = 'tages';
+      var t = types[typ] || { level: dt.level || 1, xp: dt.xp || 0 };
+      var nextXP = [100,300,600,1000,9999], lv = Math.max(1, Math.min(5, +t.level || 1)), xp = +t.xp || 0;
+      var lo = lv > 1 ? nextXP[lv - 2] : 0, pct = lv < 5 ? Math.max(0, Math.min(100, Math.round((xp - lo) / (nextXP[lv - 1] - lo) * 100))) : 100;
+      var LBL = { tages:'Tages-Training', positionierung:'Positionierung', sprechuebung:'Pitch', einwand:'Einwände', warmakquise:'Warm-Akquise', followup:'Follow-up', abschluss:'Abschluss', preis:'Preis', wochentest:'Wochentest' };
+      var thema = ''; try{ var tt = getDailyTrainingThema(); thema = LBL[tt] || ''; }catch(e){}
+      var el = document.createElement('div'); el.id = 'm-master'; el.className = 'm-master';
+      el.innerHTML = '<div class="m-master-l"><div class="m-eyebrow m-eyebrow--gold">Brand Mastery</div>'
+        + '<div class="m-master-t"><span class="m-num">Level ' + lv + '</span> · ' + esc(LBL[typ] || 'Training') + '</div>'
+        + '<div class="m-progress" style="margin-top:10px"><i style="width:' + pct + '%"></i></div>'
+        + '<div class="m-micro" style="margin-top:8px">' + pct + ' % bis Level ' + Math.min(5, lv + 1) + (thema ? ' · Heute: ' + esc(thema) : '') + '</div></div>'
+        + '<button type="button" class="m-btn m-btn--primary m-btn--sm" onclick="try{ var b=document.getElementById(\'dt-timer-btn\'); if(b) b.click(); }catch(e){}">Weitermachen <span class="m-arrow">→</span></button>';
+      body.insertBefore(el, body.firstChild);
+      body.classList.add('m-page-start-tag');
+    }catch(e){}
+  }
+
   function pageClass(id){
     try{
       var b = document.getElementById('detail-body'); if(!b) return;
@@ -57912,6 +57981,8 @@ function azTagZeigen(el, t){
     wrap('renderLuna', function(b){ enhanceLuna(b); });
     wrap('renderProjekte', function(b){ enhanceProjekte(b); });
     watchMilestones();
+    wrap('renderSalesEnhanced', function(b){ enhanceSales(b); });
+    wrap('renderStartTag', function(b){ enhanceMastery(b); });
     wrap('renderJournal', function(b){ enhanceJournal(b); setTimeout(function(){ enhanceJournal(b); }, 400); });
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(init, 0); });
