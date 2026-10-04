@@ -54474,6 +54474,55 @@ body.dark #pstart-root.m-dash-on #p-ritual button { background: var(--m-gold) !i
   #pstart-root.m-dash-on .m-more-grid > .fokus-heute, #pstart-root.m-dash-on .m-more-grid > .fh-lux { grid-column: 1 / -1; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   23 · HEUTE · Jetzt / Danach
+   ═══════════════════════════════════════════════════════════════════════════ */
+#m-heute { max-width: 820px; margin: 0 auto 8px; }
+.m-heute-meta { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin: 4px 0 22px; padding-bottom: 18px; border-bottom: 1px solid var(--m-line); }
+.m-heute-meta > div { min-width: 0; }
+.m-heute-meta b { display: block; margin-top: 6px; font: 500 15px/1.3 var(--m-sans); color: var(--m-ink); overflow: hidden; text-overflow: ellipsis; }
+.m-heute-meta .m-btn--link { margin-top: 8px; }
+.m-jetzt .m-h1 { margin-top: 14px; max-width: 620px; }
+.m-jetzt-info { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
+.m-jetzt-info:empty { display: none; }
+.m-jetzt-act { display: flex; gap: 8px; align-items: center; margin-top: 24px; flex-wrap: wrap; }
+@media (max-width: 480px) { .m-jetzt-act .m-btn--primary { flex: 1; } .m-heute-meta b { font-size: 13.5px; } }
+#detail-body.m-page-heute > *:not(#m-heute) { max-width: 820px; margin-left: auto; margin-right: auto; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   24 · LUNA · Digital Chief of Staff
+   ═══════════════════════════════════════════════════════════════════════════ */
+#m-luna-board { flex: none; order: -1; background: var(--m-bg); border-bottom: 1px solid var(--m-line); }
+body:has(#detail-body.m-page-luna) #copilot-fab { display: none !important; }
+.m-luna-head { display: flex; align-items: center; gap: 12px; padding: 12px 18px; }
+.m-luna-id { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.m-luna-mark { flex: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font: 500 19px/1 var(--m-serif); color: var(--m-gold-deep); border: 1px solid var(--m-gold-line); background: radial-gradient(circle at 30% 25%, var(--m-gold-soft), transparent 70%); }
+body.dark .m-luna-mark { color: var(--m-gold); }
+.m-luna-name { font: 600 12px/1.1 var(--m-sans); letter-spacing: .32em; text-transform: uppercase; color: var(--m-ink); }
+.m-luna-role { margin-top: 4px; font: italic 400 15px/1.1 var(--m-serif); color: var(--m-ink-2); }
+.m-luna-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px 0 12px; border-radius: var(--m-r-pill); border: 1px solid var(--m-line); background: var(--m-surface); color: var(--m-ink-2); cursor: pointer; font: 600 12px/1 var(--m-sans); }
+.m-luna-toggle b { font-weight: 600; color: var(--m-ink); }
+.m-luna-toggle .m-chev { transition: transform var(--m-dur) var(--m-ease); font-size: 18px; }
+#m-luna-board.is-open .m-luna-toggle .m-chev { transform: rotate(90deg); }
+.m-luna-body { display: none; padding: 4px 18px 18px; max-height: 58vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#m-luna-board.is-open .m-luna-body { display: block; animation: m-fade var(--m-dur-slow) var(--m-ease); }
+.m-luna-sec { margin-top: 18px; }
+.m-luna-sec > .m-eyebrow { margin-bottom: 10px; }
+.m-luna-sec .m-card { padding: 16px 18px; }
+@media (max-width: 480px) { .m-luna-head { gap: 10px; padding: 10px 16px; } .m-luna-head .m-status { font-size: 11px; } }
+@media (min-width: 1024px) {
+  #detail-body.m-page-luna { position: relative; padding-left: 360px !important; }
+  #detail-body.m-page-luna > #m-luna-board { position: absolute; left: 0; top: 0; bottom: 0; width: 360px; border-bottom: 0; border-right: 1px solid var(--m-line); overflow-y: auto; background: var(--m-bg-2); z-index: 2; }
+
+  #m-luna-board .m-luna-head { padding: 26px 24px 8px; flex-wrap: wrap; }
+  #m-luna-board .m-luna-head .m-status { flex-basis: 100%; margin: 10px 0 0 50px; }
+  #m-luna-board .m-luna-toggle { display: none; }
+  #m-luna-board .m-luna-body { display: block; max-height: none; overflow: visible; padding: 4px 24px 32px; }
+  .m-luna-name { font-size: 13px; } .m-luna-role { font-size: 17px; }
+}
+@media (min-width: 1024px) and (max-width: 1279px) { #detail-body.m-page-luna { padding-left: 320px !important; } #detail-body.m-page-luna > #m-luna-board { width: 320px; } }
+
 /* ─── 20 · BEWEGUNG REDUZIEREN ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -57556,6 +57605,128 @@ function azTagZeigen(el, t){
   }
   M.enhanceStart = enhanceStart;
 
+  /* ─── 6 · HEUTE · Jetzt, danach, Details ─────────────────────────────── */
+  function heuteHTML(){
+    var d = new Date(), tasks = M.fokus(), open = tasks.filter(function(t){ return !t.done; });
+    var kap = M.kapazitaet(), zeiten = {}; try{ zeiten = (typeof fokusZeitGet === 'function') ? fokusZeitGet() : {}; }catch(e){}
+    var modus = ''; try{ modus = (typeof getDayMode === 'function') ? (getDayMode() === 'content' ? 'Content-Tag' : 'Akquise-Tag') : ''; }catch(e){}
+    var prio = ''; try{ var ap = ls('mindea-autopilot-' + today(), null); if(ap && ap.prios && ap.prios[0]) prio = ap.prios[0]; }catch(e){}
+    var kapTxt = { wenig:'Wenig', mittel:'Mittel', viel:'Viel' }[kap] || '';
+    var H = '<section id="m-heute" class="m-heute">';
+    H += '<div class="m-heute-meta">'
+      + '<div><span class="m-eyebrow">Datum</span><b>' + WD[d.getDay()] + ', ' + d.getDate() + '. ' + MO[d.getMonth()] + '</b></div>'
+      + '<div><span class="m-eyebrow">Kapazität</span>' + (kapTxt ? '<b>' + kapTxt + '</b>' : '<button type="button" class="m-btn m-btn--link" onclick="openMod(\'journal\')">Eintragen</button>') + '</div>'
+      + '<div><span class="m-eyebrow">Priorität</span><b>' + esc(prio || modus || 'Fokus') + '</b></div></div>';
+    var now = open[0];
+    if(now){
+      var subs = (now.subtasks || []), sDone = subs.filter(function(s){ return s.done; }).length;
+      var mod = String(now.module || 'heute').replace(/[^a-z0-9-]/gi, '');
+      H += '<div class="m-card m-card--hero m-jetzt m-arrive"><div class="m-eyebrow m-eyebrow--gold">Jetzt</div>'
+        + '<h2 class="m-h1">' + esc(now.text) + '</h2>'
+        + (now.meta ? '<p class="m-small" style="margin-top:10px;max-width:520px">' + esc(now.meta) + '</p>' : '')
+        + '<div class="m-jetzt-info">'
+        + (zeiten[now.id] ? '<span class="m-chip">geplant ' + esc(zeiten[now.id]) + '</span>' : '')
+        + (subs.length ? '<span class="m-chip">' + sDone + ' / ' + subs.length + ' Schritte</span>' : '')
+        + '</div>'
+        + (subs.length ? '<div class="m-progress" style="margin-top:14px"><i style="width:' + Math.round(sDone / subs.length * 100) + '%"></i></div>' : '')
+        + '<div class="m-jetzt-act"><button type="button" class="m-btn m-btn--primary" onclick="openMod(\'' + mod + '\')">Starten <span class="m-arrow">→</span></button>'
+        + '<button type="button" class="m-btn m-btn--quiet" onclick="MindeaUI.heuteErledigt(\'' + esc(now.id) + '\')">Erledigt</button></div></div>';
+      var next = open.slice(1, 4);
+      if(next.length){
+        H += '<div class="m-section" style="margin-top:28px"><div class="m-section-h"><span class="m-eyebrow">Danach</span><span class="m-micro">' + (open.length - 1) + ' offen</span></div>'
+          + '<div class="m-card" style="padding-top:6px;padding-bottom:6px"><div class="m-list">' + next.map(function(t){
+            var md = String(t.module || 'heute').replace(/[^a-z0-9-]/gi, '');
+            return '<button type="button" class="m-row" onclick="openMod(\'' + md + '\')"><div class="m-row-main"><div class="m-row-t">' + esc(t.text) + '</div>'
+              + (t.meta ? '<div class="m-row-s">' + esc(t.meta) + '</div>' : '') + '</div><span class="m-chev">›</span></button>';
+          }).join('') + '</div></div></div>';
+      }
+    } else {
+      H += '<div class="m-card m-card--success m-jetzt"><div class="m-eyebrow">Jetzt</div><h2 class="m-h1">' + (tasks.length ? 'Alles Wichtige ist erledigt.' : 'Heute ist nichts Dringendes offen.') + '</h2>'
+        + '<p class="m-small" style="margin-top:10px">' + (tasks.length ? 'Der Tag hat getragen. Was jetzt noch kommt, ist Zugabe.' : 'Ein guter Moment für das, was dich langfristig trägt.') + '</p></div>';
+    }
+    H += '<div class="m-divider"><span class="m-eyebrow">Details des Tages</span></div></section>';
+    return H;
+  }
+  M.heuteErledigt = function(id){
+    try{ premiumToggleFokus(id); }catch(e){}
+    M.done('Erledigt.');
+    try{ if(window._curMod === 'heute') renderMod('heute'); }catch(e){}
+  };
+  function enhanceHeute(body){
+    try{
+      body = body || document.getElementById('detail-body'); if(!body) return;
+      var old = body.querySelector('#m-heute'); if(old) old.remove();
+      var t = document.createElement('div'); t.innerHTML = heuteHTML();
+      body.insertBefore(t.firstChild, body.firstChild);
+      body.classList.add('m-page-heute');
+    }catch(e){}
+  }
+
+  /* ─── 7 · LUNA · Digital Chief of Staff ──────────────────────────────── */
+  function lunaBoardHTML(){
+    var lu = M.luna(), ins = M.insights({ kap:M.kapazitaet(), luna:lu }).filter(function(x){ return !/Entwurf vorbereitet/.test(x.t); });
+    var st = lu.status === 'waiting' ? ['waiting','wartet auf dich'] : ['ready','bereit'];
+    var H = '<aside id="m-luna-board" class="' + (M._lunaOpen ? 'is-open' : '') + '">'
+      + '<div class="m-luna-head"><div class="m-luna-id"><div class="m-luna-mark">L</div><div><div class="m-luna-name">Luna</div><div class="m-luna-role">Digital Chief of Staff</div></div></div>'
+      + '<span class="m-status m-status--' + st[0] + '"><i></i>' + st[1] + '</span>'
+      + '<button type="button" class="m-luna-toggle" onclick="MindeaUI.lunaBoard()" aria-label="Arbeitsstand ein- oder ausblenden">'
+      + (lu.prepared.length + lu.decisions.length ? '<b>' + (lu.prepared.length + lu.decisions.length) + '</b>' : '') + '<span class="m-chev">›</span></button></div>'
+      + '<div class="m-luna-body">';
+    var by = (lu.ap && lu.ap.preparedAt) ? esc(agoText(lu.ap.preparedAt)) + ' von Luna vorbereitet' : '';
+    // Entscheidung
+    if(lu.decisions.length){
+      H += '<div class="m-luna-sec"><div class="m-eyebrow">Braucht deine Entscheidung</div>' + lu.decisions.slice(0, 3).map(function(l){
+        return '<div class="m-card m-card--decision m-handoff m-arrive"><div class="who">' + esc(privacy() ? 'Kontakt' : String(l.name || 'Kontakt').toUpperCase()) + ' · Antwort</div>'
+          + '<div class="what">Antwort liegt vor</div><div class="note">Wie geht es weiter: Termin, Angebot oder ruhen lassen?</div>'
+          + '<div class="act"><button type="button" class="m-btn m-btn--sm" onclick="openMod(\'sales-enhanced\')">Entscheiden <span class="m-arrow">→</span></button></div></div>';
+      }).join('') + '</div>';
+    }
+    // Vorbereitet
+    H += '<div class="m-luna-sec"><div class="m-eyebrow">Von Luna vorbereitet</div>';
+    if(lu.prepared.length){
+      H += lu.prepared.slice(0, 4).map(function(p){
+        var fu = p.kind === 'fu';
+        return '<div class="m-card m-card--luna m-handoff m-arrive"><div class="who">' + esc(fu ? (privacy() ? 'KONTAKT' : String(p.name).toUpperCase()) + ' · Follow-up' : 'Content · ' + p.name) + '</div>'
+          + '<div class="what">' + (fu ? 'Follow-up heute fällig' : 'Entwurf für heute') + '</div>'
+          + '<div class="note">' + (fu ? 'Ich habe eine passende Nachricht vorbereitet.' : 'Ich habe einen fertigen Entwurf geschrieben. Du musst nur noch entscheiden.') + '</div>'
+          + '<div class="act"><button type="button" class="m-btn m-btn--sm" onclick="openMod(\'autopilot\')">Ansehen <span class="m-arrow">→</span></button>' + (by ? '<span class="by">' + by + '</span>' : '') + '</div></div>';
+      }).join('');
+    } else {
+      H += '<div class="m-card m-handoff"><div class="what">Noch nichts vorbereitet.</div><div class="note">' + (lu.due.length ? lu.due.length + ' Follow-up' + (lu.due.length === 1 ? ' ist' : 's sind') + ' fällig. ' : '') + 'Soll ich Briefing, Content und Nachrichten für heute vorbereiten?</div>'
+        + '<div class="act"><button type="button" class="m-btn m-btn--sm" onclick="openMod(\'autopilot\')">Tag vorbereiten <span class="m-arrow">→</span></button></div></div>';
+    }
+    H += '</div>';
+    // Erledigt
+    if(lu.ap){
+      var done = []; if(lu.ap.briefing) done.push('Tagesbriefing geschrieben'); if(lu.ap.prios && lu.ap.prios.length) done.push(lu.ap.prios.length + ' Prioritäten für heute gesetzt');
+      if(done.length) H += '<div class="m-luna-sec"><div class="m-eyebrow">Von Luna erledigt</div><div class="m-list">' + done.map(function(t){
+        return '<div class="m-row" style="cursor:default;min-height:44px"><i class="m-check on" style="width:20px;height:20px"></i><div class="m-row-main"><div class="m-row-t" style="font-size:14px">' + esc(t) + '</div></div></div>'; }).join('') + '</div></div>';
+    }
+    // Beobachtet
+    if(ins.length) H += '<div class="m-luna-sec"><div class="m-eyebrow">Beobachtet</div>' + ins.map(function(x){ return '<div class="m-insight"' + (x.go ? ' style="cursor:pointer" onclick="' + x.go + '"' : '') + '><div><p>' + esc(x.t) + '</p><small>' + esc(x.s) + '</small></div></div>'; }).join('') + '</div>';
+    H += '</div></aside>';
+    return H;
+  }
+  M.lunaBoard = function(){
+    M._lunaOpen = !M._lunaOpen;
+    var b = document.getElementById('m-luna-board'); if(b) b.classList.toggle('is-open', M._lunaOpen);
+  };
+  function enhanceLuna(body){
+    try{
+      body = body || document.getElementById('detail-body'); if(!body) return;
+      var old = body.querySelector('#m-luna-board'); if(old) old.remove();
+      var t = document.createElement('div'); t.innerHTML = lunaBoardHTML();
+      body.insertBefore(t.firstChild, body.firstChild);
+      body.classList.add('m-page-luna');
+    }catch(e){}
+  }
+  function pageClass(id){
+    try{
+      var b = document.getElementById('detail-body'); if(!b) return;
+      ['heute','luna','journal','projekte','start-tag','reelplan'].forEach(function(k){ if(k !== id) b.classList.remove('m-page-' + k); });
+    }catch(e){}
+  }
+
   /* ─── 9 · Start ──────────────────────────────────────────────────────── */
   function init(){
     try{ buildTabbar(); }catch(e){}
@@ -57563,6 +57734,9 @@ function azTagZeigen(el, t){
     wrap('goHome', function(){ syncNav('premium-start'); });
     wrap('renderPremiumStart', function(b){ enhanceStart(b); });
     if(window._curMod === 'premium-start') enhanceStart();
+    wrap('renderMod', function(id){ pageClass(id); });
+    wrap('renderHeute', function(b){ enhanceHeute(b); });
+    wrap('renderLuna', function(b){ enhanceLuna(b); });
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(init, 0); });
   else setTimeout(init, 0);
