@@ -54579,6 +54579,37 @@ body .m-qflow textarea.m-q-input:focus { border-bottom-color: var(--m-gold) !imp
 .lume-tip-card { border: 1px solid var(--m-line-2) !important; border-radius: var(--m-r-lg) !important; background: var(--m-surface-2) !important; box-shadow: var(--m-sh-3) !important; }
 .lume-tip-card::after { border-color: var(--m-line-2) !important; border-width: 0 1px 1px 0 !important; background: var(--m-surface-2) !important; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   28 · REEL-PLAN BOARD · FILM REVIEW REPORT
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-reelboard .m-reel { position: relative; background: var(--m-surface) !important; border: 1px solid var(--m-line) !important; border-radius: var(--m-r-lg) !important; padding: 16px 18px !important; box-shadow: var(--m-sh-1);
+  transition: box-shadow var(--m-dur) var(--m-ease), border-color var(--m-dur) var(--m-ease); }
+.m-reelboard .m-reel[style*="rgba(201,169,110,.55)"] { border-color: var(--m-gold-line) !important; box-shadow: 0 0 0 3px var(--m-gold-soft), var(--m-sh-1); }
+.m-reel .m-reel-hook { font: 500 19px/1.3 var(--m-serif) !important; margin-top: 6px !important; }
+.m-reel:not(.open) .m-reel-more { display: none !important; }
+.m-reel.open .m-reel-more { animation: m-fade var(--m-dur-slow) var(--m-ease); }
+.m-reel-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--m-line); }
+.m-reel-open { border: 0; background: none; cursor: pointer; padding: 4px 6px; color: var(--m-ink-3); }
+.m-reel-open .m-chev { display: inline-block; font-size: 20px; transition: transform var(--m-dur) var(--m-ease); }
+.m-reel.open .m-reel-open .m-chev { transform: rotate(90deg); color: var(--m-gold); }
+@media (min-width: 900px) {
+  .m-reelboard { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 14px; }
+  .m-reelboard > * { grid-column: 1 / -1; }
+  .m-reelboard > .m-reel { grid-column: auto; }
+}
+@media (min-width: 1280px) { .m-reelboard { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.m-report { max-width: 85%; margin: 4px 0 10px 29px; padding: 22px 22px 18px; background: var(--m-surface); border: 1px solid var(--m-line); border-radius: var(--m-r-lg); box-shadow: var(--m-sh-2); position: relative; }
+.m-report::before { content: ''; position: absolute; left: 22px; right: 22px; top: -1px; height: 1px; background: linear-gradient(90deg, transparent, var(--m-gold-line), transparent); }
+.m-report-top { display: flex; gap: 22px; align-items: flex-end; margin-top: 16px; flex-wrap: wrap; }
+.m-report-big .v { font: 400 64px/0.9 var(--m-serif-2); font-variant-numeric: lining-nums; color: var(--m-ink); letter-spacing: -.02em; }
+.m-report-big .l, .m-report-scores .l { display: block; margin-top: 8px; font: 600 10px/1.2 var(--m-sans); letter-spacing: .18em; text-transform: uppercase; color: var(--m-ink-3); }
+.m-report-scores { display: flex; gap: 20px; flex-wrap: wrap; padding-bottom: 4px; }
+.m-report-scores .v { display: block; font: 400 26px/1 var(--m-serif-2); font-variant-numeric: lining-nums; color: var(--m-ink); }
+.m-report-sec { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--m-line); }
+.m-report-sec p { margin: 8px 0 0; font: italic 400 17px/1.45 var(--m-serif); color: var(--m-ink); }
+.m-report-sec ol { margin: 8px 0 0; padding-left: 20px; font: 400 14px/1.55 var(--m-sans); color: var(--m-ink); }
+.m-report-sec li + li { margin-top: 6px; }
+
 /* ─── 20 · BEWEGUNG REDUZIEREN ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -57681,6 +57712,7 @@ function azTagZeigen(el, t){
         + '<h2 class="m-h1">' + esc(now.text) + '</h2>'
         + (now.meta ? '<p class="m-small" style="margin-top:10px;max-width:520px">' + esc(now.meta) + '</p>' : '')
         + '<div class="m-jetzt-info">'
+        + (function(){ try{ var mn = (typeof tpMin === 'function') ? tpMin(now.id) : 0; return mn ? '<span class="m-chip">ca. ' + mn + ' Minuten</span>' : ''; }catch(e){ return ''; } })()
         + (zeiten[now.id] ? '<span class="m-chip">geplant ' + esc(zeiten[now.id]) + '</span>' : '')
         + (subs.length ? '<span class="m-chip">' + sDone + ' / ' + subs.length + ' Schritte</span>' : '')
         + '</div>'
@@ -57962,6 +57994,69 @@ function azTagZeigen(el, t){
     }catch(e){}
   }
 
+  /* ─── 14 · REEL-PLAN · Creative Production Board ─────────────────────── */
+  function enhanceReelPlan(body){
+    try{
+      body = body || document.getElementById('detail-body'); if(!body) return;
+      var board = body.firstElementChild; if(!board) return;
+      board.classList.add('m-reelboard'); body.classList.add('m-page-reelplan');
+      var heute = today();
+      board.querySelectorAll('[id^="cpk-"]').forEach(function(card){
+        if(card.classList.contains('m-reel')) return;
+        card.classList.add('m-reel');
+        var content = card.querySelector(':scope > div > div:nth-child(2)'); if(!content) return;
+        var kids = Array.prototype.slice.call(content.children);
+        kids.forEach(function(k, i){ if(i >= 2 && !(k.className && /funnel|cpfb/i.test(k.className)) && !/TOFU|MOFU|BOFU/.test(k.textContent || '')) k.classList.add('m-reel-more'); });
+        if(kids[1]) kids[1].classList.add('m-reel-hook');
+        var done = card.style.opacity && +card.style.opacity < 1;
+        var isToday = (card.querySelector('[style*="var(--g)"]') && /heute/.test(kids[0] ? kids[0].textContent : ''));
+        var st = document.createElement('div'); st.className = 'm-reel-foot';
+        st.innerHTML = '<span class="m-status ' + (done ? 'm-status--ready' : (isToday ? 'm-status--working' : '')) + '"><i></i>' + (done ? 'Veröffentlicht' : (isToday ? 'Heute dran' : 'Geplant')) + '</span><button type="button" class="m-reel-open" aria-label="Details"><span class="m-chev">›</span></button>';
+        content.appendChild(st);
+        st.querySelector('.m-reel-open').addEventListener('click', function(e){ e.stopPropagation(); card.classList.toggle('open'); });
+      });
+    }catch(e){}
+  }
+
+  /* ─── 15 · FILM REVIEW · Creative Director Report ────────────────────── */
+  function reportFrom(txt){
+    var t = String(txt || ''), scores = [], m, re = /(HOOK|INHALT|WIRKUNG|KLARHEIT|HANDWERK|MARKE|STORY|PREMIUM[-\s]?WAHRNEHMUNG|BILD|TON|SCHNITT)[^\n]{0,40}?(\d{1,2}(?:[.,]\d)?)\s*\/\s*10/gi;
+    while((m = re.exec(t)) && scores.length < 6){ var v = parseFloat(m[2].replace(',', '.')); if(v >= 0 && v <= 10 && !scores.some(function(s){ return s.k === m[1].toUpperCase(); })) scores.push({ k:m[1].toUpperCase().replace(/\s+/, '-'), v:v }); }
+    var viral = /Viral-?Score:?\s*(\d{1,3})\s*%/i.exec(t);
+    if(scores.length < 2 && !viral) return null;
+    var pick = function(r){ var x = r.exec(t); return x ? x[1].trim() : ''; };
+    var staerke = pick(/St(?:ä|ae)rke(?:\s*1)?:\s*([^\n]+)/i);
+    var hebel = pick(/DAS W(?:Ü|UE)RDE ICH NOCH (?:Ä|AE)NDERN:?\s*([^\n]+)/i);
+    var verb = []; var rv = /Verbesserung(?:en)?:?\s*([^\n]+)/gi, x; while((x = rv.exec(t)) && verb.length < 3) verb.push(x[1].trim());
+    var avg = scores.length ? scores.reduce(function(a, s){ return a + s.v; }, 0) / scores.length : 0;
+    var H = '<div class="m-report"><div class="m-eyebrow m-eyebrow--gold">Creative Director Report</div>';
+    if(scores.length) H += '<div class="m-report-top"><div class="m-report-big"><div class="v">' + avg.toFixed(1) + '</div><div class="l">Gesamteindruck</div></div><div class="m-report-scores">'
+      + scores.map(function(s){ return '<div><span class="v">' + s.v.toFixed(1) + '</span><span class="l">' + esc(s.k.replace(/-/g, ' ').toLowerCase()) + '</span></div>'; }).join('')
+      + (viral ? '<div><span class="v">' + viral[1] + ' %</span><span class="l">potenzial</span></div>' : '') + '</div></div>';
+    else if(viral) H += '<div class="m-report-top"><div class="m-report-big"><div class="v">' + viral[1] + ' %</div><div class="l">Potenzial</div></div></div>';
+    if(staerke) H += '<div class="m-report-sec"><span class="m-eyebrow">Stärkster Moment</span><p>' + esc(staerke) + '</p></div>';
+    if(hebel) H += '<div class="m-report-sec"><span class="m-eyebrow">Größter Premium-Killer</span><p>' + esc(hebel) + '</p></div>';
+    if(verb.length) H += '<div class="m-report-sec"><span class="m-eyebrow">Nächste ' + (verb.length === 1 ? 'Änderung' : verb.length + ' Änderungen') + '</span><ol>' + verb.map(function(v){ return '<li>' + esc(v) + '</li>'; }).join('') + '</ol></div>';
+    return H + '<div class="m-micro" style="margin-top:14px">Vollständige Analyse darunter</div></div>';
+  }
+  function enhanceReview(){
+    try{
+      if(window._curMod !== 'video-review') return;
+      document.querySelectorAll('#detail-body .msg-wrap.ai .msg-bubble').forEach(function(b){
+        if(b.dataset.mReport) return; var h = reportFrom(b.textContent); b.dataset.mReport = '1';
+        if(h){ var d = document.createElement('div'); d.innerHTML = h; b.parentNode.insertBefore(d.firstChild, b); }
+      });
+    }catch(e){}
+  }
+  M.reportFrom = reportFrom;
+  function watchReview(){
+    try{
+      var body = document.getElementById('detail-body'); if(!body || M._revObs) return;
+      M._revObs = new MutationObserver(function(){ if(window._curMod === 'video-review'){ clearTimeout(M._revT); M._revT = setTimeout(enhanceReview, 250); } });
+      M._revObs.observe(body, { childList:true, subtree:true });
+    }catch(e){}
+  }
+
   function pageClass(id){
     try{
       var b = document.getElementById('detail-body'); if(!b) return;
@@ -57981,6 +58076,8 @@ function azTagZeigen(el, t){
     wrap('renderLuna', function(b){ enhanceLuna(b); });
     wrap('renderProjekte', function(b){ enhanceProjekte(b); });
     watchMilestones();
+    watchReview();
+    wrap('renderReelPlan', function(b){ enhanceReelPlan(b); });
     wrap('renderSalesEnhanced', function(b){ enhanceSales(b); });
     wrap('renderStartTag', function(b){ enhanceMastery(b); });
     wrap('renderJournal', function(b){ enhanceJournal(b); setTimeout(function(){ enhanceJournal(b); }, 400); });
