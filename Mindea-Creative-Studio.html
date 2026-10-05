@@ -2182,7 +2182,7 @@ function drawTextLocal(ctx, el, o = {}) {
     let s = line;
     if (words != null) { const ws = line.split(' '); const vis = Math.max(0, Math.min(ws.length, words - wordCount)); wordCount += ws.length; if (!vis) return; s = ws.slice(0, vis).join(' '); }
     const y = top + m.lh * (i + 0.5);
-    if (el.shadow && el.shadow.on) { ctx.shadowColor = rgba(el.shadow.color, el.shadow.opacity ?? 0.35); ctx.shadowBlur = el.shadow.blur; ctx.shadowOffsetX = el.shadow.x; ctx.shadowOffsetY = el.shadow.y; }
+    if (el.shadow && el.shadow.on) { const k = Math.abs(ctx.getTransform ? ctx.getTransform().a : 1) || 1; ctx.shadowColor = rgba(el.shadow.color, el.shadow.opacity ?? 0.35); ctx.shadowBlur = el.shadow.blur * k; ctx.shadowOffsetX = el.shadow.x * k; ctx.shadowOffsetY = el.shadow.y * k; }
     if (el.stroke && el.stroke.on && el.stroke.w > 0) { ctx.save(); ctx.strokeStyle = el.stroke.color; ctx.lineWidth = el.stroke.w * 2; ctx.lineJoin = 'round'; fillTextLS(ctx, s, x, y, m.ls, align, true); ctx.restore(); }
     ctx.fillStyle = el.color;
     fillTextLS(ctx, s, x, y, m.ls, align);
@@ -2284,50 +2284,58 @@ async function makeProjectThumb(p, size = 360) {
 }
 
 /* ── Captions ────────────────────────────────────────────────────────── */
+/* Caption styles: readable by default — sentence case, Jost, letter-spacing ≈ 0.03em, line-height 1.2.
+   ALL CAPS only where the spacing is wide enough to stay legible (Luxury). */
 const CAPTION_STYLES = {
-  minimal: { l: 'Minimal', font: 'Jost', weight: 500, size: 0.05, color: '#FFFFFF', shadow: true, upper: false, emph: '#D9C393', emphItalic: false, active: '#D9C393' },
-  mindea: { l: 'Mindéa', font: 'Cormorant Garamond', weight: 600, size: 0.066, color: '#F8F5F0', shadow: true, emph: '#D9C393', emphItalic: true, active: '#D9C393', lh: 1.08 },
-  editorial: { l: 'Editorial', font: 'Playfair Display', weight: 500, italic: true, size: 0.054, color: '#FFFFFF', shadow: true, emph: '#D9C393', emphItalic: false, active: '#F1E9DB' },
-  bold: { l: 'Bold', font: 'Jost', weight: 700, size: 0.056, color: '#FFFFFF', shadow: true, upper: true, emph: '#D9C393', stroke: '#17130F', active: '#D9C393', ls: 0.02 },
-  box: { l: 'Box', font: 'Jost', weight: 500, size: 0.046, color: '#F8F5F0', box: '#17130F', boxA: 0.82, emph: '#D9C393', active: '#D9C393' },
-  clean: { l: 'Clean', font: 'Jost', weight: 400, size: 0.046, color: '#FFFFFF', shadow: true, soft: true, emph: '#F1E9DB', active: '#FFFFFF' },
-  luxury: { l: 'Luxury', font: 'Cormorant Garamond', weight: 500, size: 0.05, color: '#F1E9DB', shadow: true, upper: true, ls: 0.16, emph: '#D9C393', active: '#D9C393' },
+  mindea: { l: 'Mindéa', font: 'Jost', weight: 500, size: 0.05, color: '#F8F5F0', shadow: true, ls: 0.03, lh: 1.2, emph: '#D9C393', active: '#D9C393' },
+  minimal: { l: 'Minimal', font: 'Jost', weight: 400, size: 0.046, color: '#FFFFFF', shadow: true, ls: 0.03, lh: 1.2, emph: '#F1E9DB', active: '#D9C393' },
+  editorial: { l: 'Editorial', font: 'Playfair Display', weight: 500, italic: true, size: 0.052, color: '#FFFFFF', shadow: true, ls: 0.01, lh: 1.2, emph: '#D9C393', active: '#F1E9DB' },
+  bold: { l: 'Bold', font: 'Jost', weight: 600, size: 0.054, color: '#FFFFFF', shadow: true, ls: 0.03, lh: 1.15, emph: '#D9C393', active: '#D9C393' },
+  box: { l: 'Box', font: 'Jost', weight: 500, size: 0.046, color: '#F8F5F0', box: true, ls: 0.03, lh: 1.2, emph: '#D9C393', active: '#D9C393' },
+  clean: { l: 'Clean', font: 'Jost', weight: 400, size: 0.044, color: '#FFFFFF', shadow: true, ls: 0.03, lh: 1.25, emph: '#FFFFFF', active: '#F1E9DB' },
+  luxury: { l: 'Luxury', font: 'Cormorant Garamond', weight: 500, size: 0.05, color: '#F1E9DB', shadow: true, upper: true, ls: 0.14, lh: 1.2, emph: '#D9C393', active: '#D9C393' },
 };
-const CAPTION_POS = [{ v: 'top', l: 'Oben' }, { v: 'middle', l: 'Mitte' }, { v: 'bottom', l: 'Unten' }, { v: 'safe', l: 'Safe Zone Reel' }, { v: 'free', l: 'Frei' }];
+const CAPTION_POS = [{ v: 'safe', l: 'Unteres Drittel (Safe Zone)' }, { v: 'bottom', l: 'Unten' }, { v: 'middle', l: 'Mitte' }, { v: 'top', l: 'Oben' }, { v: 'free', l: 'Frei' }];
 const CAPTION_ANIMS = [{ v: 'none', l: 'Keine' }, { v: 'fade', l: 'Fade' }, { v: 'pop', l: 'Pop' }, { v: 'slideUp', l: 'Slide Up' }, { v: 'word', l: 'Wortweise' }, { v: 'scale', l: 'Scale' }];
+/** Caption centre. 'safe' = lower third, above the Reels/TikTok UI (≈ 22 % from the bottom). */
 function capY(set, cap, H) {
   if (cap && cap.y != null) return cap.y * H;
-  switch (set.position) { case 'top': return H * 0.2; case 'middle': return H * 0.5; case 'bottom': return H * 0.84; case 'free': return (set.y ?? 0.72) * H; default: return H * 0.68; }
+  switch (set.position) { case 'top': return H * 0.2; case 'middle': return H * 0.5; case 'bottom': return H * 0.8; case 'free': return (set.y ?? 0.76) * H; default: return H * 0.76; }
 }
-/** Layout caption words into ≤2 balanced lines. Returns [{words:[{w,i}], width}] */
-function capLayout(ctx, words, maxW, ls) {
-  const sp = ctx.measureText(' ').width;
-  const widths = words.map(w => measureLS(ctx, w, ls));
-  const total = widths.reduce((a, b) => a + b, 0) + sp * (words.length - 1);
-  if (total <= maxW || words.length < 2) return [{ idx: words.map((_, i) => i), width: total }];
-  // balanced split
-  let best = 1, bestD = Infinity, acc = 0;
-  for (let i = 1; i < words.length; i++) { acc += widths[i - 1] + (i > 1 ? sp : 0); const d = Math.abs(total - acc * 2); if (d < bestD && acc <= maxW) { bestD = d; best = i; } }
-  const A = words.slice(0, best).map((_, i) => i), B = words.slice(best).map((_, i) => i + best);
-  const wid = ix => ix.reduce((s, i) => s + widths[i], 0) + sp * (ix.length - 1);
-  return [{ idx: A, width: wid(A) }, { idx: B, width: wid(B) }];
+/** Clean caption words: real spaces between words, no glued tokens, no stray whitespace. */
+function capWords(text) {
+  return String(text || '').replace(/ /g, ' ').replace(/([.,!?;:…])(?=[A-Za-zÄÖÜäöüß])/g, '$1 ').split(/\s+/).filter(Boolean);
+}
+/** Balanced ≤2-line layout using each word's real width. */
+function capLayout(widths, sp, maxW) {
+  const n = widths.length, sum = (a, b) => { let s = 0; for (let i = a; i < b; i++) s += widths[i]; return s + sp * Math.max(0, b - a - 1); };
+  const total = sum(0, n);
+  if (total <= maxW || n < 2) return [{ a: 0, b: n, width: total }];
+  let best = 1, bestD = Infinity;
+  for (let k = 1; k < n; k++) { const w1 = sum(0, k), w2 = sum(k, n); const d = Math.max(w1, w2) + Math.abs(w1 - w2) * 0.2; if (d < bestD) { bestD = d; best = k; } }
+  return [{ a: 0, b: best, width: sum(0, best) }, { a: best, b: n, width: sum(best, n) }];
 }
 function drawCaption(ctx, cap, set, t, W, H, o = {}) {
-  const st = Object.assign({}, CAPTION_STYLES[cap.style || set.style] || CAPTION_STYLES.mindea);
+  const st = CAPTION_STYLES[cap.style || set.style] || CAPTION_STYLES.mindea;
   const size = Math.round(st.size * Math.min(W, H * 0.62) * (set.size || 1) * (cap.size || 1));
-  const raw = (cap.text || '').trim(); if (!raw) return;
-  const words = raw.split(/\s+/).map(w => st.upper ? w.toUpperCase() : w);
+  let words = capWords(cap.text);
+  if (!words.length) return;
+  if (st.upper) words = words.map(w => w.toUpperCase());
   if (cap.emoji) words.push(cap.emoji);
+  const k = Math.abs(ctx.getTransform ? ctx.getTransform().a : 1) || 1; // shadows are in device px → scale them
+  const fontFor = italic => `${italic ? 'italic ' : ''}${st.weight} ${size}px ${ff(st.font)}`;
   ctx.save();
-  ctx.font = `${st.italic ? 'italic ' : ''}${st.weight} ${size}px ${ff(st.font)}`;
   ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
   const ls = (st.ls || 0) * size;
-  const lines = capLayout(ctx, words, W * 0.82, ls);
-  const lh = size * (st.lh || 1.18);
+  ctx.font = fontFor(st.italic);
+  // guaranteed visible word gap (≥ 0.28em), independent of font metrics
+  const sp = Math.max(ctx.measureText(' ').width, size * 0.28) + ls;
+  const widths = words.map(w => measureLS(ctx, w, ls));
+  const lines = capLayout(widths, sp, W * 0.8);
+  const lh = size * (st.lh || 1.2);
   const cy = capY(set, cap, H);
   const anim = set.animation || 'fade';
   const dur = Math.max(0.01, cap.end - cap.start), q = clamp((t - cap.start) / 0.22, 0, 1), qo = clamp((cap.end - t) / 0.14, 0, 1);
-  // word timing (real word timestamps if present, else even split)
   const wt = words.map((_, i) => cap.words && cap.words[i] ? cap.words[i].s : cap.start + dur * i / words.length);
   let visible = words.length;
   if (anim === 'word') visible = wt.filter(s => s <= t + 0.02).length || 1;
@@ -2337,32 +2345,28 @@ function drawCaption(ctx, cap, set, t, W, H, o = {}) {
   else if (anim === 'scale') { const s = 1.08 - 0.08 * easeOut(q); ctx.globalAlpha *= easeOut(q) * qo; ctx.translate(W / 2, cy); ctx.scale(s, s); ctx.translate(-W / 2, -cy); }
   else if (anim === 'word') ctx.globalAlpha *= qo;
   const blockH = lines.length * lh;
-  const sp = ctx.measureText(' ').width;
   const emph = new Set(set.emphasis === false ? [] : (cap.emph || []));
-  if (st.box) {
-    const bw = Math.max(...lines.map(l => l.width)) + size * 1.0, bh = blockH + size * 0.55;
-    ctx.save(); ctx.globalAlpha *= st.boxA ?? 0.85; ctx.fillStyle = st.box; rrPath(ctx, W / 2 - bw / 2, cy - bh / 2, bw, bh, size * 0.28); ctx.fill(); ctx.restore();
+  // readability background: Mindéa warm black at 40 % with rounded corners
+  if (st.box || cap.box || set.box) {
+    const bw = Math.max(...lines.map(l => l.width)) + size * 0.9, bh = blockH + size * 0.5;
+    ctx.save(); ctx.globalAlpha *= st.box ? 0.62 : 0.4; ctx.fillStyle = '#17130F'; rrPath(ctx, W / 2 - bw / 2, cy - bh / 2, bw, bh, size * 0.32); ctx.fill(); ctx.restore();
   }
-  let wordIdx = 0;
   lines.forEach((ln, li) => {
     let x = W / 2 - ln.width / 2; const y = cy - blockH / 2 + lh * (li + 0.5);
-    ln.idx.forEach(i => {
-      const word = words[i]; const ww = measureLS(ctx, word, ls);
+    for (let i = ln.a; i < ln.b; i++) {
+      const word = words[i];
       if (i < visible) {
-        // subtle active-word highlight — only with real word timestamps
         const isActive = !!(set.highlight && cap.words && cap.words.length && t >= wt[i] && (i === words.length - 1 || t < wt[i + 1]));
-        const isEmph = emph.has(i);
         ctx.save();
-        if (isEmph && st.emphItalic) ctx.font = `italic ${st.weight} ${size * 1.04}px ${ff(st.font)}`;
-        if (st.shadow) { ctx.shadowColor = st.soft ? 'rgba(0,0,0,.35)' : 'rgba(0,0,0,.5)'; ctx.shadowBlur = size * (st.soft ? 0.5 : 0.28); ctx.shadowOffsetY = size * 0.04; }
-        if (st.stroke) { ctx.lineJoin = 'round'; ctx.strokeStyle = st.stroke; ctx.lineWidth = size * 0.1; fillTextLS(ctx, word, x, y, ls, 'left', true); ctx.shadowColor = 'transparent'; }
-        ctx.fillStyle = isEmph ? st.emph : (isActive ? st.active : st.color);
+        ctx.font = fontFor(st.italic);
+        if (st.shadow) { ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = size * 0.16 * k; ctx.shadowOffsetY = size * 0.04 * k; }
+        ctx.fillStyle = emph.has(i) ? st.emph : (isActive ? st.active : st.color);
         if (anim === 'word') { const wq = clamp((t - wt[i]) / 0.18, 0, 1); ctx.globalAlpha *= easeOut(wq); ctx.translate(0, (1 - easeOut(wq)) * size * 0.2); }
         fillTextLS(ctx, word, x, y, ls, 'left');
         ctx.restore();
       }
-      x += ww + sp; wordIdx++;
-    });
+      x += widths[i] + sp;
+    }
   });
   ctx.restore();
   return { y: cy, h: blockH };
@@ -4147,7 +4151,7 @@ const VideoUI = {
       let moved = false;
       const mv = ev => { const nx = (ev.clientX - r.left) * k, ny = (ev.clientY - r.top) * k; if (Math.hypot(nx - x0, ny - y0) > 4) moved = true; if (!moved) return;
         if (hit.el) { hit.el.x = Math.round(ox + nx - x0); hit.el.y = Math.round(oy + ny - y0); const cx = hit.el.x + hit.el.w / 2; if (Math.abs(cx - f.w / 2) < f.w * 0.012) hit.el.x = Math.round(f.w / 2 - hit.el.w / 2); }
-        else hit.cap.y = clamp((oy + ny - y0) / f.h, 0.05, 0.95);
+        else { hit.cap.y = clamp((oy + ny - y0) / f.h, 0.05, 0.95); hit.cap.manual = true; }
         requestVRender(); };
       const up = () => { c.removeEventListener('pointermove', mv); c.removeEventListener('pointerup', up); c.removeEventListener('pointercancel', up); if (moved) { commit('move'); this.renderInspector(); } };
       c.addEventListener('pointermove', mv); c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
@@ -4435,8 +4439,8 @@ const VideoUI = {
     st.onchange = () => { c.start = Math.max(0, +st.value); commit('cap'); Timeline.render(); }; en.onchange = () => { c.end = Math.max(c.start + 0.1, +en.value); commit('cap'); Timeline.render(); };
     ins.appendChild(insSec('Caption', ta, h('div', { class: 'grid2', style: { marginTop: '8px' } }, field('Start', st), field('Ende', en)),
       field('Stil (nur diese Caption)', selectEl([{ v: '', l: 'Wie alle' }, ...Object.entries(CAPTION_STYLES).map(([k, s]) => ({ v: k, l: s.l }))], c.style || '', v => { c.style = v || undefined; commit('cap'); requestVRender(); })),
-      slider('Vertikale Position', round((c.y ?? capY(App.project.video.cap, null, 1)), 2), 0.05, 0.95, 0.01, this.lv(v => c.y = v), this.cm('cap')),
-      h('div', { class: 'row wrap' }, btn('Position zurücksetzen', () => { delete c.y; commit('cap'); requestVRender(); this.renderInspector(); }, { cls: 'sm' }), btn('Alle im Caption Studio', () => showView('captions'), { cls: 'sm ghost', icon: 'captions' }))));
+      slider('Vertikale Position', round((c.y ?? capY(App.project.video.cap, null, 1)), 2), 0.05, 0.95, 0.01, this.lv(v => { c.y = v; c.manual = true; }), this.cm('cap')), toggle('Lesbarkeits-Hintergrund', !!c.box, x => { c.box = x; commit('cap'); requestVRender(); }),
+      h('div', { class: 'row wrap' }, btn('Position zurücksetzen', () => { delete c.y; delete c.manual; commit('cap'); requestVRender(); this.renderInspector(); }, { cls: 'sm' }), btn('Alle im Caption Studio', () => showView('captions'), { cls: 'sm ghost', icon: 'captions' }))));
   },
   iAudio(ins, it) {
     const m = Media.get(it.mediaId);
@@ -4496,6 +4500,7 @@ function preloadVideoProject(p) {
 const CapEngine = {
   FUNC: new Set('der die das den dem des ein eine einen einem einer und oder aber mit zu zum zur in im an am auf für von vom bei aus nach über unter um als wie so dass ob wenn weil ich du er sie es wir ihr mein meine dein deine sein seine ihre unsere nicht noch auch nur schon sehr ganz the a an and or but to of in on at for with from my your our their his her its is are was i you we they this that'.split(' ')),
   EMPH: /^(wichtig|wichtigste|nie|niemals|immer|endlich|wirklich|echt|marke|marken|sichtbar|sichtbarkeit|vertrauen|gefühl|klarheit|ruhe|qualität|premium|luxus|liebe|mut|wirkung|erfolg|gründung|gegründet|kunden|kundinnen|geschichte|zeit|wachstum|idee|frei|freiheit|important|never|always|brand|trust|feeling|clarity|love|growth|idea|story)$/i,
+  NEG: /^(nicht|nichts|kein|keine|keinen|keinem|keiner|nie|niemals|weder|not|no|never|dont|cant|wont|isnt|arent|doesnt|didnt)$/i,
   clean(w) { return String(w).toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); },
   emphIndex(words) {
     let best = -1, bs = 1.5;
@@ -4512,7 +4517,9 @@ const CapEngine = {
       const gap = next ? next.s - w.e : 9;
       const punct = /[.!?…]["“”»]?$/.test(w.w), comma = /[,;:–—]$/.test(w.w);
       const len = cur.length;
-      let brk = !next || punct || gap > 0.42 || len >= maxWords || (comma && len >= 2) || chars(cur) > (opts.maxChars || 30);
+      let brk = !next || punct || gap > 0.42 || len >= maxWords || (comma && len >= 2) || chars(cur) > (opts.maxChars || 26);
+      // never tear a negation from what it negates ("nicht | aufgeben") – allow one extra word
+      if (brk && next && !punct && gap <= 0.42 && this.NEG.test(this.clean(w.w)) && len > 1) { cur.pop(); groups.push(cur); cur = [w]; continue; }
       if (brk && next && !punct && gap <= 0.42 && len > 1 && this.FUNC.has(this.clean(w.w))) { cur.pop(); groups.push(cur); cur = [w]; continue; }
       if (brk) { groups.push(cur); cur = []; }
     }
@@ -4523,7 +4530,14 @@ const CapEngine = {
       const g = groups[i]; if (g.length !== 1 || groups.length < 2) continue;
       const prev = groups[i - 1], next = groups[i + 1];
       if (prev && !endsSentence(prev) && prev.length < maxWords + 1 && g[0].s - prev[prev.length - 1].e < 0.35) { prev.push(...g); groups.splice(i, 1); }
-      else if (next && !endsSentence(g) && next.length < maxWords + 2 && next[0].s - g[0].e < (this.FUNC.has(this.clean(g[0].w)) ? 1.6 : 0.6)) { next.unshift(...g); groups.splice(i, 1); }
+      else if (next && !endsSentence(g) && next[0].s - g[0].e < (this.FUNC.has(this.clean(g[0].w)) ? 1.6 : 0.6)) {
+        const merged = [...g, ...next];
+        if (merged.length <= maxWords) { groups.splice(i, 2, merged); continue; }
+        // rebalance: split near the middle, never after a function word or a negation
+        let best = -1, bd = 99; const mid = merged.length / 2;
+        for (let k = 2; k <= merged.length - 1; k++) { const c = this.clean(merged[k - 1].w); if (this.FUNC.has(c) || this.NEG.test(c)) continue; if (k > maxWords || merged.length - k > maxWords) continue; const d = Math.abs(k - mid); if (d < bd) { bd = d; best = k; } }
+        if (best > 0) groups.splice(i, 2, merged.slice(0, best), merged.slice(best));
+      }
     }
     return groups.map((g, i) => {
       const start = g[0].s; const nextStart = groups[i + 1] ? groups[i + 1][0].s : Infinity;
@@ -4550,6 +4564,37 @@ const CapEngine = {
     return out;
   },
 };
+/**
+ * Face-/subject-free caption placement + automatic readability box.
+ * Uses the per-frame subject track (face box or skin-tone region) and the
+ * brightness of the caption band. Manually moved captions are left alone.
+ */
+function smartCaptionPlacement(p) {
+  const v = p.video, lay = mainLayout(v.main); const res = { moved: 0, boxed: 0, checked: 0 };
+  const base = capY(v.cap, null, 1); const half = 0.065;
+  for (const c of v.captions) {
+    if (c.manual) continue;
+    const mid = (c.start + c.end) / 2; const L = lay.find(l => mid >= l.start && mid < l.end); if (!L) continue;
+    const m = Media.get(L.clip.mediaId); const tr = m && m.analysis && m.analysis.track; if (!tr || !tr.length) continue;
+    const st = L.clip.in + (mid - L.start) * L.clip.speed;
+    let s = tr[0]; for (const x of tr) if (Math.abs(x.t - st) < Math.abs(s.t - st)) s = x;
+    res.checked++;
+    delete c.y; c.box = false;
+    if (s.fy0 != null && s.fy1 != null) {
+      const z = L.clip.zoom || 1; // digital zoom pushes the face away from the centre
+      const top = 0.5 + (s.fy0 - 0.5) * z, bot = 0.5 + (s.fy1 - 0.5) * z;
+      if (bot > base - half && top < base + half) {
+        if (bot + 0.09 <= 0.8) c.y = round(bot + 0.08, 3);            // directly below the face, still above the app UI
+        else if (top > 0.36) c.y = 0.2;                              // face sits low → captions to the upper third
+        else c.box = true;                                           // no free area → keep position, add readability box
+        if (c.y != null) res.moved++;
+      }
+    }
+    const band = s.band; if (band != null && band > 0.6 && !c.box) c.box = true;
+    if (c.box) res.boxed++;
+  }
+  return res;
+}
 /** Speech segments mapped from source media to timeline time (needs analysis). */
 function timelineSpeech(p) {
   const out = [];
@@ -4614,7 +4659,8 @@ const CaptionsUI = {
     const setSrc = k => { this.src = k; $$('.tab', tabs).forEach(t => t.classList.toggle('on', t.dataset.k === k)); drawSrc(); };
     [['script', 'Skript einfügen'], ['auto', 'Automatisch transkribieren'], ['transcript', 'Vorhandenes Transkript']].forEach(([k, l]) => tabs.appendChild(h('button', { class: 'tab' + (this.src === k ? ' on' : ''), type: 'button', role: 'tab', dataset: { k }, onclick: () => setSrc(k) }, l)));
     const wordsPer = h('div'); let wp = v.cap.wordsPer || 4;
-    const wpChips = chips([2, 3, 4, 5, 6].map(n => ({ v: n, l: n + ' Wörter' })), wp, n => { wp = n; v.cap.wordsPer = n; });
+    if (wp > 4) wp = 4;
+    const wpChips = chips([2, 3, 4].map(n => ({ v: n, l: n + ' Wörter' })), wp, n => { wp = n; v.cap.wordsPer = n; });
     wordsPer.append(h('div', { class: 'lbl', style: { margin: '12px 0 6px' } }, 'Wörter pro Caption'), wpChips);
     const drawSrc = () => {
       clear(sbody);
@@ -4651,7 +4697,9 @@ const CaptionsUI = {
       t.append(c, h('span', { class: 'tl' }, s.l)); sg.appendChild(t);
     });
     stCard.appendChild(sg);
-    stCard.append(h('div', { class: 'lbl', style: { margin: '14px 0 6px' } }, 'Position'), chips(CAPTION_POS, v.cap.position, x => { v.cap.position = x; commit('cappos'); requestVRender(); this.render(); }));
+    stCard.append(h('div', { class: 'lbl', style: { margin: '14px 0 6px' } }, 'Position'), chips(CAPTION_POS, v.cap.position, x => { v.cap.position = x; commit('cappos'); requestVRender(); this.render(); }),
+      h('div', { class: 'row wrap', style: { marginTop: '10px', gap: '8px' } }, btn('Gesichter & Motiv freihalten', async ev => { const b = ev.currentTarget; setBtnBusy(b, true); try { await this.placeSmart(true); } finally { setBtnBusy(b, false); } }, { cls: 'sm', icon: 'person', tip: 'Analysiert das Video und setzt Untertitel nie auf Gesichter' }),
+        toggle('Lesbarkeits-Hintergrund für alle', !!v.cap.box, x => { v.cap.box = x; commit('capbox'); requestVRender(); })));
     if (v.cap.position === 'free') stCard.appendChild(slider('Vertikale Position', v.cap.y ?? 0.72, 0.05, 0.95, 0.01, x => { v.cap.y = x; requestVRender(); }, () => commit('cappos')));
     stCard.append(h('div', { class: 'lbl', style: { margin: '14px 0 6px' } }, 'Animation'), chips(CAPTION_ANIMS, v.cap.animation, x => { v.cap.animation = x; commit('capanim'); requestVRender(); }),
       h('div', { style: { height: '10px' } }), slider('Größe', v.cap.size || 1, 0.6, 1.6, 0.01, x => { v.cap.size = x; requestVRender(); }, () => commit('capsize'), { reset: 1 }),
@@ -4677,17 +4725,25 @@ const CaptionsUI = {
       const nudge = (d) => { c.start = Math.max(0, c.start + d); c.end = Math.max(c.start + 0.15, c.end + d); if (c.words) c.words.forEach(w => { w.s += d; w.e += d; }); commit('captime'); this.renderList(); VE.seek(c.start + 0.01); };
       row.append(time, inp,
         ibtn('chevL', 'Früher (−0,1 s)', () => nudge(-0.1), { size: 's' }), ibtn('chevR', 'Später (+0,1 s)', () => nudge(0.1), { size: 's' }),
-        ibtn('up', 'Höher positionieren', () => { c.y = clamp((c.y ?? capY(v.cap, null, 1)) - 0.03, 0.05, 0.95); commit('capy'); requestVRender(); }, { size: 's' }),
-        ibtn('down', 'Tiefer positionieren', () => { c.y = clamp((c.y ?? capY(v.cap, null, 1)) + 0.03, 0.05, 0.95); commit('capy'); requestVRender(); }, { size: 's' }),
+        ibtn('up', 'Höher positionieren', () => { c.manual = true; c.y = clamp((c.y ?? capY(v.cap, null, 1)) - 0.03, 0.05, 0.95); commit('capy'); requestVRender(); }, { size: 's' }),
+        ibtn('down', 'Tiefer positionieren', () => { c.manual = true; c.y = clamp((c.y ?? capY(v.cap, null, 1)) + 0.03, 0.05, 0.95); commit('capy'); requestVRender(); }, { size: 's' }),
         ibtn('more', 'Mehr', ev => popMenu(ev.currentTarget, [
           { label: 'Start = Playhead', icon: 'clock', fn: () => { const d = c.end - c.start; c.start = VE.t; c.end = VE.t + d; commit('captime'); this.renderList(); } },
           { label: 'Ende = Playhead', icon: 'clock', fn: () => { if (VE.t > c.start) { c.end = VE.t; commit('captime'); this.renderList(); } } },
           { label: 'Mit nächster zusammenführen', icon: 'link', fn: () => { const n = v.captions[i + 1]; if (!n) return; c.text += ' ' + n.text; c.end = n.end; c.words = c.words && n.words ? c.words.concat(n.words) : null; v.captions.splice(i + 1, 1); commit('capmerge'); this.renderList(); } },
-          { label: 'Position zurücksetzen', icon: 'undo', fn: () => { delete c.y; commit('capy'); requestVRender(); } },
+          { label: 'Position zurücksetzen', icon: 'undo', fn: () => { delete c.y; delete c.manual; commit('capy'); requestVRender(); } },
           '-', { label: 'Löschen', icon: 'trash', danger: true, fn: () => { v.captions.splice(i, 1); commit('capdel'); this.renderList(); requestVRender(); } }]), { size: 's' }));
       list.appendChild(row);
     });
     lc.appendChild(list);
+  },
+  /** Analyse subject positions (once per video) and place captions face-free. */
+  async placeSmart(verbose) {
+    const p = App.project; if (!p || !p.video.captions.length) { if (verbose) toast('Erzeuge zuerst Untertitel.', 'info'); return; }
+    for (const id of new Set(p.video.main.filter(c => c.kind === 'video').map(c => c.mediaId))) await ensureSubjectTrack(id);
+    const r = smartCaptionPlacement(p);
+    commit('capsmart'); this.renderList && this.renderList(); requestVRender();
+    if (verbose) toast(r.checked ? `${r.moved} Untertitel vom Gesicht weg verschoben · ${r.boxed} mit Lesbarkeits-Hintergrund` : 'Keine Bildanalyse möglich – Position bleibt im unteren Drittel.', 'success', { duration: 4500 });
   },
   async fromScript(text, wp, align) {
     const p = App.project, v = p.video; if (!text.trim()) { toast('Bitte zuerst ein Skript einfügen.', 'info'); return; }
@@ -4698,7 +4754,7 @@ const CaptionsUI = {
     const words = CapEngine.alignScript(text, { start: speech && speech.length ? speech[0][0] : 0.2, end: speech && speech.length ? speech[speech.length - 1][1] : dur - 0.1, speech });
     v.captions = CapEngine.segment(words, wp, { emphasis: true }).map(c => ({ ...c, words: null }));
     v.transcript = v.transcript && !v.transcript.estimated ? v.transcript : { text, words: words.map(w => ({ ...w })), source: 'Skript', estimated: true, timeline: true };
-    commit('captions'); this.render(); VE.seek(0); toast(v.captions.length + ' Untertitel erzeugt', 'success');
+    commit('captions'); await this.placeSmart(false); this.render(); VE.seek(0); toast(v.captions.length + ' Untertitel erzeugt · Gesichter freigehalten', 'success');
   },
   buildFromTranscript(wp) {
     const p = App.project, v = p.video, tr = v.transcript; if (!tr || !tr.words) return;
@@ -4706,6 +4762,7 @@ const CaptionsUI = {
     v.captions = CapEngine.segment(words, wp, { emphasis: true });
     if (tr.estimated) v.captions.forEach(c => c.words = null);
     commit('captions'); this.render(); VE.seek(0); toast(v.captions.length + ' Untertitel erzeugt', 'success');
+    this.placeSmart(false).then(() => this.render());
   },
   draw() {
     const c = this.e.canvas; if (!c || !this.active() || !c.isConnected) return;
@@ -4719,7 +4776,7 @@ const CaptionsUI = {
       const r = c.getBoundingClientRect(); const k = f.h / r.height; const y0 = (e.clientY - r.top) * k; const cy = capY(v.cap, cap, f.h);
       if (Math.abs(y0 - cy) > f.h * 0.08) return;
       e.preventDefault(); c.setPointerCapture(e.pointerId);
-      const mv = ev => { cap.y = clamp(((ev.clientY - r.top) * k) / f.h, 0.05, 0.95); requestVRender(); };
+      const mv = ev => { cap.y = clamp(((ev.clientY - r.top) * k) / f.h, 0.05, 0.95); cap.manual = true; requestVRender(); };
       const up = () => { c.removeEventListener('pointermove', mv); c.removeEventListener('pointerup', up); commit('capmove'); };
       c.addEventListener('pointermove', mv); c.addEventListener('pointerup', up);
     });
@@ -5111,7 +5168,7 @@ const Analysis = {
     for (let t = Math.min(0.2, dur / 2); t < dur; t += step) {
       await new Promise(res => { const done = () => { v.removeEventListener('seeked', done); res(); }; v.addEventListener('seeked', done); v.currentTime = t; setTimeout(done, 1500); });
       ctx.drawImage(v, 0, 0, W, H); const d = ctx.getImageData(0, 0, W, H).data;
-      let diff = 0, sx = 0, sw = 0;
+      let diff = 0, sx = 0, sw = 0; const rowSkin = new Float32Array(H);
       const lum = new Float32Array(W * H);
       for (let i = 0, p = 0; i < d.length; i += 4, p++) {
         const r = d[i], g = d[i + 1], b = d[i + 2]; const L = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; lum[p] = L;
@@ -5119,13 +5176,19 @@ const Analysis = {
         if (prev) diff += Math.abs(L - prev[p]);
         // skin-tone heuristic (YCbCr range) weighted toward center rows
         const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b, cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
-        if (cr > 135 && cr < 175 && cb > 85 && cb < 135 && r > 60) { const x = p % W; const y = Math.floor(p / W); const wgt = 1 - Math.abs(y / H - 0.4); sx += x * wgt; sw += wgt; }
+        if (cr > 135 && cr < 175 && cb > 85 && cb < 135 && r > 60) { const x = p % W; const y = Math.floor(p / W); const wgt = 1 - Math.abs(y / H - 0.4); sx += x * wgt; sw += wgt; rowSkin[y]++; }
       }
       if (prev) { const md = diff / (W * H); if (md > 0.16) scenes.push(round(t, 2)); }
       prev = lum;
-      let x = sw > W * H * 0.01 ? sx / sw / W : null, src = 'skin';
-      if (fd) { try { big.getContext('2d').drawImage(v, 0, 0, big.width, big.height); const f = await fd.detect(big); if (f[0]) { x = (f[0].boundingBox.x + f[0].boundingBox.width / 2) / big.width; src = 'face'; } } catch (e) { } }
-      samples.push({ t: round(t, 2), x: x == null ? null : round(x, 3), src });
+      let x = sw > W * H * 0.01 ? sx / sw / W : null, src = 'skin', fy0 = null, fy1 = null;
+      if (x != null) { // vertical extent of the skin region ≈ face (top of the blob, max 32 % of the height)
+        const mx = Math.max(...rowSkin); const dense = []; for (let y = 0; y < H; y++) if (rowSkin[y] >= mx * 0.3 && rowSkin[y] >= 2) dense.push(y);
+        if (dense.length) { fy0 = dense[0] / H; fy1 = Math.min(dense[dense.length - 1] + 1, dense[0] + H * 0.32) / H; }
+      }
+      if (fd) { try { big.getContext('2d').drawImage(v, 0, 0, big.width, big.height); const f = await fd.detect(big); if (f[0]) { const bb = f[0].boundingBox; x = (bb.x + bb.width / 2) / big.width; fy0 = bb.y / big.height; fy1 = (bb.y + bb.height * 1.15) / big.height; src = 'face'; } } catch (e) { } }
+      // brightness of the caption band (lower third, centre) → readability box if bright
+      let bl = 0, bn = 0; for (let y = Math.floor(H * 0.68); y < Math.floor(H * 0.86); y++) for (let xx = Math.floor(W * 0.3); xx < Math.floor(W * 0.7); xx++) { bl += lum[y * W + xx]; bn++; }
+      samples.push({ t: round(t, 2), x: x == null ? null : round(x, 3), fy0: fy0 == null ? null : round(fy0, 3), fy1: fy1 == null ? null : round(fy1, 3), band: bn ? round(bl / bn, 3) : null, src });
       onProgress && onProgress(t / dur);
     }
     v.removeAttribute('src'); v.load();
@@ -5135,6 +5198,14 @@ const Analysis = {
     return { color: { r: sumR / nPix / 255, g: sumG / nPix / 255, b: sumB / nPix / 255, p02: pct(0.02), p50: pct(0.5), p98: pct(0.98) }, scenes, samples, duration: dur, w: v.videoWidth, h: v.videoHeight };
   },
 };
+/** Per-video subject track (face/skin box + caption-band brightness), cached in the media record. */
+async function ensureSubjectTrack(mediaId) {
+  const m = Media.get(mediaId); if (!m) return null;
+  if (m.analysis && m.analysis.track) return m.analysis.track;
+  const kill = toast('Analysiere Bildinhalt (Gesichter & Helligkeit) …', 'info', { duration: 60000 });
+  try { const fr = await Analysis.frames(mediaId); if (!fr) return null; await Media.update(mediaId, { analysis: Object.assign({}, m.analysis, { track: fr.samples }) }); return fr.samples; }
+  catch (e) { return null; } finally { kill(); }
+}
 async function ensureSpeech(p) {
   let ok = false;
   for (const id of new Set(p.video.main.filter(c => c.kind === 'video').map(c => c.mediaId))) {
@@ -5270,7 +5341,7 @@ function buildAutoEdit({ media, fmtKey, opts, audio, frames, transcript, llm }) 
     if (transcript.estimated) v.captions.forEach(c => c.words = null);
     stats.captions = v.captions.length;
   }
-  v.cap.style = preset.cap; v.cap.animation = preset.anim; v.cap.position = 'safe'; v.cap.highlight = true;
+  v.cap.style = preset.cap; v.cap.animation = preset.anim; v.cap.position = 'safe'; v.cap.highlight = true; v.cap.wordsPer = Math.min(4, opts.wordsPer || 4);
   // sentence list in timeline time (for b-roll / graphics / hook)
   const sentences = [];
   if (tlWords && tlWords.length) { let cur = []; tlWords.forEach((w, i) => { cur.push(w); if (/[.!?…]$/.test(w.w) || i === tlWords.length - 1 || (tlWords[i + 1] && tlWords[i + 1].s - w.e > 0.7)) { sentences.push({ text: cur.map(x => x.w).join(' '), s: cur[0].s, e: cur[cur.length - 1].e }); cur = []; } }); }
@@ -5451,6 +5522,7 @@ const AutoEditUI = {
       // 3 scenes / frames
       this.setStep('scenes', 'run', 'Bilder werden abgetastet …', 0);
       if (!C_.frames) { try { C_.frames = await Analysis.frames(m.id, p => this.setStep('scenes', 'run', 'Bilder werden abgetastet …', p)); } catch (e) { C_.frames = null; } }
+      if (C_.frames) await Media.update(m.id, { analysis: Object.assign({}, Media.get(m.id).analysis, { track: C_.frames.samples }) });
       this.setStep('scenes', C_.frames ? 'done' : 'skip', C_.frames ? `${C_.frames.samples.length} Bilder analysiert · ${C_.frames.scenes.length} Szenenwechsel · Motiv: ${C_.frames.samples.some(s => s.src === 'face') ? 'Gesichtserkennung' : 'Bildanalyse (Hauttöne/Mitte)'}` : 'Bildanalyse nicht möglich'); chk();
       // 4 key statements
       let llm = null;
@@ -5473,6 +5545,7 @@ const AutoEditUI = {
       chk();
       this.setStep('media', 'run', 'Mediathek wird durchsucht …');
       const res = buildAutoEdit({ media: m, fmtKey: o.fmt, opts: o, audio: C_.audio, frames: C_.frames, transcript: tr, llm });
+      if (res.captions.length) { const pl = smartCaptionPlacement({ video: res, format: FORMATS[o.fmt] }); if (pl.moved || pl.boxed) res.autoEdit.summary.splice(2, 0, `Untertitel gesichtsfrei platziert (${pl.moved} verschoben, ${pl.boxed} mit Lesbarkeits-Hintergrund)`); }
       const st = res.autoEdit.stats;
       this.setStep('media', o.broll && tr ? 'done' : 'skip', o.broll && tr ? `${st.broll} passende Medien gefunden` : 'Übersprungen');
       this.setStep('caps', o.captions && tr ? 'done' : 'skip', o.captions && tr ? `${st.captions} Untertitel` : 'Benötigt Transkript');

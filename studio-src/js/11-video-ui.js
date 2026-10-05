@@ -116,7 +116,7 @@ const VideoUI = {
       let moved = false;
       const mv = ev => { const nx = (ev.clientX - r.left) * k, ny = (ev.clientY - r.top) * k; if (Math.hypot(nx - x0, ny - y0) > 4) moved = true; if (!moved) return;
         if (hit.el) { hit.el.x = Math.round(ox + nx - x0); hit.el.y = Math.round(oy + ny - y0); const cx = hit.el.x + hit.el.w / 2; if (Math.abs(cx - f.w / 2) < f.w * 0.012) hit.el.x = Math.round(f.w / 2 - hit.el.w / 2); }
-        else hit.cap.y = clamp((oy + ny - y0) / f.h, 0.05, 0.95);
+        else { hit.cap.y = clamp((oy + ny - y0) / f.h, 0.05, 0.95); hit.cap.manual = true; }
         requestVRender(); };
       const up = () => { c.removeEventListener('pointermove', mv); c.removeEventListener('pointerup', up); c.removeEventListener('pointercancel', up); if (moved) { commit('move'); this.renderInspector(); } };
       c.addEventListener('pointermove', mv); c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
@@ -404,8 +404,8 @@ const VideoUI = {
     st.onchange = () => { c.start = Math.max(0, +st.value); commit('cap'); Timeline.render(); }; en.onchange = () => { c.end = Math.max(c.start + 0.1, +en.value); commit('cap'); Timeline.render(); };
     ins.appendChild(insSec('Caption', ta, h('div', { class: 'grid2', style: { marginTop: '8px' } }, field('Start', st), field('Ende', en)),
       field('Stil (nur diese Caption)', selectEl([{ v: '', l: 'Wie alle' }, ...Object.entries(CAPTION_STYLES).map(([k, s]) => ({ v: k, l: s.l }))], c.style || '', v => { c.style = v || undefined; commit('cap'); requestVRender(); })),
-      slider('Vertikale Position', round((c.y ?? capY(App.project.video.cap, null, 1)), 2), 0.05, 0.95, 0.01, this.lv(v => c.y = v), this.cm('cap')),
-      h('div', { class: 'row wrap' }, btn('Position zurücksetzen', () => { delete c.y; commit('cap'); requestVRender(); this.renderInspector(); }, { cls: 'sm' }), btn('Alle im Caption Studio', () => showView('captions'), { cls: 'sm ghost', icon: 'captions' }))));
+      slider('Vertikale Position', round((c.y ?? capY(App.project.video.cap, null, 1)), 2), 0.05, 0.95, 0.01, this.lv(v => { c.y = v; c.manual = true; }), this.cm('cap')), toggle('Lesbarkeits-Hintergrund', !!c.box, x => { c.box = x; commit('cap'); requestVRender(); }),
+      h('div', { class: 'row wrap' }, btn('Position zurücksetzen', () => { delete c.y; delete c.manual; commit('cap'); requestVRender(); this.renderInspector(); }, { cls: 'sm' }), btn('Alle im Caption Studio', () => showView('captions'), { cls: 'sm ghost', icon: 'captions' }))));
   },
   iAudio(ins, it) {
     const m = Media.get(it.mediaId);

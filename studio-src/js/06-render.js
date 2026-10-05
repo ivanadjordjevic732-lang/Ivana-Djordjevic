@@ -98,7 +98,7 @@ function drawTextLocal(ctx, el, o = {}) {
     let s = line;
     if (words != null) { const ws = line.split(' '); const vis = Math.max(0, Math.min(ws.length, words - wordCount)); wordCount += ws.length; if (!vis) return; s = ws.slice(0, vis).join(' '); }
     const y = top + m.lh * (i + 0.5);
-    if (el.shadow && el.shadow.on) { ctx.shadowColor = rgba(el.shadow.color, el.shadow.opacity ?? 0.35); ctx.shadowBlur = el.shadow.blur; ctx.shadowOffsetX = el.shadow.x; ctx.shadowOffsetY = el.shadow.y; }
+    if (el.shadow && el.shadow.on) { const k = Math.abs(ctx.getTransform ? ctx.getTransform().a : 1) || 1; ctx.shadowColor = rgba(el.shadow.color, el.shadow.opacity ?? 0.35); ctx.shadowBlur = el.shadow.blur * k; ctx.shadowOffsetX = el.shadow.x * k; ctx.shadowOffsetY = el.shadow.y * k; }
     if (el.stroke && el.stroke.on && el.stroke.w > 0) { ctx.save(); ctx.strokeStyle = el.stroke.color; ctx.lineWidth = el.stroke.w * 2; ctx.lineJoin = 'round'; fillTextLS(ctx, s, x, y, m.ls, align, true); ctx.restore(); }
     ctx.fillStyle = el.color;
     fillTextLS(ctx, s, x, y, m.ls, align);
@@ -200,50 +200,58 @@ async function makeProjectThumb(p, size = 360) {
 }
 
 /* ── Captions ────────────────────────────────────────────────────────── */
+/* Caption styles: readable by default — sentence case, Jost, letter-spacing ≈ 0.03em, line-height 1.2.
+   ALL CAPS only where the spacing is wide enough to stay legible (Luxury). */
 const CAPTION_STYLES = {
-  minimal: { l: 'Minimal', font: 'Jost', weight: 500, size: 0.05, color: '#FFFFFF', shadow: true, upper: false, emph: '#D9C393', emphItalic: false, active: '#D9C393' },
-  mindea: { l: 'Mindéa', font: 'Cormorant Garamond', weight: 600, size: 0.066, color: '#F8F5F0', shadow: true, emph: '#D9C393', emphItalic: true, active: '#D9C393', lh: 1.08 },
-  editorial: { l: 'Editorial', font: 'Playfair Display', weight: 500, italic: true, size: 0.054, color: '#FFFFFF', shadow: true, emph: '#D9C393', emphItalic: false, active: '#F1E9DB' },
-  bold: { l: 'Bold', font: 'Jost', weight: 700, size: 0.056, color: '#FFFFFF', shadow: true, upper: true, emph: '#D9C393', stroke: '#17130F', active: '#D9C393', ls: 0.02 },
-  box: { l: 'Box', font: 'Jost', weight: 500, size: 0.046, color: '#F8F5F0', box: '#17130F', boxA: 0.82, emph: '#D9C393', active: '#D9C393' },
-  clean: { l: 'Clean', font: 'Jost', weight: 400, size: 0.046, color: '#FFFFFF', shadow: true, soft: true, emph: '#F1E9DB', active: '#FFFFFF' },
-  luxury: { l: 'Luxury', font: 'Cormorant Garamond', weight: 500, size: 0.05, color: '#F1E9DB', shadow: true, upper: true, ls: 0.16, emph: '#D9C393', active: '#D9C393' },
+  mindea: { l: 'Mindéa', font: 'Jost', weight: 500, size: 0.05, color: '#F8F5F0', shadow: true, ls: 0.03, lh: 1.2, emph: '#D9C393', active: '#D9C393' },
+  minimal: { l: 'Minimal', font: 'Jost', weight: 400, size: 0.046, color: '#FFFFFF', shadow: true, ls: 0.03, lh: 1.2, emph: '#F1E9DB', active: '#D9C393' },
+  editorial: { l: 'Editorial', font: 'Playfair Display', weight: 500, italic: true, size: 0.052, color: '#FFFFFF', shadow: true, ls: 0.01, lh: 1.2, emph: '#D9C393', active: '#F1E9DB' },
+  bold: { l: 'Bold', font: 'Jost', weight: 600, size: 0.054, color: '#FFFFFF', shadow: true, ls: 0.03, lh: 1.15, emph: '#D9C393', active: '#D9C393' },
+  box: { l: 'Box', font: 'Jost', weight: 500, size: 0.046, color: '#F8F5F0', box: true, ls: 0.03, lh: 1.2, emph: '#D9C393', active: '#D9C393' },
+  clean: { l: 'Clean', font: 'Jost', weight: 400, size: 0.044, color: '#FFFFFF', shadow: true, ls: 0.03, lh: 1.25, emph: '#FFFFFF', active: '#F1E9DB' },
+  luxury: { l: 'Luxury', font: 'Cormorant Garamond', weight: 500, size: 0.05, color: '#F1E9DB', shadow: true, upper: true, ls: 0.14, lh: 1.2, emph: '#D9C393', active: '#D9C393' },
 };
-const CAPTION_POS = [{ v: 'top', l: 'Oben' }, { v: 'middle', l: 'Mitte' }, { v: 'bottom', l: 'Unten' }, { v: 'safe', l: 'Safe Zone Reel' }, { v: 'free', l: 'Frei' }];
+const CAPTION_POS = [{ v: 'safe', l: 'Unteres Drittel (Safe Zone)' }, { v: 'bottom', l: 'Unten' }, { v: 'middle', l: 'Mitte' }, { v: 'top', l: 'Oben' }, { v: 'free', l: 'Frei' }];
 const CAPTION_ANIMS = [{ v: 'none', l: 'Keine' }, { v: 'fade', l: 'Fade' }, { v: 'pop', l: 'Pop' }, { v: 'slideUp', l: 'Slide Up' }, { v: 'word', l: 'Wortweise' }, { v: 'scale', l: 'Scale' }];
+/** Caption centre. 'safe' = lower third, above the Reels/TikTok UI (≈ 22 % from the bottom). */
 function capY(set, cap, H) {
   if (cap && cap.y != null) return cap.y * H;
-  switch (set.position) { case 'top': return H * 0.2; case 'middle': return H * 0.5; case 'bottom': return H * 0.84; case 'free': return (set.y ?? 0.72) * H; default: return H * 0.68; }
+  switch (set.position) { case 'top': return H * 0.2; case 'middle': return H * 0.5; case 'bottom': return H * 0.8; case 'free': return (set.y ?? 0.76) * H; default: return H * 0.76; }
 }
-/** Layout caption words into ≤2 balanced lines. Returns [{words:[{w,i}], width}] */
-function capLayout(ctx, words, maxW, ls) {
-  const sp = ctx.measureText(' ').width;
-  const widths = words.map(w => measureLS(ctx, w, ls));
-  const total = widths.reduce((a, b) => a + b, 0) + sp * (words.length - 1);
-  if (total <= maxW || words.length < 2) return [{ idx: words.map((_, i) => i), width: total }];
-  // balanced split
-  let best = 1, bestD = Infinity, acc = 0;
-  for (let i = 1; i < words.length; i++) { acc += widths[i - 1] + (i > 1 ? sp : 0); const d = Math.abs(total - acc * 2); if (d < bestD && acc <= maxW) { bestD = d; best = i; } }
-  const A = words.slice(0, best).map((_, i) => i), B = words.slice(best).map((_, i) => i + best);
-  const wid = ix => ix.reduce((s, i) => s + widths[i], 0) + sp * (ix.length - 1);
-  return [{ idx: A, width: wid(A) }, { idx: B, width: wid(B) }];
+/** Clean caption words: real spaces between words, no glued tokens, no stray whitespace. */
+function capWords(text) {
+  return String(text || '').replace(/ /g, ' ').replace(/([.,!?;:…])(?=[A-Za-zÄÖÜäöüß])/g, '$1 ').split(/\s+/).filter(Boolean);
+}
+/** Balanced ≤2-line layout using each word's real width. */
+function capLayout(widths, sp, maxW) {
+  const n = widths.length, sum = (a, b) => { let s = 0; for (let i = a; i < b; i++) s += widths[i]; return s + sp * Math.max(0, b - a - 1); };
+  const total = sum(0, n);
+  if (total <= maxW || n < 2) return [{ a: 0, b: n, width: total }];
+  let best = 1, bestD = Infinity;
+  for (let k = 1; k < n; k++) { const w1 = sum(0, k), w2 = sum(k, n); const d = Math.max(w1, w2) + Math.abs(w1 - w2) * 0.2; if (d < bestD) { bestD = d; best = k; } }
+  return [{ a: 0, b: best, width: sum(0, best) }, { a: best, b: n, width: sum(best, n) }];
 }
 function drawCaption(ctx, cap, set, t, W, H, o = {}) {
-  const st = Object.assign({}, CAPTION_STYLES[cap.style || set.style] || CAPTION_STYLES.mindea);
+  const st = CAPTION_STYLES[cap.style || set.style] || CAPTION_STYLES.mindea;
   const size = Math.round(st.size * Math.min(W, H * 0.62) * (set.size || 1) * (cap.size || 1));
-  const raw = (cap.text || '').trim(); if (!raw) return;
-  const words = raw.split(/\s+/).map(w => st.upper ? w.toUpperCase() : w);
+  let words = capWords(cap.text);
+  if (!words.length) return;
+  if (st.upper) words = words.map(w => w.toUpperCase());
   if (cap.emoji) words.push(cap.emoji);
+  const k = Math.abs(ctx.getTransform ? ctx.getTransform().a : 1) || 1; // shadows are in device px → scale them
+  const fontFor = italic => `${italic ? 'italic ' : ''}${st.weight} ${size}px ${ff(st.font)}`;
   ctx.save();
-  ctx.font = `${st.italic ? 'italic ' : ''}${st.weight} ${size}px ${ff(st.font)}`;
   ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
   const ls = (st.ls || 0) * size;
-  const lines = capLayout(ctx, words, W * 0.82, ls);
-  const lh = size * (st.lh || 1.18);
+  ctx.font = fontFor(st.italic);
+  // guaranteed visible word gap (≥ 0.28em), independent of font metrics
+  const sp = Math.max(ctx.measureText(' ').width, size * 0.28) + ls;
+  const widths = words.map(w => measureLS(ctx, w, ls));
+  const lines = capLayout(widths, sp, W * 0.8);
+  const lh = size * (st.lh || 1.2);
   const cy = capY(set, cap, H);
   const anim = set.animation || 'fade';
   const dur = Math.max(0.01, cap.end - cap.start), q = clamp((t - cap.start) / 0.22, 0, 1), qo = clamp((cap.end - t) / 0.14, 0, 1);
-  // word timing (real word timestamps if present, else even split)
   const wt = words.map((_, i) => cap.words && cap.words[i] ? cap.words[i].s : cap.start + dur * i / words.length);
   let visible = words.length;
   if (anim === 'word') visible = wt.filter(s => s <= t + 0.02).length || 1;
@@ -253,32 +261,28 @@ function drawCaption(ctx, cap, set, t, W, H, o = {}) {
   else if (anim === 'scale') { const s = 1.08 - 0.08 * easeOut(q); ctx.globalAlpha *= easeOut(q) * qo; ctx.translate(W / 2, cy); ctx.scale(s, s); ctx.translate(-W / 2, -cy); }
   else if (anim === 'word') ctx.globalAlpha *= qo;
   const blockH = lines.length * lh;
-  const sp = ctx.measureText(' ').width;
   const emph = new Set(set.emphasis === false ? [] : (cap.emph || []));
-  if (st.box) {
-    const bw = Math.max(...lines.map(l => l.width)) + size * 1.0, bh = blockH + size * 0.55;
-    ctx.save(); ctx.globalAlpha *= st.boxA ?? 0.85; ctx.fillStyle = st.box; rrPath(ctx, W / 2 - bw / 2, cy - bh / 2, bw, bh, size * 0.28); ctx.fill(); ctx.restore();
+  // readability background: Mindéa warm black at 40 % with rounded corners
+  if (st.box || cap.box || set.box) {
+    const bw = Math.max(...lines.map(l => l.width)) + size * 0.9, bh = blockH + size * 0.5;
+    ctx.save(); ctx.globalAlpha *= st.box ? 0.62 : 0.4; ctx.fillStyle = '#17130F'; rrPath(ctx, W / 2 - bw / 2, cy - bh / 2, bw, bh, size * 0.32); ctx.fill(); ctx.restore();
   }
-  let wordIdx = 0;
   lines.forEach((ln, li) => {
     let x = W / 2 - ln.width / 2; const y = cy - blockH / 2 + lh * (li + 0.5);
-    ln.idx.forEach(i => {
-      const word = words[i]; const ww = measureLS(ctx, word, ls);
+    for (let i = ln.a; i < ln.b; i++) {
+      const word = words[i];
       if (i < visible) {
-        // subtle active-word highlight — only with real word timestamps
         const isActive = !!(set.highlight && cap.words && cap.words.length && t >= wt[i] && (i === words.length - 1 || t < wt[i + 1]));
-        const isEmph = emph.has(i);
         ctx.save();
-        if (isEmph && st.emphItalic) ctx.font = `italic ${st.weight} ${size * 1.04}px ${ff(st.font)}`;
-        if (st.shadow) { ctx.shadowColor = st.soft ? 'rgba(0,0,0,.35)' : 'rgba(0,0,0,.5)'; ctx.shadowBlur = size * (st.soft ? 0.5 : 0.28); ctx.shadowOffsetY = size * 0.04; }
-        if (st.stroke) { ctx.lineJoin = 'round'; ctx.strokeStyle = st.stroke; ctx.lineWidth = size * 0.1; fillTextLS(ctx, word, x, y, ls, 'left', true); ctx.shadowColor = 'transparent'; }
-        ctx.fillStyle = isEmph ? st.emph : (isActive ? st.active : st.color);
+        ctx.font = fontFor(st.italic);
+        if (st.shadow) { ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = size * 0.16 * k; ctx.shadowOffsetY = size * 0.04 * k; }
+        ctx.fillStyle = emph.has(i) ? st.emph : (isActive ? st.active : st.color);
         if (anim === 'word') { const wq = clamp((t - wt[i]) / 0.18, 0, 1); ctx.globalAlpha *= easeOut(wq); ctx.translate(0, (1 - easeOut(wq)) * size * 0.2); }
         fillTextLS(ctx, word, x, y, ls, 'left');
         ctx.restore();
       }
-      x += ww + sp; wordIdx++;
-    });
+      x += widths[i] + sp;
+    }
   });
   ctx.restore();
   return { y: cy, h: blockH };

@@ -55,7 +55,7 @@ const Analysis = {
     for (let t = Math.min(0.2, dur / 2); t < dur; t += step) {
       await new Promise(res => { const done = () => { v.removeEventListener('seeked', done); res(); }; v.addEventListener('seeked', done); v.currentTime = t; setTimeout(done, 1500); });
       ctx.drawImage(v, 0, 0, W, H); const d = ctx.getImageData(0, 0, W, H).data;
-      let diff = 0, sx = 0, sw = 0;
+      let diff = 0, sx = 0, sw = 0; const rowSkin = new Float32Array(H);
       const lum = new Float32Array(W * H);
       for (let i = 0, p = 0; i < d.length; i += 4, p++) {
         const r = d[i], g = d[i + 1], b = d[i + 2]; const L = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; lum[p] = L;
@@ -63,13 +63,19 @@ const Analysis = {
         if (prev) diff += Math.abs(L - prev[p]);
         // skin-tone heuristic (YCbCr range) weighted toward center rows
         const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b, cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
-        if (cr > 135 && cr < 175 && cb > 85 && cb < 135 && r > 60) { const x = p % W; const y = Math.floor(p / W); const wgt = 1 - Math.abs(y / H - 0.4); sx += x * wgt; sw += wgt; }
+        if (cr > 135 && cr < 175 && cb > 85 && cb < 135 && r > 60) { const x = p % W; const y = Math.floor(p / W); const wgt = 1 - Math.abs(y / H - 0.4); sx += x * wgt; sw += wgt; rowSkin[y]++; }
       }
       if (prev) { const md = diff / (W * H); if (md > 0.16) scenes.push(round(t, 2)); }
       prev = lum;
-      let x = sw > W * H * 0.01 ? sx / sw / W : null, src = 'skin';
-      if (fd) { try { big.getContext('2d').drawImage(v, 0, 0, big.width, big.height); const f = await fd.detect(big); if (f[0]) { x = (f[0].boundingBox.x + f[0].boundingBox.width / 2) / big.width; src = 'face'; } } catch (e) { } }
-      samples.push({ t: round(t, 2), x: x == null ? null : round(x, 3), src });
+      let x = sw > W * H * 0.01 ? sx / sw / W : null, src = 'skin', fy0 = null, fy1 = null;
+      if (x != null) { // vertical extent of the skin region ≈ face (top of the blob, max 32 % of the height)
+        const mx = Math.max(...rowSkin); const dense = []; for (let y = 0; y < H; y++) if (rowSkin[y] >= mx * 0.3 && rowSkin[y] >= 2) dense.push(y);
+        if (dense.length) { fy0 = dense[0] / H; fy1 = Math.min(dense[dense.length - 1] + 1, dense[0] + H * 0.32) / H; }
+      }
+      if (fd) { try { big.getContext('2d').drawImage(v, 0, 0, big.width, big.height); const f = await fd.detect(big); if (f[0]) { const bb = f[0].boundingBox; x = (bb.x + bb.width / 2) / big.width; fy0 = bb.y / big.height; fy1 = (bb.y + bb.height * 1.15) / big.height; src = 'face'; } } catch (e) { } }
+      // brightness of the caption band (lower third, centre) → readability box if bright
+      let bl = 0, bn = 0; for (let y = Math.floor(H * 0.68); y < Math.floor(H * 0.86); y++) for (let xx = Math.floor(W * 0.3); xx < Math.floor(W * 0.7); xx++) { bl += lum[y * W + xx]; bn++; }
+      samples.push({ t: round(t, 2), x: x == null ? null : round(x, 3), fy0: fy0 == null ? null : round(fy0, 3), fy1: fy1 == null ? null : round(fy1, 3), band: bn ? round(bl / bn, 3) : null, src });
       onProgress && onProgress(t / dur);
     }
     v.removeAttribute('src'); v.load();
@@ -79,6 +85,14 @@ const Analysis = {
     return { color: { r: sumR / nPix / 255, g: sumG / nPix / 255, b: sumB / nPix / 255, p02: pct(0.02), p50: pct(0.5), p98: pct(0.98) }, scenes, samples, duration: dur, w: v.videoWidth, h: v.videoHeight };
   },
 };
+/** Per-video subject track (face/skin box + caption-band brightness), cached in the media record. */
+async function ensureSubjectTrack(mediaId) {
+  const m = Media.get(mediaId); if (!m) return null;
+  if (m.analysis && m.analysis.track) return m.analysis.track;
+  const kill = toast('Analysiere Bildinhalt (Gesichter & Helligkeit) …', 'info', { duration: 60000 });
+  try { const fr = await Analysis.frames(mediaId); if (!fr) return null; await Media.update(mediaId, { analysis: Object.assign({}, m.analysis, { track: fr.samples }) }); return fr.samples; }
+  catch (e) { return null; } finally { kill(); }
+}
 async function ensureSpeech(p) {
   let ok = false;
   for (const id of new Set(p.video.main.filter(c => c.kind === 'video').map(c => c.mediaId))) {
@@ -214,7 +228,7 @@ function buildAutoEdit({ media, fmtKey, opts, audio, frames, transcript, llm }) 
     if (transcript.estimated) v.captions.forEach(c => c.words = null);
     stats.captions = v.captions.length;
   }
-  v.cap.style = preset.cap; v.cap.animation = preset.anim; v.cap.position = 'safe'; v.cap.highlight = true;
+  v.cap.style = preset.cap; v.cap.animation = preset.anim; v.cap.position = 'safe'; v.cap.highlight = true; v.cap.wordsPer = Math.min(4, opts.wordsPer || 4);
   // sentence list in timeline time (for b-roll / graphics / hook)
   const sentences = [];
   if (tlWords && tlWords.length) { let cur = []; tlWords.forEach((w, i) => { cur.push(w); if (/[.!?…]$/.test(w.w) || i === tlWords.length - 1 || (tlWords[i + 1] && tlWords[i + 1].s - w.e > 0.7)) { sentences.push({ text: cur.map(x => x.w).join(' '), s: cur[0].s, e: cur[cur.length - 1].e }); cur = []; } }); }
@@ -395,6 +409,7 @@ const AutoEditUI = {
       // 3 scenes / frames
       this.setStep('scenes', 'run', 'Bilder werden abgetastet …', 0);
       if (!C_.frames) { try { C_.frames = await Analysis.frames(m.id, p => this.setStep('scenes', 'run', 'Bilder werden abgetastet …', p)); } catch (e) { C_.frames = null; } }
+      if (C_.frames) await Media.update(m.id, { analysis: Object.assign({}, Media.get(m.id).analysis, { track: C_.frames.samples }) });
       this.setStep('scenes', C_.frames ? 'done' : 'skip', C_.frames ? `${C_.frames.samples.length} Bilder analysiert · ${C_.frames.scenes.length} Szenenwechsel · Motiv: ${C_.frames.samples.some(s => s.src === 'face') ? 'Gesichtserkennung' : 'Bildanalyse (Hauttöne/Mitte)'}` : 'Bildanalyse nicht möglich'); chk();
       // 4 key statements
       let llm = null;
@@ -417,6 +432,7 @@ const AutoEditUI = {
       chk();
       this.setStep('media', 'run', 'Mediathek wird durchsucht …');
       const res = buildAutoEdit({ media: m, fmtKey: o.fmt, opts: o, audio: C_.audio, frames: C_.frames, transcript: tr, llm });
+      if (res.captions.length) { const pl = smartCaptionPlacement({ video: res, format: FORMATS[o.fmt] }); if (pl.moved || pl.boxed) res.autoEdit.summary.splice(2, 0, `Untertitel gesichtsfrei platziert (${pl.moved} verschoben, ${pl.boxed} mit Lesbarkeits-Hintergrund)`); }
       const st = res.autoEdit.stats;
       this.setStep('media', o.broll && tr ? 'done' : 'skip', o.broll && tr ? `${st.broll} passende Medien gefunden` : 'Übersprungen');
       this.setStep('caps', o.captions && tr ? 'done' : 'skip', o.captions && tr ? `${st.captions} Untertitel` : 'Benötigt Transkript');
