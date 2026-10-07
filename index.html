@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Mindéa">
 <title>Mindéa Workspace</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="asset-sorter.css" rel="stylesheet">
 <style>
 :root {
   --g:#8b6432; --gl:#b8904a; --b:#4a7a96; --p:#6b5a8e;
@@ -263,6 +264,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tc);heigh
     <div style="font-size:9px;color:var(--b);font-weight:700;letter-spacing:2px;margin-bottom:8px">FÜR KUNDEN</div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
       <button onclick="openMod('briefing')" class="sb-item">📋 Briefing</button>
+      <button onclick="openMod('assets')" class="sb-item">🗂️ Asset Sorter</button>
       <button onclick="openMod('angebot')" class="sb-item">📄 Angebote</button>
       <button onclick="openMod('bp')" class="sb-item">✨ Brand Presence</button>
       <button onclick="openMod('bs')" class="sb-item">🎞️ Brand Story</button>
@@ -411,6 +413,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tc);heigh
       </div>
       <div class="module-list">
         <button class="module-item" onclick="openMod('briefing')"><span class="module-item-icon">📋</span><div><span class="module-item-title">Briefing</span><div class="module-item-sub">Video-Fragen</div></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
+        <button class="module-item" onclick="openMod('assets')"><span class="module-item-icon">🗂️</span><div><span class="module-item-title">Asset Sorter</span><div class="module-item-sub">Kundenmaterial sortieren & bewerten</div></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
         <button class="module-item" onclick="openMod('angebot')"><span class="module-item-icon">📄</span><div><span class="module-item-title">Angebote</span></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
         <button class="module-item" onclick="openMod('bp')"><span class="module-item-icon">✨</span><div><span class="module-item-title">Brand Presence</span></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
         <button class="module-item" onclick="openMod('bs')"><span class="module-item-icon">🎞️</span><div><span class="module-item-title">Brand Story</span></div><span class="module-item-arrow" style="color:var(--b)">›</span></button>
@@ -585,6 +588,7 @@ const MOD_META = {
   preiscoach:{title:'Preis-Coach',sub:'Einwände kontern',      icon:'💎', ac:'#2e7d5e', chat:1},
   projekte:{title:'Projekte',      sub:'Aufgaben & Status',     icon:'📋', ac:'#2e7d5e'},
   briefing:{title:'Briefing',      sub:'Kunden-Aufnahme',       icon:'📋', ac:'#4a7a96'},
+  assets:  {title:'Asset Sorter',  sub:'KI-Materialassistent',  icon:'🗂️', ac:'#4a7a96'},
   angebot: {title:'Angebote',      sub:'Individuell',           icon:'📄', ac:'#4a7a96'},
   bp:      {title:'Brand Presence',sub:'Komplett generieren',   icon:'✨', ac:'#4a7a96', chat:1},
   bs:      {title:'Brand Story',   sub:'Film generieren',       icon:'🎞️', ac:'#4a7a96', chat:1},
@@ -1039,7 +1043,7 @@ function openMod(id) {
 function getAreaLabel(id) {
   if (['luna','heute','reels','post','story','text','mail','scriptdir','kalender','wochenplan','analytics','launchplan'].includes(id)) return 'FÜR DICH';
   if (['sales','leadfinder','showcase','projekte','preiscoach','leadquellen'].includes(id)) return 'BUSINESS';
-  if (['briefing','angebot','bp','bs','bi','prompts'].includes(id)) return 'FÜR KUNDEN';
+  if (['briefing','assets','angebot','bp','bs','bi','prompts'].includes(id)) return 'FÜR KUNDEN';
   return 'KI WISSEN';
 }
 function goHome() { show('home-screen'); updateStats(); updateNextPost(); renderContentPack(); document.getElementById('hdr-title').textContent='MINDÉA'; document.getElementById('hdr-sub').textContent='WORKSPACE'; }
@@ -1092,6 +1096,7 @@ function renderMod(id) {
   else if (id==='preiscoach') renderChatMod(body, id);
   else if (id==='projekte') renderProjekte(body);
   else if (id==='briefing') renderBriefing(body);
+  else if (id==='assets') { if (typeof renderAssetSorter==='function') renderAssetSorter(body); else body.innerHTML='<div style="padding:30px;text-align:center;color:var(--ts)">Asset Sorter konnte nicht geladen werden (asset-sorter.js fehlt).</div>'; }
   else if (id==='angebot') renderAngebot(body);
   else if (id==='news') renderNews(body);
   else if (id==='mail') renderMail(body);
@@ -2973,5 +2978,6 @@ function renderEinwandSheet(body) {
 // ─── START ────────────────────────────────────────────────────────────────
 init();
 </script>
+<script src="asset-sorter.js"></script>
 </body>
 </html>
