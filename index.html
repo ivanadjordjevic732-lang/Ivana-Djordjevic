@@ -5612,6 +5612,7 @@ function lunaHead(){
   // gecacht. Hinter dem Marker kommt nur, was sich staendig aendert (Uhrzeit, Fenster).
   base += '\n<<DYNAMIK>>\n';
   try{ base += _lunaJetztCtx(); }catch(e){}
+  try{ if(typeof dqaLunaCtx==='function') base += dqaLunaCtx(); }catch(e){}
   try{
     var _igz=lsGet('mindea-ig-zahlen',[])||[];
     if(_igz.length){
@@ -38231,6 +38232,7 @@ function renderProjekte(body) {
       + '<span onclick="projLoeschen('+p.id+')" style="cursor:pointer;color:var(--tm);font-size:15px;padding:0 4px">\u00d7</span>'
       + (istTest?'<span style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#4a7a96;background:rgba(74,122,150,.12);border-radius:20px;padding:3px 8px;white-space:nowrap">Testkundin</span>':'')
       + '</div>'
+      + ((typeof dqaBadgeHTML==='function')?dqaBadgeHTML(p):'')
       + '<div style="display:flex;flex-wrap:wrap;gap:5px">'
       + PST.map(function(s2){ return '<button class="status-chip'+(p.status===s2.id?' active':'')+'" style="'+(p.status===s2.id?'border-color:'+s2.c+';color:'+s2.c+';background:'+s2.c+'15':'')+'" onclick="updateProj('+p.id+',\''+s2.id+'\')">'+s2.l+'</button>'; }).join('')
       + '</div>';
@@ -38507,41 +38509,85 @@ var FD_PAKETE = {
   bi: { name:'Brand Impact', preis:898, ziel:'mehrere Videos als Kampagne: eine Kernbotschaft in Varianten, jede eigenstaendig, zusammen ein Ganzes' }
 };
 var FD_STUFEN = ['Testfilm mit Ansaetzen','sauberer Testfilm','solider Markenfilm','professioneller Markenfilm','Agenturproduktion','Premiumproduktion'];
-async function fdFramesAusVideo(file, alleSek, maxN){
+// v9.9.700: Delivery QA nutzt dieselbe Bild-Zerlegung. Ohne viertes Argument laeuft alles
+// exakt wie bisher fuer den Film-Direktor. Mit opt kommen hinzu: feste Zusatzzeitpunkte
+// (Anfang und Ende), Helligkeitswerte je Bild, die echte Videogroesse, ein Fortschritt
+// und Zeitlimits, damit ein haengender Seek auf dem iPhone die Pruefung nicht einfriert.
+async function fdFramesAusVideo(file, alleSek, maxN, opt){
   return new Promise(function(resolve){
+    var fertig=false; var url=null;
+    var aus=function(x){ if(fertig) return; fertig=true; try{ if(url) URL.revokeObjectURL(url); }catch(e){} resolve(x); };
+    var fehl=function(grund){ aus(opt ? {fehler:grund, frames:[], dauer:0, fehlZeiten:[]} : null); };
     try{
-      var url=URL.createObjectURL(file); var v=document.createElement('video'); v.muted=true; v.playsInline=true; v.preload='auto'; v.src=url;
-      var frames=[]; var zeiten=[]; var i=0;
+      url=URL.createObjectURL(file); var v=document.createElement('video'); v.muted=true; v.playsInline=true; v.preload='auto'; v.src=url;
+      var frames=[]; var zeiten=[]; var i=0; var fehlZeiten=[]; var seekT=null;
+      if(opt){ setTimeout(function(){ if(!zeiten.length) fehl('metadaten'); }, opt.metaTimeout||20000); }
       v.onloadedmetadata=function(){
         var dauer=v.duration||0;
+        if(opt && !(dauer>0 && isFinite(dauer) && v.videoWidth>0)){ fehl(!(v.videoWidth>0)?'keinbild':'dauer'); return; }
         // Abstand so waehlen, dass die Bilder den ganzen Film abdecken: mindestens alle
         // zwei Sekunden, bei laengeren Filmen gleichmaessig verteilt bis zur Hoechstzahl.
         var schritt=Math.max(alleSek, dauer/(maxN-1));
         var n=Math.max(2, Math.min(maxN, Math.floor(dauer/schritt)+1));
         for(var k=0;k<n;k++) zeiten.push(Math.min(Math.max(0,dauer-0.05), k*schritt));
         if(zeiten[zeiten.length-1] < dauer-1.5) zeiten.push(Math.max(0,dauer-0.2));
-        var next=function(){ if(i>=zeiten.length){ URL.revokeObjectURL(url); resolve({frames:frames, dauer:dauer}); return; } v.currentTime=zeiten[i]; };
+        if(opt && opt.extra){
+          opt.extra(dauer).forEach(function(t){ t=Math.min(Math.max(0,dauer-0.04), t); if(!zeiten.some(function(z){ return Math.abs(z-t)<0.25; })) zeiten.push(t); });
+          zeiten.sort(function(a,b){ return a-b; });
+        }
+        var next=function(){
+          if(i>=zeiten.length){ aus({frames:frames, dauer:dauer, breite:v.videoWidth, hoehe:v.videoHeight, fehlZeiten:fehlZeiten}); return; }
+          if(opt){
+            try{ if(opt.onProgress) opt.onProgress(i, zeiten.length); }catch(e){}
+            clearTimeout(seekT); var soll=i;
+            seekT=setTimeout(function(){ if(i===soll && !fertig){ fehlZeiten.push(zeiten[i]); i++; next(); } }, opt.seekTimeout||8000);
+          }
+          v.currentTime=zeiten[i];
+        };
         v.onseeked=function(){
+          if(fertig) return;
           try{
             var c=document.createElement('canvas'); var maxW=640; var sc=(v.videoWidth>maxW)?maxW/v.videoWidth:1;
             c.width=Math.round(v.videoWidth*sc); c.height=Math.round(v.videoHeight*sc);
             c.getContext('2d').drawImage(v,0,0,c.width,c.height);
-            frames.push({ t:zeiten[i], b64:c.toDataURL('image/jpeg',0.55).split(',')[1] });
-          }catch(e){}
-          i++; next();
+            var fr={ t:zeiten[i], b64:c.toDataURL('image/jpeg',0.55).split(',')[1] };
+            if(opt && opt.stats){ try{ Object.assign(fr, fdBildWerte(c)); }catch(eS){} }
+            frames.push(fr);
+          }catch(e){ if(opt) fehlZeiten.push(zeiten[i]); }
+          if(opt) clearTimeout(seekT);
+          i++;
+          // Kleine Pause zwischen den Bildern, damit Safari auf dem iPhone die Oberflaeche zeichnen kann
+          if(opt) setTimeout(next, 0); else next();
         };
-        v.onerror=function(){ resolve(null); };
+        v.onerror=function(){ fehl('decode'); };
         next();
       };
-      v.onerror=function(){ resolve(null); };
-    }catch(e){ resolve(null); }
+      v.onerror=function(){ fehl('decode'); };
+    }catch(e){ fehl('decode'); }
   });
 }
+// Helligkeit und ein grober 8x8-Abdruck je Bild, rein lokal. Dient Delivery QA fuer
+// Schwarzbilder, Standbilder und Helligkeitsspruenge. Nichts davon geht an die KI.
+function fdBildWerte(canvas){
+  var s=document.createElement('canvas'); s.width=32; s.height=32;
+  var g=s.getContext('2d'); g.drawImage(canvas,0,0,32,32);
+  var px=g.getImageData(0,0,32,32).data, n=1024, sum=0, sq=0, sig=new Array(64).fill(0);
+  for(var p=0;p<n;p++){
+    var y=0.2126*px[p*4]+0.7152*px[p*4+1]+0.0722*px[p*4+2];
+    sum+=y; sq+=y*y;
+    var bx=(p%32)>>2, by=(p/32|0)>>2; sig[by*8+bx]+=y/16;
+  }
+  var mw=sum/n;
+  return { luma:Math.round(mw*10)/10, streu:Math.round(Math.sqrt(Math.max(0,sq/n-mw*mw))*10)/10, sig:sig.map(function(x){ return Math.round(x); }) };
+}
 function _fdTc(sek){ var m=Math.floor(sek/60), s2=Math.floor(sek%60); return m+':'+('0'+s2).slice(-2); }
-async function fdCall(sys, textTeile, frames){
+// v9.9.700: Optional zusaetzliche Bilder vor den Filmbildern, z. B. das Original-Logo
+// der Kundin fuer Delivery QA. Fuer den Film-Direktor unveraendert.
+async function fdCall(sys, textTeile, frames, vorab){
   if(!apiKey) return '[Kein API Key]';
   var content=[{type:'text', text:textTeile}];
-  frames.forEach(function(f){ content.push({type:'text', text:'Bild bei '+_fdTc(f.t)}); content.push({type:'image', source:{type:'base64', media_type:'image/jpeg', data:f.b64}}); });
+  (vorab||[]).forEach(function(x){ content.push({type:'text', text:x.label}); content.push({type:'image', source:{type:'base64', media_type:x.media||'image/png', data:x.b64}}); });
+  frames.forEach(function(f){ content.push({type:'text', text:f.label||('Bild bei '+_fdTc(f.t))}); content.push({type:'image', source:{type:'base64', media_type:'image/jpeg', data:f.b64}}); });
   var r=await fetch('https://api.anthropic.com/v1/messages',{ method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:3200, system:sys, messages:[{role:'user', content:content}] }) });
   if(!r.ok){ var et=''; try{ et=(await r.json()).error.message; }catch(e){} return '[Fehler '+r.status+': '+String(et).slice(0,100)+']'; }
@@ -38567,9 +38613,11 @@ async function fdPruefen(id, inp){
   try{
     var f=inp && inp.files && inp.files[0]; if(!f) return;
     var d=fbProj(id); var pr=null; try{ pr=(lsGet('mindea-projekte',[])||[]).filter(function(x){ return x && String(x.id)===String(id); })[0]||null; }catch(e){}
-    var kunde=(pr&&(pr.name||pr.kunde))||''; var paketKey=String(d.filmpaket||(pr&&(pr.paket||pr.package))||'').toLowerCase();
-    if(!/^(bp|bs|bi)$/.test(paketKey)){ paketKey = /presence/i.test(paketKey)?'bp':(/story/i.test(paketKey)?'bs':(/impact/i.test(paketKey)?'bi':'')); }
+    var kunde=(pr&&(pr.name||pr.kunde))||''; var paketKey=fdPaketKey(d, pr);
     var hin=document.getElementById('fd-hin-'+id); if(hin){ hin.style.display='block'; hin.textContent='Video wird in Bilder zerlegt ...'; }
+    // v9.9.700: Der Abdruck der Datei wird mit dem Review gespeichert. Delivery QA erkennt
+    // daran, ob dieser Review wirklich zu der Datei gehoert, die ausgeliefert werden soll.
+    var fpInfo=null; try{ fpInfo=await dqaFingerprint(f); }catch(eFp){}
     var res=await fdFramesAusVideo(f, 2, 24);
     if(!res || !res.frames.length){ if(hin) hin.textContent='Konnte das Video nicht lesen. Bitte als MP4 oder MOV versuchen.'; return; }
     if(hin) hin.textContent=res.frames.length+' Bilder aus '+_fdTc(res.dauer)+' Minuten. Der Direktor schaut ...';
@@ -38582,13 +38630,20 @@ async function fdPruefen(id, inp){
     if(!ant || /^\[Fehler|^\[Kein/.test(ant)){ if(hin) hin.textContent='Das hat nicht geklappt: '+String(ant).slice(0,120); return; }
     var sc=null; try{ var m=/AKTUELL:\s*(\d{1,2})\s*\/\s*10/i.exec(ant); if(m) sc=+m[1]; }catch(e){}
     var liste=Array.isArray(d.filmreviews)?d.filmreviews:[];
-    liste.push({ version:(vorh?vorh.version:0)+1, stand:_heuteLokal(), score:sc, frames:res.frames.length, dauer:Math.round(res.dauer), paket:paketKey, text:String(ant).replace(/\*\*/g,'').trim().slice(0,12000) });
+    liste.push({ version:(vorh?vorh.version:0)+1, stand:_heuteLokal(), score:sc, frames:res.frames.length, dauer:Math.round(res.dauer), paket:paketKey, text:String(ant).replace(/\*\*/g,'').trim().slice(0,12000),
+      fp:(fpInfo&&fpInfo.fp)||'', datei:String(f.name||'').slice(0,120), groesse:f.size||0 });
     d.filmreviews=liste.slice(-10); lsSet(fbProjKey(id), d);
     if(hin) hin.textContent='';
     try{ inp.value=''; }catch(e){}
     showToast('Analyse fertig'+(sc!==null?(', '+sc+' von 10'):'')+'.');
     if(window._projDetail && typeof renderMod==='function') renderMod('projekte');
   }catch(e){ try{ var h2=document.getElementById('fd-hin-'+id); if(h2) h2.textContent='Das hat nicht geklappt.'; }catch(e2){} }
+}
+// Paket des Projekts, eine Quelle fuer Film-Direktor und Delivery QA.
+function fdPaketKey(d, pr){
+  var k=String((d&&d.filmpaket)||(pr&&(pr.paket||pr.package))||'').toLowerCase();
+  if(!/^(bp|bs|bi)$/.test(k)){ k = /presence/i.test(k)?'bp':(/story/i.test(k)?'bs':(/impact/i.test(k)?'bi':'')); }
+  return k;
 }
 function fdKarte(id, d){
   var liste=Array.isArray(d.filmreviews)?d.filmreviews:[];
@@ -38611,6 +38666,990 @@ function fdKarte(id, d){
   h+='</div>';
   return h;
 }
+// === DELIVERY QA (v9.9.700) ===
+// Zweite, klar getrennte Pruefstufe nach dem Film-Direktor. Der Film-Direktor fragt, ob der
+// Film kreativ und strategisch gut genug ist. Delivery QA fragt nur: Ist GENAU DIESE
+// Exportdatei technisch und produktionsseitig bereit fuer die Kundin?
+// Grundregel: Keine Sicherheit vortaeuschen. Was nicht zuverlaessig pruefbar ist, wird
+// MANUELL PRUEFEN. Ein ehrliches Gelb ist besser als ein falsches Gruen.
+// Ablauf: lokale Metadaten und Bilder (fdFramesAusVideo, dieselbe Engine wie der Direktor),
+// lokale Tonanalyse, EIN visueller KI-Aufruf (fdCall), Projektabgleich, Creative-Status.
+// Gespeichert wird je Projekt in mindea-fb-<id>.deliveryqa, je Datei ein Eintrag.
+var DQA_FORMATE = {
+  '9x16': { n:'Instagram Reel / Story', w:9,  h:16, minW:1080, minH:1920 },
+  '4x5':  { n:'Instagram Feed',         w:4,  h:5,  minW:1080, minH:1350 },
+  '1x1':  { n:'Quadratisch',            w:1,  h:1,  minW:1080, minH:1080 },
+  '16x9': { n:'Website / YouTube',      w:16, h:9,  minW:1920, minH:1080 }
+};
+var DQA_GRUPPEN = [['datei','Datei'],['bild','Bild'],['textlogo','Text & Logo'],['projekt','Projekt'],['creative','Creative Review']];
+var DQA_STUFEN = ['Video wird vorbereitet','Frames werden gepr\u00fcft','Projekt wird abgeglichen','Finaler Check'];
+var DQA_LABEL = { ok:'Bereit zur Auslieferung', warn:'Manuell pr\u00fcfen', block:'Noch nicht ausliefern' };
+var DQA_SYM = { ok:'\u2713', warn:'!', block:'\u00d7' };
+
+function _dqaEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function _dqaTc(sek){ sek=Math.max(0,+sek||0); var m=Math.floor(sek/60), s=Math.floor(sek%60), z=Math.floor((sek*10)%10); return m+':'+('0'+s).slice(-2)+','+z; }
+function _dqaMb(b){ var mb=(+b||0)/1048576; return (mb>=100?Math.round(mb):Math.round(mb*10)/10).toString().replace('.',',')+' MB'; }
+function _dqaDatum(iso){ try{ var d=new Date(iso); return ('0'+d.getDate()).slice(-2)+'.'+('0'+(d.getMonth()+1)).slice(-2)+'. '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }catch(e){ return ''; } }
+function _dqaProjekt(id){ try{ return (lsGet('mindea-projekte',[])||[]).filter(function(x){ return x && String(x.id)===String(id); })[0]||null; }catch(e){ return null; } }
+function dqaDaten(d){
+  var q=(d && d.deliveryqa && typeof d.deliveryqa==='object') ? d.deliveryqa : {};
+  if(!Array.isArray(q.checks)) q.checks=[];
+  if(!Array.isArray(q.protokoll)) q.protokoll=[];
+  return q;
+}
+function _dqaSpeichern(id, d, q){
+  // Bis zu acht Dateien je Projekt bleiben im Verlauf, Vorschaubilder nur bei den letzten drei.
+  q.checks=q.checks.slice(-8);
+  q.checks.forEach(function(c, i){ if(i < q.checks.length-3) c.thumbs={}; });
+  q.protokoll=q.protokoll.slice(-60);
+  d.deliveryqa=q; lsSet(fbProjKey(id), d);
+  if(typeof doSilentBackup==='function') { try{ doSilentBackup(); }catch(e){} }
+}
+
+// ── Datei-Abdruck ─────────────────────────────────────────────────────────
+// SHA-256 ueber Anfang, Ende und Groesse der Datei. Gleicher Abdruck heisst: dieselbe
+// Exportdatei, auch wenn sie umbenannt wurde. Ohne Krypto-Schnittstelle bleibt nur
+// ein Abdruck aus Groesse, Datum und Name.
+async function _dqaBytes(blob){
+  if(blob.arrayBuffer) return await blob.arrayBuffer();
+  return await new Promise(function(res, rej){ var r=new FileReader(); r.onload=function(){ res(r.result); }; r.onerror=rej; r.readAsArrayBuffer(blob); });
+}
+async function dqaFingerprint(file){
+  try{
+    if(window.crypto && crypto.subtle && window.TextEncoder){
+      var teil=2*1048576;
+      var a=await _dqaBytes(file.slice(0, Math.min(teil, file.size)));
+      var b=(file.size>teil) ? await _dqaBytes(file.slice(Math.max(teil, file.size-teil))) : new ArrayBuffer(0);
+      var m=new TextEncoder().encode('g'+file.size);
+      var all=new Uint8Array(a.byteLength+b.byteLength+m.length);
+      all.set(new Uint8Array(a),0); all.set(new Uint8Array(b),a.byteLength); all.set(m,a.byteLength+b.byteLength);
+      var h=new Uint8Array(await crypto.subtle.digest('SHA-256', all));
+      return { fp:'s'+Array.prototype.slice.call(h,0,12).map(function(x){ return ('0'+x.toString(16)).slice(-2); }).join(''), art:'inhalt' };
+    }
+  }catch(e){}
+  return { fp:'m'+file.size+'-'+(file.lastModified||0)+'-'+String(file.name||'').slice(0,40), art:'metadaten' };
+}
+
+// ── MP4/MOV-Container lesen (Codec, Bildrate, Tonspur) ─────────────────────
+// Der Browser verraet Codec und Bildrate nicht. Bei MP4 und MOV stehen sie aber im
+// moov-Kasten der Datei. Den lesen wir direkt. Andere Container: nicht technisch auslesbar.
+function _dqa4cc(dv,o){ try{ return String.fromCharCode(dv.getUint8(o),dv.getUint8(o+1),dv.getUint8(o+2),dv.getUint8(o+3)); }catch(e){ return ''; } }
+function _dqaKinder(dv,start,end){
+  var a=[], pos=start, n=0;
+  while(pos+8<=end && n++<600){
+    var bs=dv.getUint32(pos), typ=_dqa4cc(dv,pos+4), hl=8;
+    if(bs===1){ bs=dv.getUint32(pos+8)*4294967296+dv.getUint32(pos+12); hl=16; } else if(bs===0){ bs=end-pos; }
+    if(bs<hl || pos+bs>end) break;
+    a.push({ typ:typ, p:pos+hl, e:pos+bs }); pos+=bs;
+  }
+  return a;
+}
+function _dqaFind(dv,box,typ){ return _dqaKinder(dv,box.p,box.e).filter(function(b){ return b.typ===typ; })[0]||null; }
+function _dqaPfad(dv,box,pfad){ var b=box; for(var i=0;i<pfad.length && b;i++) b=_dqaFind(dv,b,pfad[i]); return b; }
+var DQA_CODECS = { avc1:'H.264', avc3:'H.264', hvc1:'HEVC (H.265)', hev1:'HEVC (H.265)', av01:'AV1', vp09:'VP9', vp08:'VP8', mp4v:'MPEG-4 Part 2',
+  apch:'ProRes 422 HQ', apcn:'ProRes 422', apcs:'ProRes 422 LT', apco:'ProRes 422 Proxy', ap4h:'ProRes 4444', ap4x:'ProRes 4444 XQ',
+  mp4a:'AAC', 'ac-3':'AC-3', 'ec-3':'E-AC-3', Opus:'Opus', alac:'ALAC', lpcm:'PCM', sowt:'PCM', twos:'PCM', fLaC:'FLAC', '.mp3':'MP3' };
+async function dqaContainer(file){
+  var out={ container:null, videoCodec:null, audioCodec:null, fps:null, hatAudio:null };
+  try{
+    var size=file.size, pos=0, n=0, moov=null;
+    while(pos+8<=size && n++<400){
+      var h=new DataView(await _dqaBytes(file.slice(pos, Math.min(size,pos+16))));
+      if(h.byteLength<8) break;
+      var bs=h.getUint32(0), typ=_dqa4cc(h,4), hl=8;
+      if(bs===1 && h.byteLength>=16){ bs=h.getUint32(8)*4294967296+h.getUint32(12); hl=16; } else if(bs===0){ bs=size-pos; }
+      if(n===1 && ['ftyp','wide','moov','free','mdat','skip','pnot'].indexOf(typ)<0) return out;
+      if(bs<hl) break;
+      if(typ==='moov'){ if(bs>40*1048576) return out; moov=new DataView(await _dqaBytes(file.slice(pos+hl, pos+bs))); break; }
+      pos+=bs;
+    }
+    if(!moov) return out;
+    out.container='mp4'; out.hatAudio=false;
+    _dqaKinder(moov,0,moov.byteLength).forEach(function(tr){
+      if(tr.typ!=='trak') return;
+      var mdia=_dqaFind(moov,tr,'mdia'); if(!mdia) return;
+      var hdlr=_dqaFind(moov,mdia,'hdlr'), mdhd=_dqaFind(moov,mdia,'mdhd');
+      var art=hdlr?_dqa4cc(moov,hdlr.p+8):'';
+      var stbl=_dqaPfad(moov,mdia,['minf','stbl']);
+      var stsd=stbl?_dqaFind(moov,stbl,'stsd'):null; var cc=stsd?_dqa4cc(moov,stsd.p+12):'';
+      if(art==='soun'){ out.hatAudio=true; if(!out.audioCodec) out.audioCodec=cc; }
+      if(art==='vide' && !out.videoCodec){
+        out.videoCodec=cc;
+        var stts=stbl?_dqaFind(moov,stbl,'stts'):null;
+        if(mdhd && stts){
+          var ver=moov.getUint8(mdhd.p), ts=(ver===1)?moov.getUint32(mdhd.p+20):moov.getUint32(mdhd.p+12);
+          var cnt=moov.getUint32(stts.p+4), samples=0, ticks=0;
+          for(var k=0;k<cnt && k<200000;k++){ var c=moov.getUint32(stts.p+8+k*8), dl=moov.getUint32(stts.p+12+k*8); samples+=c; ticks+=c*dl; }
+          if(ts>0 && ticks>0 && samples>1) out.fps=Math.round(samples/(ticks/ts)*100)/100;
+        }
+      }
+    });
+  }catch(e){ out.container=out.container||null; }
+  return out;
+}
+
+// ── Ton technisch ─────────────────────────────────────────────────────────
+// Nur, was sich messen laesst: vorhanden, stumm, lange Stille, digitales Clipping,
+// Ton endet vor dem Bild, harter Abbruch am Ende. Musik, Stimme, Aussprache und Mix
+// hoert Mindea nicht, das bleibt AUDIO INHALTLICH NICHT BEURTEILBAR.
+async function dqaTon(file, videoDauer, onP){
+  var r={ status:'nb', grund:'' };
+  if(file.size>250*1048576){ r.grund='Die Datei ist zu gro\u00df f\u00fcr eine sichere Tonanalyse auf diesem Ger\u00e4t.'; return r; }
+  var AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC){ r.grund='Dieser Browser kann die Tonspur nicht dekodieren.'; return r; }
+  var ctx=null;
+  try{
+    var buf=await _dqaBytes(file);
+    ctx=new AC();
+    var ab=await Promise.race([
+      new Promise(function(res,rej){ try{ var p=ctx.decodeAudioData(buf, res, rej); if(p && p.then) p.then(res, rej); }catch(e){ rej(e); } }),
+      new Promise(function(res,rej){ setTimeout(function(){ rej(new Error('zeit')); }, 60000); })
+    ]);
+    var sr=ab.sampleRate, len=ab.length, ch=[];
+    for(var c=0;c<Math.min(2,ab.numberOfChannels);c++) ch.push(ab.getChannelData(c));
+    var win=Math.max(1,Math.round(sr*0.05)), nW=Math.ceil(len/win), rms=new Float32Array(nW), peak=0, clipEv=0, clipErst=null, lauf=0;
+    for(var w=0; w<nW; w++){
+      var s0=w*win, s1=Math.min(len,s0+win), acc=0;
+      for(var s=s0;s<s1;s++){
+        var x=0; for(var k=0;k<ch.length;k++){ var a=ch[k][s]; if(a<0) a=-a; if(a>x) x=a; }
+        acc+=x*x; if(x>peak) peak=x;
+        if(x>=0.999){ lauf++; if(lauf===3){ clipEv++; if(clipErst===null) clipErst=s/sr; } } else lauf=0;
+      }
+      rms[w]=Math.sqrt(acc/Math.max(1,s1-s0));
+      if(w%300===299){ try{ if(onP) onP(w/nW); }catch(e){} await new Promise(function(z){ setTimeout(z,0); }); }
+    }
+    r.status='ok'; r.dauer=Math.round(ab.duration*100)/100; r.peak=peak;
+    r.stumm=(peak<0.0018);
+    // Laengste Stille im Film, Anfang und Ende ausgenommen (dort ist Stille oft gewollt)
+    var still=null, st=-1;
+    for(var i=0;i<=nW;i++){
+      var leise=(i<nW && rms[i]<0.001 && i*0.05>0.5 && i*0.05<ab.duration-1);
+      if(leise && st<0) st=i;
+      if(!leise && st>=0){ var lg=(i-st)*0.05; if(!still || lg>still.lg) still={ ab:st*0.05, lg:lg }; st=-1; }
+    }
+    r.stille=(still && still.lg>=4) ? { ab:Math.round(still.ab*10)/10, lg:Math.round(still.lg*10)/10 } : null;
+    r.clip=(clipEv>=8) ? { n:clipEv, ab:Math.round(clipErst*10)/10 } : null;
+    r.frueh=(videoDauer && ab.duration < videoDauer-0.5) ? Math.round(ab.duration*10)/10 : null;
+    var endRms=nW>=2 ? (rms[nW-1]+rms[nW-2])/2 : 0;
+    r.hartesEnde=(!r.stumm && endRms>0.08);
+  }catch(e){ r.status='nb'; r.grund='Die Tonspur lie\u00df sich im Browser nicht dekodieren. Das hei\u00dft nicht, dass sie fehlt.'; }
+  finally{ try{ if(ctx && ctx.close) ctx.close(); }catch(e2){} }
+  return r;
+}
+
+// ── Film-Direktor-Status lesen ────────────────────────────────────────────
+function _dqaNorm(t){ return String(t||'').replace(/\u00c4/g,'AE').replace(/\u00d6/g,'OE').replace(/\u00dc/g,'UE').replace(/\u00e4/g,'ae').replace(/\u00f6/g,'oe').replace(/\u00fc/g,'ue').replace(/\u00df/g,'ss'); }
+function _dqaAbschnitt(text, kopf, enden){
+  var T=_dqaNorm(text), U=T.toUpperCase(), a=U.indexOf(kopf);
+  if(a<0) return null;
+  var e=U.length;
+  enden.forEach(function(x){ var j=U.indexOf(x, a+kopf.length); if(j>=0 && j<e) e=j; });
+  var roh=T.slice(a+kopf.length, e).replace(/^[^\n]*\n?/, function(z){ return z.replace(/^[\s:\-\(\)a-z]*$/i,''); });
+  var zeilen=roh.split(/\n/).map(function(x){ return x.trim(); }).filter(function(x){ return x.length>3; });
+  return zeilen;
+}
+function fdReviewStatus(rv){
+  var out={ lesbar:false, muss:null, mussUnsicher:false, polish:null, stufe:'' };
+  if(!rv || !rv.text) return out;
+  var ENDEN=['SOLLTE VERBESSERT WERDEN','FINALER POLISH','DIE NAECHSTEN 5 SCHRITTE','DIE NAECHSTEN SCHRITTE','AKTUELL:','GROESSTE LUECKE'];
+  var zaehle=function(z){
+    if(!z) return { n:null, u:true };
+    var txt=z.join(' ');
+    if(!z.length || (txt.length<80 && /\b(keine|nichts|entfaellt)\b/i.test(txt))) return { n:0, u:false };
+    var nummer=z.filter(function(x){ return /^(\d+[\.\)]|[\-\u2022\u2013])\s/.test(x); }).length;
+    if(nummer) return { n:nummer, u:false };
+    var prob=z.filter(function(x){ return /^PROBLEM\b/i.test(x); }).length;
+    if(prob) return { n:prob, u:false };
+    return { n:Math.max(1, z.length), u:true };
+  };
+  var m=zaehle(_dqaAbschnitt(rv.text, 'MUSS GEAENDERT WERDEN', ENDEN));
+  var p=zaehle(_dqaAbschnitt(rv.text, 'FINALER POLISH', ENDEN.filter(function(x){ return x!=='FINALER POLISH'; })));
+  out.lesbar=(m.n!==null); out.muss=m.n; out.mussUnsicher=m.u; out.polish=p.n;
+  try{ var st=/QUALIT(?:AE|\u00c4)TSSTUFE:?\s*\n?\s*([^\n]+)/i.exec(rv.text); if(st) out.stufe=st[1].trim().slice(0,80); }catch(e){}
+  return out;
+}
+
+// ── Orchestrator- und Luna-Anbindung ──────────────────────────────────────
+// Es gibt (noch) keinen zentralen Orchestrator in der App. Delivery QA baut deshalb
+// KEINE eigene Automationslogik, sondern meldet nur Ereignisse: als DOM-Ereignis
+// "mindea:event", an window.MindeaOrchestrator.emit, falls vorhanden, und ins Aktivitaetslog.
+function dqaEmit(typ, info){
+  var det=Object.assign({ type:typ, at:new Date().toISOString(), quelle:'delivery-qa' }, info||{});
+  try{ if(window.MindeaOrchestrator && typeof window.MindeaOrchestrator.emit==='function') window.MindeaOrchestrator.emit(typ, det); }catch(e){}
+  try{ window.dispatchEvent(new CustomEvent('mindea:event', { detail:det })); }catch(e){}
+  try{ if(typeof logActivity==='function') logActivity(typ, String(info&&info.projekt||'')); }catch(e){}
+}
+// Haelt die Projekt-Prioritaet synchron mit dem Delivery-Ergebnis. Nur Prioritaeten,
+// die Delivery QA selbst gesetzt hat, werden wieder entfernt.
+function _dqaProjektSync(id, status, grund, fp){
+  try{
+    var projs=lsGet('mindea-projekte',[])||[];
+    lsSet('mindea-projekte', projs.map(function(p){
+      if(String(p.id)!==String(id)) return p;
+      var x=Object.assign({}, p);
+      if(status==='block'){ x.prio='hoch'; x.prioGrund=String(grund||'').slice(0,200); x.prioQuelle='delivery-qa'; }
+      else if(x.prioQuelle==='delivery-qa'){ delete x.prio; delete x.prioGrund; delete x.prioQuelle; }
+      // Eine neue Datei oder ein spaeter gefundener Blocker hebt eine Freigabe auf. Ausgeliefert bleibt ausgeliefert.
+      if(fp && x.delivery && x.delivery.status==='DELIVERY READY' && (x.delivery.fp!==fp || status!=='ok')){ x.delivery={ status:'NEU PRUEFEN', vorherFp:x.delivery.fp, at:new Date().toISOString() }; }
+      x.dqaStatus=status; x.dqaAt=new Date().toISOString();
+      return x;
+    }));
+  }catch(e){}
+}
+
+// ── Pruefpunkte zusammenstellen ───────────────────────────────────────────
+// Ein Pruefpunkt: { id, g:Gruppe, t:Titel, s:'ok'|'warn'|'block'|'info', d:Detail,
+//   z:Zeit in Sekunden (nur echte Bildzeiten), nb:nicht beurteilbar, hart:nicht manuell
+//   uebersteuerbar, q:'lokal'|'ki'|'projekt', erw/erk: erwartet/erkannt, bb: Status nach Bestaetigung }
+function _dqaZeitAusKi(z, frames){
+  if(!z) return null;
+  var s=String(z).trim().replace(/^Bild bei\s*/i,'');
+  var f=frames.filter(function(x){ return _dqaTc(x.t)===s; })[0];
+  if(f) return f.t;
+  var m=/^(\d+):(\d{1,2})(?:[,\.](\d))?$/.exec(s); if(!m) return null;
+  var sek=(+m[1])*60+(+m[2])+(m[3]?(+m[3])/10:0);
+  var best=null; frames.forEach(function(x){ if(Math.abs(x.t-sek)<=0.6 && (!best || Math.abs(x.t-sek)<Math.abs(best.t-sek))) best=x; });
+  return best ? best.t : null;   // Zeitcodes, die zu keinem gesendeten Bild passen, werden verworfen
+}
+function _dqaRatioName(w,h){
+  var r=w/h, best=null;
+  [['9:16',9/16],['4:5',4/5],['1:1',1],['16:9',16/9],['4:3',4/3],['3:4',3/4],['2:3',2/3],['21:9',21/9]].forEach(function(x){ var dv=Math.abs(r-x[1])/x[1]; if(!best || dv<best[1]) best=[x[0],dv]; });
+  return (best && best[1]<0.02) ? best[0] : (Math.round(r*100)/100).toString().replace('.',',')+':1';
+}
+function dqaPunkteBauen(ctx){
+  var P=[], add=function(o){ P.push(o); return o; };
+  var f=ctx.file, r=ctx.r||{}, cont=ctx.cont||{}, ton=ctx.ton, vg=ctx.vg||{}, ki=ctx.ki, frames=(r.frames||[]);
+  var fmt=DQA_FORMATE[vg.format]||null, frei=(vg.format==='frei' && +vg.freiW>0 && +vg.freiH>0) ? { n:'Projektvorgabe', w:+vg.freiW, h:+vg.freiH, minW:+vg.freiMinW||0, minH:+vg.freiMinH||0 } : null;
+  var ziel=fmt||frei;
+  var lesbar=!r.fehler && frames.length>0;
+  var dauer=r.dauer||0, W=r.breite||0, H=r.hoehe||0;
+
+  // DATEI
+  var name=String(f.name||''), ext=(name.split('.').pop()||'').toLowerCase(), mime=String(f.type||'').toLowerCase();
+  var gutTyp=/mp4|quicktime|m4v/.test(mime) || ['mp4','mov','m4v'].indexOf(ext)>=0;
+  add({ id:'dt-typ', g:'datei', t:'Dateityp', q:'lokal', s:gutTyp?'ok':'warn', d:(mime||('.'+ext))+(gutTyp?'':' \u00b7 Nicht jedes Ger\u00e4t der Kundin spielt dieses Format ab. MP4 (H.264) ist der sichere Standard.') });
+  if(!(f.size>0)) add({ id:'dt-leer', g:'datei', t:'Datei ist leer', q:'lokal', s:'block', hart:true, d:'0 Byte. Der Export ist fehlgeschlagen.' });
+  if(r.fehler){
+    var FT={ decode:'Das Video l\u00e4sst sich nicht dekodieren. Die Datei wirkt besch\u00e4digt oder hat ein Format, das dieses Ger\u00e4t nicht liest.', metadaten:'Die Datei liefert keine lesbaren Videodaten. Sie wirkt besch\u00e4digt oder unvollst\u00e4ndig exportiert.', keinbild:'Die Datei enth\u00e4lt keine lesbare Bildspur.', dauer:'Die Videodauer ist nicht lesbar. Die Datei wirkt unvollst\u00e4ndig.' };
+    add({ id:'dt-lesbar', g:'datei', t:'Video kann nicht gelesen werden', q:'lokal', s:'block', hart:true, d:FT[r.fehler]||FT.decode });
+  } else {
+    add({ id:'dt-lesbar', g:'datei', t:'Video dekodierbar', q:'lokal', s:'ok', d:_fdTc(dauer)+' Min \u00b7 '+W+' \u00d7 '+H });
+    var erst=frames.filter(function(x){ return x.t<0.05; })[0];
+    add({ id:'dt-erst', g:'datei', t:erst?'Erster Frame geladen':'Erster Frame nicht ladbar', q:'lokal', s:erst?'ok':'block', hart:!erst, d:erst?'0:00 lesbar':'Das Bild bei 0:00 lie\u00df sich nicht laden.' });
+    var letzt=frames.filter(function(x){ return x.t>=dauer-0.3; })[0];
+    add({ id:'dt-ende', g:'datei', t:letzt?'Letzter Bereich geladen':'Video kann nicht vollst\u00e4ndig gelesen werden', q:'lokal', s:letzt?'ok':'block', hart:!letzt, z:letzt?letzt.t:null, d:letzt?('bis '+_dqaTc(letzt.t)+' lesbar'):'Die letzten Sekunden lie\u00dfen sich nicht laden. Der Export wirkt abgeschnitten oder besch\u00e4digt.' });
+    var mitte=(r.fehlZeiten||[]).filter(function(t){ return t>0.05 && t<dauer-0.3; });
+    if(mitte.length) add({ id:'dt-luecken', g:'datei', t:'Stellen nicht lesbar', q:'lokal', s:'warn', d:mitte.length+' Stelle'+(mitte.length===1?'':'n')+' lie\u00dfen sich nicht laden: '+mitte.slice(0,4).map(_dqaTc).join(', ')+'. Im Player an diesen Stellen nachsehen.' });
+
+    // Aufloesung und Seitenverhaeltnis
+    var kurz=Math.min(W,H);
+    if(ziel){
+      var rIst=W/H, rSoll=ziel.w/ziel.h, ab=Math.abs(rIst-rSoll)/rSoll;
+      if(ab>0.015) add({ id:'dt-ratio', g:'datei', t:'Falsches Seitenverh\u00e4ltnis', q:'lokal', s:'block', hart:true, erw:ziel.w+':'+ziel.h+' ('+ziel.n+')', erk:_dqaRatioName(W,H)+' \u00b7 '+W+' \u00d7 '+H, d:'Die Datei passt nicht zur Ausgabe im Projekt. Falls die Vorgabe falsch ist, die Ausgabevorgabe \u00e4ndern.' });
+      else add({ id:'dt-ratio', g:'datei', t:'Seitenverh\u00e4ltnis', q:'lokal', s:'ok', d:ziel.w+':'+ziel.h+' wie vorgegeben' });
+      var minK=Math.min(ziel.minW||0, ziel.minH||0);
+      if(kurz<720) add({ id:'dt-aufl', g:'datei', t:'Aufl\u00f6sung zu niedrig', q:'lokal', s:'block', erw:(ziel.minW&&ziel.minH)?(ziel.minW+' \u00d7 '+ziel.minH):'', erk:W+' \u00d7 '+H, d:'Unter 720 Pixel an der kurzen Seite wirkt ein Markenfilm auf aktuellen Displays unscharf.' });
+      else if(minK && kurz<minK) add({ id:'dt-aufl', g:'datei', t:'Aufl\u00f6sung zu niedrig', q:'lokal', s:'warn', erw:ziel.minW+' \u00d7 '+ziel.minH, erk:W+' \u00d7 '+H, d:'Unter dem typischen Ma\u00df f\u00fcr '+ziel.n+'.' });
+      else add({ id:'dt-aufl', g:'datei', t:'Aufl\u00f6sung', q:'lokal', s:'ok', d:W+' \u00d7 '+H });
+    } else {
+      add({ id:'dt-ratio', g:'datei', t:'Seitenverh\u00e4ltnis', q:'lokal', s:'info', d:_dqaRatioName(W,H)+' \u00b7 keine Formatvorgabe im Projekt, deshalb kein Abgleich.' });
+      add({ id:'dt-aufl', g:'datei', t:kurz<720?'Aufl\u00f6sung zu niedrig':'Aufl\u00f6sung', q:'lokal', s:kurz<720?'block':'ok', d:W+' \u00d7 '+H+(kurz<720?' \u00b7 unter 720 Pixel an der kurzen Seite':'') });
+    }
+    // Dauer
+    var dMin=+vg.minDauer||0, dMax=+vg.maxDauer||0;
+    if(dMin||dMax){
+      var raus=(dMin && dauer<dMin-1) || (dMax && dauer>dMax+1);
+      add({ id:'dt-dauer', g:'datei', t:raus?'Dauer passt nicht zur Projektvorgabe':'Dauer', q:'lokal', s:raus?'warn':'ok', erw:raus?((dMin?_fdTc(dMin):'')+(dMin&&dMax?' bis ':'')+(dMax?(dMin?'':'h\u00f6chstens ')+_fdTc(dMax):'')):'', erk:raus?_fdTc(dauer):'', d:raus?'':_fdTc(dauer)+' Min, innerhalb der Vorgabe' });
+    } else add({ id:'dt-dauer', g:'datei', t:'Dauer', q:'lokal', s:'info', d:_fdTc(dauer)+' Min \u00b7 keine Vorgabe hinterlegt' });
+    // Groesse und Bitrate
+    if(f.size>0 && dauer>0){
+      var mbit=f.size*8/dauer/1e6, mbitTxt=(Math.round(mbit*10)/10).toString().replace('.',',')+' Mbit/s';
+      var zuKlein=mbit<(kurz>=1080?2:1);
+      var zuGross=mbit>80 || f.size>2*1073741824;
+      add({ id:'dt-groesse', g:'datei', t:zuKlein?'Datei ungew\u00f6hnlich klein':(zuGross?'Datei ungew\u00f6hnlich gro\u00df':'Dateigr\u00f6\u00dfe'), q:'lokal', s:zuKlein?'warn':(zuGross?'info':'ok'),
+        d:_dqaMb(f.size)+' \u00b7 '+mbitTxt+(zuKlein?' \u00b7 bei dieser Datenrate ist sichtbarer Qualit\u00e4tsverlust wahrscheinlich. Mit h\u00f6herer Qualit\u00e4t exportieren.':(zuGross?' \u00b7 f\u00fcr Download und Kundenportal sehr gro\u00df, eventuell eine Auslieferungsfassung exportieren.':'')) });
+    }
+    if(ctx.vorige && ctx.vorige.fileSize>0 && f.size>0){
+      var dif=Math.round((f.size-ctx.vorige.fileSize)/ctx.vorige.fileSize*100);
+      if(Math.abs(dif)>=30) add({ id:'dt-vergleich', g:'datei', t:'Gr\u00f6\u00dfe anders als vorherige Datei', q:'lokal', s:'info', d:'Diese Datei ist '+Math.abs(dif)+' % '+(dif>0?'gr\u00f6\u00dfer':'kleiner')+' als '+(ctx.vorige.filename||'die vorherige')+'.' });
+    }
+  }
+  // Codec und Bildrate
+  if(cont.container){
+    var vc=DQA_CODECS[cont.videoCodec]||cont.videoCodec||'?', ac=cont.audioCodec?(DQA_CODECS[cont.audioCodec]||cont.audioCodec):'';
+    var prores=/^ap/.test(cont.videoCodec||''), hevc=/^h[ev][cv]1$/.test(cont.videoCodec||'');
+    add({ id:'dt-codec', g:'datei', t:prores?'ProRes ist keine Auslieferungsdatei':'Codec und Bildrate', q:'lokal', s:prores?'warn':(hevc||cont.videoCodec==='av01'?'info':'ok'),
+      d:vc+(cont.fps?(' \u00b7 '+String(cont.fps).replace('.',',')+' fps'):' \u00b7 Bildrate nicht technisch auslesbar')+(ac?(' \u00b7 '+ac):'')
+        +(prores?' \u00b7 Schnittformat, sehr gro\u00df und auf vielen Ger\u00e4ten nicht abspielbar. Als H.264 exportieren.':(hevc?' \u00b7 l\u00e4uft auf Apple-Ger\u00e4ten, auf manchen Windows-PCs nicht. H.264 ist universeller.':'')) });
+  } else add({ id:'dt-codec', g:'datei', t:'Codec und Bildrate', q:'lokal', s:'info', nb:true, d:'Nicht technisch auslesbar. Der Browser gibt diese Werte nicht zuverl\u00e4ssig preis.' });
+  // Tonspur
+  if(cont.hatAudio===false){
+    add({ id:'dt-audio', g:'datei', t:'Audio-Track fehlt', q:'lokal', s:'warn', d:'Der Container enth\u00e4lt eindeutig keine Tonspur. Wenn der Film Ton haben soll, neu exportieren.' });
+  } else if(ton && ton.status==='ok'){
+    add({ id:'dt-audio', g:'datei', t:'Audio-Track vorhanden', q:'lokal', s:'ok', d:'Tonspur gelesen \u00b7 '+_fdTc(ton.dauer||0)+' Min' });
+    var tonOk=true;
+    if(ton.stumm){ tonOk=false; add({ id:'tn-stumm', g:'datei', t:'Ton ist komplett stumm', q:'lokal', s:'warn', d:'Die Tonspur existiert, enth\u00e4lt aber nur Stille. Musik oder Voice-over wurden vermutlich nicht mit exportiert.' }); }
+    if(!ton.stumm && ton.frueh!==null){ tonOk=false; add({ id:'tn-frueh', g:'datei', t:'Ton endet vor dem Bild', q:'lokal', s:'warn', d:'Ton endet bei '+_dqaTc(ton.frueh)+', das Bild l\u00e4uft bis '+_dqaTc(dauer)+'.' }); }
+    if(!ton.stumm && ton.clip){ tonOk=false; add({ id:'tn-clip', g:'datei', t:'Digitales Clipping', q:'lokal', s:'warn', d:ton.clip.n+' \u00fcbersteuerte Stellen, erste bei '+_dqaTc(ton.clip.ab)+' (Zeit aus der Tonspur). Mit Kopfh\u00f6rern pr\u00fcfen, eventuell Pegel senken.' }); }
+    if(!ton.stumm && ton.stille){ tonOk=false; add({ id:'tn-stille', g:'datei', t:'Lange Stille im Ton', q:'lokal', s:'warn', d:ton.stille.lg.toString().replace('.',',')+' s Stille ab '+_dqaTc(ton.stille.ab)+' (Zeit aus der Tonspur). Gewollt oder fehlt dort Musik?' }); }
+    if(ton.hartesEnde) add({ id:'tn-ende', g:'datei', t:'Ton endet hart', q:'lokal', s:'info', d:'Der Ton ist im letzten Moment noch laut. Pr\u00fcfen, ob Musik oder Voice-over abgeschnitten werden.' });
+    if(tonOk) add({ id:'dt-ton', g:'datei', t:'Ton technisch', q:'lokal', s:'ok', d:'nicht stumm \u00b7 kein Clipping \u00b7 keine lange Stille \u00b7 endet nicht vor dem Bild' });
+  } else {
+    add({ id:'dt-audio', g:'datei', t:'Audio-Track', q:'lokal', s:'info', nb:true, d:'Nicht technisch auslesbar.' });
+    add({ id:'dt-ton', g:'datei', t:'Ton technisch nicht vollst\u00e4ndig pr\u00fcfbar', q:'lokal', s:'warn', nb:true, d:(ton&&ton.grund)||'Die Tonspur konnte nicht analysiert werden.' });
+  }
+
+  // BILD (lokal)
+  if(lesbar){
+    var schwarz=function(x){ return typeof x.luma==='number' && x.luma<14 && x.streu<7; };
+    var alle=frames.filter(function(x){ return typeof x.luma==='number'; });
+    if(alle.length && alle.every(schwarz)) add({ id:'bd-schwarz', g:'bild', t:'Film ist durchgehend schwarz', q:'lokal', s:'block', hart:true, d:'Alle '+alle.length+' gepr\u00fcften Bilder sind schwarz.' });
+    else {
+      var start=frames.filter(function(x){ return x.t<=1.05; }), ende=frames.filter(function(x){ return x.t>=dauer-1.6; });
+      var anf=[];
+      if(start.length && schwarz(start[0])) anf.push('0:00 ist schwarz');
+      if(start.length>1 && start.every(schwarz)) anf.push('die erste Sekunde ist komplett schwarz');
+      var kiA=ki && ki.anfang && ki.anfang.status==='auffaellig' ? String(ki.anfang.notiz||'').slice(0,200) : '';
+      add({ id:'bd-anfang', g:'bild', t:anf.length||kiA?'Anfang auff\u00e4llig':'Anfang sauber', q:kiA?'ki':'lokal', s:anf.length||kiA?'warn':'ok', z:start.length?start[0].t:0,
+        d:anf.length||kiA ? ([anf.join(', ')].filter(Boolean).concat(kiA?[kiA]:[]).join('. ')+'. Beabsichtigter Einstieg?') : (ki?'0:00 und die erste Sekunde ohne Schwarzbild, Testbild oder leere Fl\u00e4che':'lokal gepr\u00fcft: kein Schwarzbild') });
+      var end=[];
+      var lz=ende.length?ende[ende.length-1]:null;
+      if(lz && schwarz(lz)) end.push('der letzte Frame ist schwarz');
+      var gleich=function(a,b){ if(!a||!b||!a.sig||!b.sig) return false; var s2=0; for(var k=0;k<64;k++) s2+=Math.abs(a.sig[k]-b.sig[k]); return s2/64<1.2; };
+      var stand=ende.length>=3 && ende.every(function(x,k){ return k===0 || gleich(ende[k-1],x); }) && !schwarz(ende[0]);
+      var kiE=ki && ki.ende && ki.ende.status==='auffaellig' ? String(ki.ende.notiz||'').slice(0,200) : '';
+      add({ id:'bd-ende', g:'bild', t:end.length||kiE?'Ende auff\u00e4llig':'Ende sauber', q:kiE?'ki':'lokal', s:end.length||kiE?'warn':'ok', z:lz?lz.t:null,
+        d:end.length||kiE ? ([end.join(', ')].filter(Boolean).concat(kiE?[kiE]:[]).join('. ')+'.') : (ki?'Letzte Sekunden ohne Endcard, Schwarzbild oder abgeschnittenes Outro':'lokal gepr\u00fcft: kein Schwarzbild am Ende') });
+      if(stand) add({ id:'bd-stand', g:'bild', t:'Standbild am Ende', q:'lokal', s:'info', z:ende[0].t, d:'Die letzten '+(Math.round((dauer-ende[0].t)*10)/10).toString().replace('.',',')+' s zeigen dasselbe Bild. Bei einem Logo-Hold gewollt, sonst ein Freeze.' });
+      var mitteS=frames.filter(function(x){ return x.t>1.05 && x.t<dauer-1.6 && schwarz(x); });
+      add({ id:'bd-schwarz', g:'bild', t:mitteS.length?'Schwarzbild im Film':'Keine Schwarzbilder', q:'lokal', s:mitteS.length?'warn':'ok', z:mitteS.length?mitteS[0].t:null,
+        d:mitteS.length ? ('Schwarz bei '+mitteS.slice(0,4).map(function(x){ return _dqaTc(x.t); }).join(', ')+'. Blende oder Exportfehler?') : 'in '+alle.length+' Stichproben' });
+      var spr=[]; for(var k2=1;k2<alle.length;k2++){ if(Math.abs(alle[k2].luma-alle[k2-1].luma)>110) spr.push(alle[k2]); }
+      if(spr.length) add({ id:'bd-hell', g:'bild', t:'Starker Helligkeitssprung', q:'lokal', s:'info', z:spr[0].t, d:'Zwischen Stichproben bei '+spr.slice(0,3).map(function(x){ return _dqaTc(x.t); }).join(', ')+'. Oft ein gewollter Schnitt, im Player ansehen.' });
+    }
+  }
+
+  // BILD, TEXT & LOGO (KI)
+  var kiBef=(ki && Array.isArray(ki.befunde)) ? ki.befunde : [];
+  var KAT={ wasserzeichen:'bild', endcard:'bild', testbild:'bild', exportfehler:'bild', schwarzbild:'bild', fremdlogo:'bild', ki_artefakt:'bild', bildqualitaet:'bild', format:'bild', marke:'textlogo', text:'textlogo', safe_area:'textlogo', logo:'textlogo' };
+  var KT={ wasserzeichen:'Wasserzeichen', endcard:'Editor-Endcard', testbild:'Testbild', exportfehler:'Exportfehler', schwarzbild:'Schwarzbild', fremdlogo:'Fremdes Logo', ki_artefakt:'KI-Artefakt', bildqualitaet:'Bildqualit\u00e4t', format:'Bildformat', marke:'Markenname', text:'Text', safe_area:'Text au\u00dferhalb sicherer Bereiche', logo:'Logo' };
+  var gezaehlt={};
+  kiBef.slice(0,14).forEach(function(b, i){
+    if(!b || !b.beschreibung) return;
+    var kat=String(b.kategorie||'').toLowerCase(); var g=KAT[kat]||'bild';
+    var sicher=String(b.sicherheit||'').toLowerCase()==='sicher';
+    var sw=String(b.schwere||'').toLowerCase();
+    var s=(sw==='blocker' && sicher) ? 'block' : ((sw==='blocker'||sw==='warnung') ? 'warn' : 'info');
+    gezaehlt[kat]=1;
+    add({ id:'ki-'+kat+'-'+i, g:g, t:(KT[kat]||'Auff\u00e4lligkeit')+(sicher?'':' (unsicher erkannt)'), q:'ki', s:s, z:_dqaZeitAusKi(b.zeit, frames),
+      d:String(b.beschreibung).slice(0,260), erw:String(b.erwartet||'').slice(0,80), erk:String(b.erkannt||'').slice(0,80) });
+  });
+  if(lesbar){
+    if(!ki){
+      add({ id:'ki-fehlt', g:'bild', t:'Visuelle KI-Pr\u00fcfung nicht abgeschlossen', q:'ki', s:'warn', nb:true, d:(ctx.kiFehler||'Die visuelle Pr\u00fcfung lief nicht durch.')+' Wasserzeichen, KI-Artefakte, Text und Logo sind deshalb ungepr\u00fcft. Datei erneut pr\u00fcfen oder selbst ansehen.' });
+    } else {
+      var stat=function(o){ return String(o&&o.status||'').toLowerCase(); };
+      if(!gezaehlt.wasserzeichen && !gezaehlt.endcard && !gezaehlt.testbild){
+        var wz=stat(ki.wasserzeichen);
+        add({ id:'bd-wz', g:'bild', t:wz==='unsicher'?'Wasserzeichen unsicher':'Kein Wasserzeichen, keine Endcard', q:'ki', s:wz==='unsicher'?'warn':'ok', d:wz==='unsicher'?'M\u00f6gliches Wasserzeichen oder Editor-Hinweis, nicht eindeutig erkennbar. Im Player pr\u00fcfen.':'in '+frames.length+' Stichproben' });
+      }
+      if(!gezaehlt.ki_artefakt){
+        var ka=stat(ki.ki_artefakte);
+        add({ id:'bd-ki', g:'bild', t:ka==='unsicher'?'KI-Artefakte unsicher':'Keine sichtbaren KI-Artefakte', q:'ki', s:ka==='unsicher'?'warn':'ok', d:ka==='unsicher'?'H\u00e4nde, Gesichter oder Produkte wirken an einer Stelle m\u00f6glicherweise verformt. Nicht eindeutig.':'H\u00e4nde, Gesichter, Produkt, Logo in den Stichproben' });
+      }
+      if(!gezaehlt.bildqualitaet && !gezaehlt.exportfehler) add({ id:'bd-qual', g:'bild', t:'Einzelbildqualit\u00e4t', q:'ki', s:'ok', d:'keine auff\u00e4llig schlechten Einzelbilder in den Stichproben' });
+      // Markenname, CTA, Website, Instagram nur, wenn im Projekt hinterlegt
+      [['marke','tl-marke','Markenname',vg.marke],['cta','tl-cta','CTA',vg.cta],['website','tl-web','Website',vg.website],['instagram','tl-ig','Instagram-Name',vg.instagram]].forEach(function(x){
+        var o=ki[x[0]]||{}, st2=stat(o), soll=String(x[3]||'').trim();
+        if(!soll){ if(x[0]==='marke') add({ id:x[1], g:'textlogo', t:'Markenname nicht abgleichbar', q:'projekt', s:'warn', nb:true, d:'Keine Vorgabe hinterlegt. Erwarteten Markennamen in den Ausgabevorgaben eintragen oder selbst pr\u00fcfen.' }); return; }
+        if(gezaehlt.marke && x[0]==='marke') return;
+        var z2=_dqaZeitAusKi(o.zeit, frames);
+        if(st2==='korrekt') add({ id:x[1], g:'textlogo', t:x[2], q:'ki', s:'ok', z:z2, d:'\u201e'+soll+'\u201c korrekt gesehen' });
+        else if(st2==='falsch') add({ id:x[1], g:'textlogo', t:x[2]+' wirkt falsch geschrieben', q:'ki', s:(String(o.sicherheit||'sicher').toLowerCase()==='unsicher')?'warn':'block', z:z2, erw:soll, erk:String(o.erkannt||'').slice(0,80), d:'' });
+        else if(st2==='unsicher') add({ id:x[1], g:'textlogo', t:x[2]+' unsicher erkannt', q:'ki', s:'warn', z:z2, erw:soll, erk:String(o.erkannt||'').slice(0,80), d:'Text nicht klar genug lesbar f\u00fcr eine sichere Aussage.' });
+        else add({ id:x[1], g:'textlogo', t:x[2]+' nicht gesehen', q:'ki', s:'warn', d:'\u201e'+soll+'\u201c kam in den Stichproben nicht vor. Kann zwischen zwei Stichproben liegen.' });
+      });
+      if(!gezaehlt.text && !gezaehlt.safe_area){
+        var tx=stat(ki.text);
+        if(tx==='unsicher') add({ id:'tl-text', g:'textlogo', t:'Text unsicher erkannt', q:'ki', s:'warn', d:'Text im Film ist teils zu klein oder unscharf f\u00fcr eine sichere Pr\u00fcfung auf Fehler und Abschnitte.' });
+        else if(tx!=='kein_text') add({ id:'tl-text', g:'textlogo', t:'Text lesbar und vollst\u00e4ndig', q:'ki', s:'ok', d:'keine abgeschnittenen Buchstaben, keine sichtbaren Fehler in den Stichproben' });
+      }
+      if(!gezaehlt.logo){
+        var lg=stat(ki.logo), zL=_dqaZeitAusKi(ki.logo&&ki.logo.zeit, frames), nt=String(ki.logo&&ki.logo.notiz||'').slice(0,200);
+        if(!ctx.hatLogo) add({ id:'tl-logo', g:'textlogo', t:'Logo manuell vergleichen', q:'projekt', s:'warn', nb:true, z:zL, d:'Kein Original-Logo im Projekt hinterlegt. '+(lg==='kein_logo_sichtbar'?'In den Stichproben war kein Logo zu sehen.':'Sichtbares Logo selbst mit dem Original vergleichen.') });
+        else if(lg==='visuell_plausibel') add({ id:'tl-logo', g:'textlogo', t:'Logo visuell plausibel', q:'ki', s:'ok', z:zL, d:'Wortmarke, Schreibweise und Form passen zum Original. Kein pixelgenauer Vergleich.'+(nt?' '+nt:'') });
+        else if(lg==='abweichung') add({ id:'tl-logo', g:'textlogo', t:'Logo weicht vom Original ab', q:'ki', s:'block', z:zL, d:nt||'Sichtbare Abweichung vom hinterlegten Original-Logo.' });
+        else if(lg==='kein_logo_sichtbar') add({ id:'tl-logo', g:'textlogo', t:'Logo nicht gesehen', q:'ki', s:'warn', d:'In den Stichproben war kein Logo zu sehen. Falls der Film eines zeigt, selbst kontrollieren.' });
+        else add({ id:'tl-logo', g:'textlogo', t:'Logo manuell vergleichen', q:'ki', s:'warn', z:zL, d:nt||'Kein sicherer Vergleich m\u00f6glich.' });
+      }
+    }
+    add({ id:'bd-abspielen', g:'bild', t:'Bewegung, \u00dcberg\u00e4nge und Ton inhaltlich', q:'lokal', s:'warn', nb:true,
+      d:'Nicht beurteilbar. Einzelbilder zeigen weder Bewegungsqualit\u00e4t, Schnittrhythmus und \u00dcberg\u00e4nge noch Lippensynchronit\u00e4t. Musik, Stimme, Aussprache und Mix h\u00f6rt Mind\u00e9a nicht. Einmal komplett mit Kopfh\u00f6rern abspielen und best\u00e4tigen.' });
+  }
+
+  // PROJEKT
+  var pr=ctx.pr||{};
+  add({ id:'pj-kundin', g:'projekt', t:'Kundenprojekt', q:'projekt', s:'ok', d:String(pr.name||'Projekt')+(pr.art==='test'?' \u00b7 Testkundin':'') });
+  var pk=ctx.paketKey, PK=(typeof FD_PAKETE==='object' && pk) ? FD_PAKETE[pk] : null;
+  if(PK){
+    add({ id:'pj-paket', g:'projekt', t:'Paket', q:'projekt', s:'ok', d:PK.name+' \u00b7 aus den Projektdaten' });
+    if(pk==='bi') add({ id:'pj-paket-umfang', g:'projekt', t:'Paketumfang', q:'projekt', s:'info', d:PK.name+' ist laut Paket '+PK.ziel+'. Diese Pr\u00fcfung gilt nur f\u00fcr diese eine Datei.' });
+  } else add({ id:'pj-paket', g:'projekt', t:'Paket nicht hinterlegt', q:'projekt', s:'warn', nb:true, d:'Keine Vorgabe hinterlegt. Im Film-Direktor das Paket w\u00e4hlen.' });
+  if(ziel) add({ id:'pj-format', g:'projekt', t:'Ausgabeformat', q:'projekt', s:'ok', d:ziel.n+' \u00b7 '+ziel.w+':'+ziel.h });
+  else add({ id:'pj-format', g:'projekt', t:'Ausgabeformat nicht hinterlegt', q:'projekt', s:'warn', nb:true, d:'Keine Vorgabe hinterlegt. Ohne Zielausgabe kann Delivery QA das Format nicht abgleichen.' });
+  // Version: aeltere Datei als zuletzt gepruefte, oder aeltere als der letzte Creative Review?
+  var fv=ctx.fdListe||[], fdIdx=-1; fv.forEach(function(x,i){ if(x && x.fp && x.fp===ctx.fp) fdIdx=i; });
+  var alteQa=null, neuere=null;
+  (ctx.qaListe||[]).forEach(function(c){ if(c.fp===ctx.fp) alteQa=c; else if(alteQa && !neuere) neuere=c; });
+  if(fdIdx>=0 && fdIdx<fv.length-1){
+    add({ id:'pj-version', g:'projekt', t:'Falsche Version', q:'projekt', s:'block', erw:'Version '+fv[fv.length-1].version+(fv[fv.length-1].datei?(' \u00b7 '+fv[fv.length-1].datei):''), erk:'Version '+fv[fdIdx].version+(fv[fdIdx].datei?(' \u00b7 '+fv[fdIdx].datei):''),
+      d:'Diese Datei ist identisch mit Version '+fv[fdIdx].version+' im Film-Direktor. Danach wurde bereits Version '+fv[fv.length-1].version+' gepr\u00fcft.' });
+  } else if(alteQa && neuere){
+    add({ id:'pj-version', g:'projekt', t:'\u00c4ltere Exportdatei', q:'projekt', s:'block', erw:String(neuere.filename||'neuere Datei'), erk:String(alteQa.filename||'diese Datei'),
+      d:'Diese Datei wurde am '+_dqaDatum(alteQa.checkedAt)+' schon gepr\u00fcft. Danach wurde eine andere Datei gepr\u00fcft.' });
+  } else {
+    var vlab=String(vg.version||'').trim();
+    if(vlab && name.toLowerCase().replace(/\s+/g,'').indexOf(vlab.toLowerCase().replace(/\s+/g,''))<0) add({ id:'pj-version', g:'projekt', t:'Versionsbezeichnung', q:'projekt', s:'info', d:'Der Dateiname enth\u00e4lt die vereinbarte Version \u201e'+vlab+'\u201c nicht. Sicherstellen, dass dies die finale Fassung ist.' });
+    else add({ id:'pj-version', g:'projekt', t:'Version', q:'projekt', s:'ok', d:vlab?('enth\u00e4lt \u201e'+vlab+'\u201c'):'keine \u00e4ltere Datei erkannt' });
+  }
+
+  // CREATIVE REVIEW
+  var letzte=fv.length?fv[fv.length-1]:null;
+  if(!letzte){
+    add({ id:'cr-review', g:'creative', t:'Kein Creative Review vorhanden', q:'projekt', s:'warn', d:'Der Film-Direktor hat diesen Film noch nicht gepr\u00fcft. Zuerst dort pr\u00fcfen lassen oder bewusst ohne Review best\u00e4tigen.' });
+  } else {
+    var rs=fdReviewStatus(letzte);
+    var passt=!!(letzte.fp && letzte.fp===ctx.fp);
+    var mussTxt=rs.muss>0 ? ((rs.mussUnsicher?'':rs.muss+' ')+'MUSS-\u00c4nderung'+(rs.muss===1||rs.mussUnsicher?'':'en')+' offen') : '';
+    var kopf='Version '+letzte.version+(letzte.score!=null?(' \u00b7 '+letzte.score+'/10'):'');
+    if(passt){
+      if(!rs.lesbar) add({ id:'cr-review', g:'creative', t:'MUSS-Status nicht eindeutig lesbar', q:'projekt', s:'warn', d:kopf+'. Im Review fehlt der Abschnitt MUSS GE\u00c4NDERT WERDEN. Review selbst lesen und best\u00e4tigen.' });
+      else if(rs.muss>0) add({ id:'cr-review', g:'creative', t:'Creative Freigabe offen', q:'projekt', s:'block', d:kopf+' geh\u00f6rt zu genau dieser Datei, und dort ist '+mussTxt+'.' });
+      else add({ id:'cr-review', g:'creative', t:'Creative Review bestanden', q:'projekt', s:'ok', d:kopf+' \u00b7 geh\u00f6rt zu dieser Datei \u00b7 keine MUSS-\u00c4nderung offen' });
+    } else {
+      add({ id:'cr-review', g:'creative', t:'Neue Version braucht Creative Check', q:'projekt', s:'warn', bb:(rs.muss>0?'block':'ok'),
+        d:'Der letzte Review ('+kopf+', '+String(letzte.stand||'').slice(8)+'.'+String(letzte.stand||'').slice(5,7)+'.) geh\u00f6rt '+(letzte.fp?'zu einer anderen Datei':'zu keiner erkennbaren Datei, er stammt aus der Zeit vor dem Datei-Abdruck')+'. Ob seine Kritik in dieser Datei gel\u00f6st ist, ist nicht verglichen. Neue Version im Film-Direktor pr\u00fcfen'+(rs.muss>0?'.':' oder best\u00e4tigen, dass der Review zu dieser Datei geh\u00f6rt.') });
+    }
+  }
+  return P;
+}
+
+// Wirksamer Status eines Punktes nach manueller Entscheidung
+function dqaEff(p, ov){
+  var o=ov && ov[p.id];
+  if(!o || p.hart || p.s==='info' || p.s==='ok') return { s:p.s, m:null };
+  if(o.a==='bestaetigt') return { s:p.bb||'ok', m:'bestaetigt' };
+  if(o.a==='zurueck') return { s:'block', m:'zurueck' };
+  return { s:p.s, m:'spaeter' };
+}
+function dqaAuswertung(c){
+  var ov=c.manualOverrides||{}, alle=dqaPunkte(c), gr={}, st='ok';
+  DQA_GRUPPEN.forEach(function(g){ gr[g[0]]={ n:0, ok:0, block:0, warn:0 }; });
+  alle.forEach(function(p){
+    var e=dqaEff(p, ov); p._e=e.s; p._m=e.m;
+    if(e.s==='info') return;
+    var G=gr[p.g]; if(!G) return; G.n++;
+    if(e.s==='ok') G.ok++; else if(e.s==='block'){ G.block++; st='block'; } else { G.warn++; if(st!=='block') st='warn'; }
+  });
+  return { status:st, gruppen:gr, punkte:alle };
+}
+function dqaPunkte(c){ return [].concat(c.technicalChecks||[], c.visualChecks||[], c.projectChecks||[], c.creativeChecks||[]); }
+
+// ── Visuelle KI-Pruefung: genau EIN Aufruf ────────────────────────────────
+function dqaSys(){
+  return 'Du bist Mind\u00e9a Delivery QA, die technische und produktionsseitige Endkontrolle vor der Auslieferung eines Kundenfilms. '
+    +'Du bist NICHT der Creative Director. Story, Wirkung, Gef\u00fchl, Sch\u00f6nheit und Strategie hat der Film-Direktor bereits bewertet, das wiederholst du nicht. '
+    +'Du suchst ausschlie\u00dflich nach Fehlern, die eine Auslieferung an die Kundin verhindern oder peinlich machen w\u00fcrden.\n\n'
+    +'DU BEKOMMST Einzelbilder mit echten Zeitcodes in der Form m:ss,z (z sind Zehntelsekunden), eine Stichprobe \u00fcber den ganzen Film, Anfang und Ende dichter. Du siehst kein laufendes Video und h\u00f6rst keinen Ton.\n\n'
+    +'SUCHE NACH: sichtbaren Wasserzeichen (CapCut, InShot, VN, Kling, Runway, Pika, Hailuo, Sora, Veo, Midjourney, TikTok, Stockfoto-Wasserzeichen wie Shutterstock, Getty, Envato, Adobe Stock), Editor-Endcards (z. B. CapCut-Endcard), Testbildern, Exportframes, leeren Fl\u00e4chen, unbeabsichtigten Schwarzbildern, '
+    +'KI-Artefakten (unnat\u00fcrliche H\u00e4nde, zus\u00e4tzliche oder verschmolzene Finger, verformte oder zwischen Bildern ver\u00e4nderte Gesichter derselben Person, Produktverformung, Logo-Verformung, Fantasie-Schrift), '
+    +'falsch geschriebenem Markennamen, falscher Schrift, unlesbarem oder abgeschnittenem Text, Text au\u00dferhalb sicherer Bereiche, fremden Logos, auff\u00e4llig schlechter Einzelbildqualit\u00e4t, falschem Bildformat (z. B. eingebettete Balken, gestauchtes Bild), '
+    +'abgeschnittenem Outro, zu fr\u00fch abgeschnittenem Logo, unvollst\u00e4ndigem Text am Ende.\n\n'
+    +'REGELN:\n'
+    +'1. Als zeit verwendest du ausschlie\u00dflich einen Zeitcode, der \u00fcber einem Bild steht, exakt so geschrieben (m:ss,z). Erfinde keine Zeitcodes. Kannst du keinen zuordnen, lass zeit leer.\n'
+    +'2. sicherheit ist "sicher" nur, wenn der Fehler auf dem Bild eindeutig zu sehen ist. Sonst "unsicher".\n'
+    +'3. Einen Schreibfehler meldest du nur bei klar lesbarem Text. Ist Text klein, unscharf oder verdeckt, setzt du text.status auf "unsicher" und meldest keinen Schreibfehler.\n'
+    +'4. Logo: Ohne Referenzlogo nie "visuell_plausibel", sondern "manuell_vergleichen" (wenn ein Logo sichtbar ist) oder "kein_logo_sichtbar". Mit Referenzlogo "visuell_plausibel", wenn Wortmarke, Schreibweise und ungef\u00e4hre Form \u00fcbereinstimmen, "abweichung" nur bei klar sichtbarer Abweichung. Behaupte nie eine pixelgenaue \u00dcbereinstimmung.\n'
+    +'5. schwere: "blocker" hei\u00dft, so darf der Film nicht ausgeliefert werden (sichtbares Wasserzeichen, Editor-Endcard, falscher Markenname, massives KI-Artefakt im Bildfokus, abgeschnittener Text oder abgeschnittenes Logo, Testbild, Exportfehler). "warnung" hei\u00dft, Ivana sollte es ansehen. "hinweis" ist kein Auslieferungsproblem.\n'
+    +'6. Kein Befund ist besser als ein erfundener. Sieht alles sauber aus, ist befunde eine leere Liste.\n'
+    +'7. Keine Aussagen \u00fcber Bewegung, \u00dcberg\u00e4nge, Schnittrhythmus, Lippensynchronit\u00e4t, Ton, Musik oder Stimme.\n'
+    +'8. Fehlt im Projekt eine Vorgabe (z. B. CTA), setzt du dort status "keine_vorgabe".\n\n'
+    +'ANTWORTE AUSSCHLIESSLICH mit einem JSON-Objekt, ohne Text davor oder danach, in genau dieser Struktur:\n'
+    +'{"befunde":[{"zeit":"m:ss,z","kategorie":"wasserzeichen|endcard|testbild|exportfehler|schwarzbild|fremdlogo|ki_artefakt|bildqualitaet|format|marke|text|safe_area|logo","schwere":"blocker|warnung|hinweis","sicherheit":"sicher|unsicher","beschreibung":"ein klarer Satz auf Deutsch","erwartet":"","erkannt":""}],'
+    +'"anfang":{"status":"sauber|auffaellig","notiz":""},"ende":{"status":"sauber|auffaellig","notiz":""},'
+    +'"marke":{"status":"korrekt|falsch|nicht_gesehen|unsicher|keine_vorgabe","sicherheit":"sicher|unsicher","zeit":"","erkannt":""},'
+    +'"cta":{"status":"korrekt|falsch|nicht_gesehen|unsicher|keine_vorgabe","zeit":"","erkannt":""},'
+    +'"website":{"status":"korrekt|falsch|nicht_gesehen|unsicher|keine_vorgabe","zeit":"","erkannt":""},'
+    +'"instagram":{"status":"korrekt|falsch|nicht_gesehen|unsicher|keine_vorgabe","zeit":"","erkannt":""},'
+    +'"logo":{"status":"visuell_plausibel|manuell_vergleichen|abweichung|kein_logo_sichtbar","zeit":"","notiz":""},'
+    +'"text":{"status":"sauber|auffaellig|unsicher|kein_text"},'
+    +'"wasserzeichen":{"status":"keins_gesehen|gefunden|unsicher"},'
+    +'"ki_artefakte":{"status":"keine_gesehen|gefunden|unsicher"}}\n'
+    +'Gefundene Probleme stehen IMMER zus\u00e4tzlich als Eintrag in befunde.';
+}
+function _dqaJson(t){
+  try{ var s=String(t||''), a=s.indexOf('{'), b=s.lastIndexOf('}'); if(a<0||b<=a) return null; var o=JSON.parse(s.slice(a,b+1)); return (o && typeof o==='object') ? o : null; }catch(e){ return null; }
+}
+async function dqaKiPruefung(ctx){
+  if(!apiKey) return { fehler:'Kein API Key hinterlegt.' };
+  var vg=ctx.vg||{}, fmt=DQA_FORMATE[vg.format];
+  var text='DELIVERY-QA-AUFTRAG\nKundin/Projekt: '+(ctx.pr&&ctx.pr.name||'unbekannt')+'\n'
+    +'Paket: '+((ctx.paket&&ctx.paket.name)||'keine Vorgabe')+'\n'
+    +'Zielausgabe: '+(fmt?(fmt.n+' '+fmt.w+':'+fmt.h):(vg.format==='frei'&&vg.freiW?('Projektvorgabe '+vg.freiW+':'+vg.freiH):'keine Vorgabe'))+'\n'
+    +(vg.format==='9x16'?'Sichere Bereiche bei 9:16: oben etwa 14 Prozent und unten etwa 20 Prozent der Bildh\u00f6he werden in Instagram von der Oberfl\u00e4che verdeckt. Wichtiger Text dort ist ein Befund safe_area.\n':'')
+    +'Erwarteter Markenname: '+(vg.marke||'keine Vorgabe')+'\n'
+    +'Erwarteter CTA: '+(vg.cta||'keine Vorgabe')+'\n'
+    +'Erwartete Website: '+(vg.website||'keine Vorgabe')+'\n'
+    +'Erwarteter Instagram-Name: '+(vg.instagram||'keine Vorgabe')+'\n'
+    +'Referenzlogo: '+(ctx.logo?'liegt als erstes Bild bei':'nicht hinterlegt')+'\n'
+    +'Datei: '+ctx.r.breite+' x '+ctx.r.hoehe+', '+_fdTc(ctx.r.dauer)+' Minuten, '+ctx.frames.length+' Bilder.\n\nPr\u00fcfe jetzt die Bilder und antworte nur mit dem JSON.';
+  var vorab=[];
+  if(ctx.logo){ var m=/^data:(image\/[a-z+]+);base64,(.+)$/.exec(ctx.logo); if(m) vorab.push({ label:'REFERENZLOGO DER KUNDIN (Original aus dem Projekt, kein Filmbild)', media:m[1], b64:m[2] }); }
+  try{
+    var ant=await Promise.race([ fdCall(dqaSys(), text, ctx.frames, vorab), new Promise(function(res){ setTimeout(function(){ res('[Fehler Zeit: Die Antwort kam nicht innerhalb von zwei Minuten]'); }, 120000); }) ]);
+    if(!ant || /^\[(Fehler|Kein|Leer)/.test(ant)) return { fehler:String(ant||'Keine Antwort').replace(/^\[|\]$/g,'').slice(0,140) };
+    var o=_dqaJson(ant);
+    if(!o) return { fehler:'Die Antwort der visuellen Pr\u00fcfung war nicht lesbar.' };
+    return { ki:o };
+  }catch(e){ return { fehler:'Die visuelle Pr\u00fcfung ist abgebrochen'+(navigator.onLine===false?' (offline)':'')+'.' }; }
+}
+
+// ── Vorschaubilder fuer FRAME ANSEHEN ─────────────────────────────────────
+function _dqaThumb(b64){
+  return new Promise(function(res){
+    try{
+      var img=new Image();
+      img.onload=function(){ try{ var mx=360, sc=Math.min(1, mx/Math.max(img.width,img.height)); var c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc); c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',0.6).split(',')[1]); }catch(e){ res(null); } };
+      img.onerror=function(){ res(null); };
+      img.src='data:image/jpeg;base64,'+b64;
+    }catch(e){ res(null); }
+  });
+}
+function _dqaTk(t){ return 't'+Math.round((+t||0)*10); }
+
+// ── Fortschritt (kleine Arbeitsschritte, kein Einfrieren) ──────────────────
+function dqaLaufZeigen(){
+  try{
+    var L=window._dqaLauf; if(!L) return;
+    var el=document.getElementById('dqa-run-'+L.id);
+    if(!el){ return; }
+    el.innerHTML=_dqaLaufHTML(L);
+  }catch(e){}
+}
+function _dqaLaufHTML(L){
+  return '<div class="dqa-steps">'+DQA_STUFEN.map(function(s,i){ return '<span class="'+(i<L.stufe?'done':(i===L.stufe?'on':''))+'">'+s+'</span>'; }).join('')+'</div>'
+    +'<div class="m-progress" style="margin:4px 0 8px"><i style="width:'+Math.round(Math.max(3,Math.min(100,L.pct||0)))+'%"></i></div>'
+    +'<div class="dqa-run-t">'+_dqaEsc(L.text||'')+'</div>'
+    +'<div class="dqa-run-n">Bitte Mind\u00e9a ge\u00f6ffnet lassen. Wird die App in den Hintergrund gelegt, kann Safari die Pr\u00fcfung anhalten.</div>';
+}
+function _dqaSchritt(stufe, text, pct){
+  var L=window._dqaLauf; if(!L) return;
+  L.stufe=stufe; L.text=text; if(pct!=null) L.pct=pct;
+  dqaLaufZeigen();
+}
+
+// ── Hauptablauf ───────────────────────────────────────────────────────────
+async function dqaPruefen(id, inp, erzwingen){
+  var f=inp && inp.files && inp.files[0]; if(!f) return;
+  try{ inp.value=''; }catch(e){}
+  if(window._dqaLauf){ showToast('Es l\u00e4uft bereits eine Pr\u00fcfung.'); return; }
+  window._dqaLauf={ id:id, stufe:0, text:'Datei wird gelesen \u2026', pct:2 };
+  window._dqaOffen=null;
+  if(window._projDetail && typeof renderMod==='function') renderMod('projekte');
+  var pr=_dqaProjekt(id);
+  try{
+    var d=fbProj(id), q=dqaDaten(d), vg=Object.assign({}, d.dqaVorgaben||{});
+    var fpI=await dqaFingerprint(f);
+    var gleich=q.checks.filter(function(c){ return c.fp===fpI.fp; });
+    var vorher=gleich.length?gleich[gleich.length-1]:null;
+    // Dieselbe Datei wurde schon vollstaendig geprueft: nicht unnoetig erneut
+    if(vorher && vorher.kiStatus==='ok' && !erzwingen){
+      window._dqaLauf=null;
+      q.checks=q.checks.filter(function(c){ return c!==vorher; }).concat([vorher]);   // als aktuelle Datei nach vorne
+      _dqaSpeichern(id, d, q);
+      _dqaProjektSync(id, dqaAuswertung(vorher).status, '', fpI.fp);
+      showToast('Diese Datei ist bereits gepr\u00fcft (gleicher Datei-Abdruck). Ergebnis und Best\u00e4tigungen gelten weiter.');
+      if(window._projDetail && typeof renderMod==='function') renderMod('projekte');
+      return;
+    }
+    dqaEmit('film.qa.started', { projectId:id, projekt:(pr&&pr.name)||'', filename:f.name, fp:fpI.fp });
+
+    // 1 · VIDEO WIRD VORBEREITET
+    _dqaSchritt(0, 'Container wird gelesen \u2026', 5);
+    var cont=await dqaContainer(f);
+    _dqaSchritt(0, 'Bilder werden aus dem Film gel\u00f6st \u2026', 8);
+    var r=await fdFramesAusVideo(f, 2, 18, {
+      stats:true,
+      extra:function(du){ return [0, 0.5, 1.0, du-1.5, du-0.8, du-0.04]; },
+      onProgress:function(i,n){ _dqaSchritt(0, 'Bild '+(i+1)+' von '+n+' wird gelesen \u2026', 8+Math.round(i/n*37)); }
+    });
+    r=r||{ fehler:'decode', frames:[], dauer:0, fehlZeiten:[] };
+    (r.frames||[]).forEach(function(x){ x.label='Bild bei '+_dqaTc(x.t); });
+    var ton=null;
+    if(!r.fehler && cont.hatAudio!==false){
+      _dqaSchritt(0, 'Tonspur wird technisch gelesen \u2026', 46);
+      ton=await dqaTon(f, r.dauer, function(p){ _dqaSchritt(0, 'Tonspur wird technisch gelesen \u2026', 46+Math.round(p*9)); });
+    }
+
+    // 2 · FRAMES WERDEN GEPRUEFT
+    var ki=null, kiFehler='';
+    var paketKey=fdPaketKey(d, pr), paket=(paketKey && typeof FD_PAKETE==='object')?FD_PAKETE[paketKey]:null;
+    if(!r.fehler && r.frames.length){
+      _dqaSchritt(1, r.frames.length+' Bilder werden visuell gepr\u00fcft \u2026', 58);
+      var kr=await dqaKiPruefung({ pr:pr, vg:vg, paket:paket, logo:d.dqaLogo||'', r:r, frames:r.frames });
+      if(kr.ki) ki=kr.ki; else kiFehler=kr.fehler||'';
+    }
+
+    // 3 · PROJEKT WIRD ABGEGLICHEN
+    _dqaSchritt(2, 'Projektvorgaben und Film-Direktor werden abgeglichen \u2026', 86);
+    var dNeu=fbProj(id);   // Film-Direktor-Liste frisch lesen
+    var fdListe=Array.isArray(dNeu.filmreviews)?dNeu.filmreviews:[];
+    var andere=q.checks.filter(function(c){ return c.fp!==fpI.fp; });
+    var punkte=dqaPunkteBauen({ file:f, r:r, cont:cont, ton:ton, vg:vg, ki:ki, kiFehler:kiFehler, pr:pr||{}, paketKey:paketKey, hatLogo:!!d.dqaLogo,
+      fp:fpI.fp, fdListe:fdListe, qaListe:q.checks, vorige:andere.length?andere[andere.length-1]:null });
+
+    // 4 · FINALER CHECK
+    _dqaSchritt(3, 'Ergebnis wird zusammengestellt \u2026', 94);
+    var thumbs={}, brauch=[];
+    var fr=r.frames||[];
+    if(fr.length){ brauch.push(fr[0].t); brauch.push(fr[fr.length-1].t); }
+    punkte.forEach(function(p){ if(p.z!=null && p.s!=='ok') brauch.push(p.z); });
+    var gesehen={};
+    for(var i=0;i<brauch.length && Object.keys(thumbs).length<10;i++){
+      var k=_dqaTk(brauch[i]); if(gesehen[k]) continue; gesehen[k]=1;
+      var src=fr.filter(function(x){ return _dqaTk(x.t)===k; })[0];
+      if(src){ var th=await _dqaThumb(src.b64); if(th) thumbs[k]=th; }
+    }
+    var lfd=(q.checks.length?Math.max.apply(null, q.checks.map(function(c){ return +c.nr||0; })):0)+1;
+    var crLetzte=fdListe.length?fdListe[fdListe.length-1]:null;
+    var rec={
+      versionId:'dqa'+Date.now(), nr:lfd, projectId:id, fp:fpI.fp, fpArt:fpI.art,
+      filename:String(f.name||'').slice(0,140), fileSize:f.size||0, mime:String(f.type||''),
+      duration:Math.round((r.dauer||0)*100)/100, width:r.breite||0, height:r.hoehe||0,
+      codec:cont.videoCodec||null, fps:cont.fps||null, audioCodec:cont.audioCodec||null,
+      checkedAt:new Date().toISOString(), stichprobe:fr.length,
+      technicalChecks:punkte.filter(function(p){ return p.g==='datei'; }),
+      visualChecks:punkte.filter(function(p){ return p.g==='bild' || p.g==='textlogo'; }),
+      projectChecks:punkte.filter(function(p){ return p.g==='projekt'; }),
+      creativeChecks:punkte.filter(function(p){ return p.g==='creative'; }),
+      creativeReviewVersion:crLetzte?crLetzte.version:null,
+      kiStatus:ki?'ok':(r.fehler?'nicht-moeglich':'fehler'), kiFehler:kiFehler||'',
+      manualOverrides:vorher?Object.assign({}, vorher.manualOverrides||{}):{},
+      thumbs:thumbs, finalStatus:null
+    };
+    var aw=dqaAuswertung(rec); rec.finalStatus=aw.status;
+    q.checks.push(rec);
+    _dqaSpeichern(id, d, q);
+    var top=aw.punkte.filter(function(p){ return p._e==='block'; })[0];
+    _dqaProjektSync(id, aw.status, top?((top.z!=null?_dqaTc(top.z)+' ':'')+top.t):'', fpI.fp);
+    dqaEmit(aw.status==='block'?'film.qa.blocked':(aw.status==='warn'?'film.qa.warning':'film.qa.ready'), { projectId:id, projekt:(pr&&pr.name)||'', versionId:rec.versionId, fp:rec.fp, status:aw.status });
+    window._dqaLauf=null;
+    window._dqaOffen=null;
+    showToast('Delivery QA: '+DQA_LABEL[aw.status]+'.');
+    if(window._projDetail && typeof renderMod==='function') renderMod('projekte');
+  }catch(e){
+    window._dqaLauf=null;
+    showToast('Delivery QA ist abgebrochen. Bitte erneut versuchen.');
+    if(window._projDetail && typeof renderMod==='function') renderMod('projekte');
+  }
+}
+
+// ── Manuelle Entscheidungen, Freigabe, Auslieferung ───────────────────────
+// Jede Entscheidung haengt an genau einer Datei (Abdruck). Dieselbe Datei behaelt ihre
+// Bestaetigungen, eine neue Datei beginnt bei null. Alles landet im Protokoll.
+function _dqaAktuell(id, versionId){
+  var d=fbProj(id), q=dqaDaten(d), c=q.checks.length?q.checks[q.checks.length-1]:null;
+  if(!c || (versionId && c.versionId!==versionId)) return null;
+  return { d:d, q:q, c:c };
+}
+function dqaManuell(id, versionId, itemId, aktion){
+  try{
+    var A=_dqaAktuell(id, versionId); if(!A){ showToast('Nur die zuletzt geprüfte Datei kann bestätigt werden.'); return; }
+    var c=A.c, p=dqaPunkte(c).filter(function(x){ return x.id===itemId; })[0];
+    if(!p || p.hart) return;
+    var vor=dqaAuswertung(c).status;
+    c.manualOverrides=c.manualOverrides||{};
+    if(aktion==='reset') delete c.manualOverrides[itemId];
+    else c.manualOverrides[itemId]={ a:aktion, at:new Date().toISOString() };
+    A.q.protokoll.push({ at:new Date().toISOString(), versionId:c.versionId, fp:c.fp, filename:c.filename, item:itemId, titel:p.t, aktion:aktion });
+    var aw=dqaAuswertung(c); c.finalStatus=aw.status;
+    _dqaSpeichern(id, A.d, A.q);
+    var top=aw.punkte.filter(function(x){ return x._e==='block'; })[0];
+    _dqaProjektSync(id, aw.status, top?((top.z!=null?_dqaTc(top.z)+' ':'')+top.t):'', c.fp);
+    if(aw.status!==vor){ var pr=_dqaProjekt(id); dqaEmit(aw.status==='block'?'film.qa.blocked':(aw.status==='warn'?'film.qa.warning':'film.qa.ready'), { projectId:id, projekt:(pr&&pr.name)||'', versionId:c.versionId, fp:c.fp, status:aw.status, manuell:true }); }
+    showToast(aktion==='bestaetigt'?'Bestätigt und protokolliert.':(aktion==='zurueck'?'Zurück zur Bearbeitung vermerkt.':(aktion==='spaeter'?'Für später vermerkt.':'Entscheidung zurückgenommen.')));
+    if(typeof renderMod==='function') renderMod('projekte');
+  }catch(e){}
+}
+function dqaFreigeben(id, versionId){
+  try{
+    var A=_dqaAktuell(id, versionId); if(!A) return;
+    var c=A.c, aw=dqaAuswertung(c);
+    if(aw.status!=='ok'){ showToast('Freigabe erst, wenn Delivery QA bereit zur Auslieferung meldet.'); return; }
+    if(!confirm('„'+c.filename+'“ für die Auslieferung freigeben?\n\nDie Datei wird NICHT automatisch an die Kundin geschickt. Das Projekt bekommt den Status DELIVERY READY.')) return;
+    var now=new Date().toISOString(), name='';
+    lsSet('mindea-projekte', (lsGet('mindea-projekte',[])||[]).map(function(p){
+      if(String(p.id)!==String(id)) return p; name=p.name||'';
+      return Object.assign({}, p, { delivery:{ status:'DELIVERY READY', fp:c.fp, versionId:c.versionId, filename:c.filename, at:now, portal:'BEREIT FÜR KUNDENPORTAL' }, updatedAt:now });
+    }));
+    A.q.protokoll.push({ at:now, versionId:c.versionId, fp:c.fp, filename:c.filename, item:'freigabe', titel:'Für Auslieferung freigegeben', aktion:'freigegeben' });
+    _dqaSpeichern(id, A.d, A.q);
+    dqaEmit('film.delivery.approved', { projectId:id, projekt:name, versionId:c.versionId, fp:c.fp, filename:c.filename });
+    try{ if(window.MindeaUI && typeof MindeaUI.done==='function') MindeaUI.done('Freigegeben.', 'Delivery Ready. Noch nicht an die Kundin gesendet.'); else showToast('Freigegeben. Delivery Ready.'); }catch(e){}
+    if(typeof renderMod==='function') renderMod('projekte');
+  }catch(e){}
+}
+function dqaAusgeliefert(id, versionId){
+  try{
+    var A=_dqaAktuell(id, versionId); if(!A) return;
+    var c=A.c, pr=_dqaProjekt(id)||{};
+    if(!(pr.delivery && pr.delivery.fp===c.fp && pr.delivery.status==='DELIVERY READY')) return;
+    if(!confirm('Hast du „'+c.filename+'“ tatsächlich an '+(pr.name||'die Kundin')+' übergeben?\n\nErst dann wird das Projekt auf DELIVERED gesetzt.')) return;
+    var now=new Date().toISOString();
+    lsSet('mindea-projekte', (lsGet('mindea-projekte',[])||[]).map(function(p){
+      if(String(p.id)!==String(id)) return p;
+      return Object.assign({}, p, { delivery:Object.assign({}, p.delivery, { status:'DELIVERED', deliveredAt:now }), updatedAt:now });
+    }));
+    A.q.protokoll.push({ at:now, versionId:c.versionId, fp:c.fp, filename:c.filename, item:'auslieferung', titel:'Als ausgeliefert markiert', aktion:'delivered' });
+    _dqaSpeichern(id, A.d, A.q);
+    dqaEmit('film.delivery.delivered', { projectId:id, projekt:pr.name||'', versionId:c.versionId, fp:c.fp, filename:c.filename });
+    // Die Projektphase Auslieferung setzt der Client Workspace, mit seinem Meilenstein
+    if(window.MindeaUI && typeof MindeaUI.projPhase==='function') MindeaUI.projPhase(id, 5);
+    else if(typeof renderMod==='function') renderMod('projekte');
+  }catch(e){}
+}
+
+// ── Ausgabevorgaben und Original-Logo des Projekts ────────────────────────
+function dqaVgToggle(id){ window._dqaVg=(window._dqaVg===id)?null:id; if(typeof renderMod==='function') renderMod('projekte'); }
+function dqaVgSet(id, k, v){
+  try{
+    var d=fbProj(id), vg=Object.assign({}, d.dqaVorgaben||{});
+    var t=String(v==null?'':v).trim().slice(0,120);
+    if(['minDauer','maxDauer','freiW','freiH','freiMinW','freiMinH'].indexOf(k)>=0){ t=t.replace(',','.'); t=(t===''||isNaN(+t))?'':String(Math.max(0,+t)); }
+    if(t==='') delete vg[k]; else vg[k]=t;
+    d.dqaVorgaben=vg; d.dqaVorgabenAt=new Date().toISOString();
+    lsSet(fbProjKey(id), d);
+    if(k==='format' && typeof renderMod==='function') renderMod('projekte');
+  }catch(e){}
+}
+function dqaLogoSet(id, inp){
+  var f=inp && inp.files && inp.files[0]; if(!f) return;
+  try{ inp.value=''; }catch(e){}
+  var url=URL.createObjectURL(f), img=new Image();
+  img.onload=function(){
+    try{
+      var bau=function(mx){ var sc=Math.min(1, mx/Math.max(img.width,img.height)); var c=document.createElement('canvas'); c.width=Math.max(1,Math.round(img.width*sc)); c.height=Math.max(1,Math.round(img.height*sc)); c.getContext('2d').drawImage(img,0,0,c.width,c.height); return c.toDataURL('image/png'); };
+      var du=bau(480); if(du.length>420000) du=bau(300);
+      URL.revokeObjectURL(url);
+      var d=fbProj(id); d.dqaLogo=du; d.dqaLogoName=String(f.name||'').slice(0,80); d.dqaVorgabenAt=new Date().toISOString();
+      lsSet(fbProjKey(id), d);
+      showToast('Original-Logo hinterlegt.');
+      if(typeof renderMod==='function') renderMod('projekte');
+    }catch(e){ showToast('Das Logo ließ sich nicht lesen.'); }
+  };
+  img.onerror=function(){ try{ URL.revokeObjectURL(url); }catch(e){} showToast('Bitte das Logo als PNG oder JPG wählen.'); };
+  img.src=url;
+}
+function dqaLogoWeg(id){
+  try{ var d=fbProj(id); delete d.dqaLogo; delete d.dqaLogoName; d.dqaVorgabenAt=new Date().toISOString(); lsSet(fbProjKey(id), d); if(typeof renderMod==='function') renderMod('projekte'); }catch(e){}
+}
+
+// ── Frame ansehen ─────────────────────────────────────────────────────────
+function dqaFrame(id, versionId, itemId){
+  try{
+    var q=dqaDaten(fbProj(id)), c=q.checks.filter(function(x){ return x.versionId===versionId; })[0]; if(!c) return;
+    var p=dqaPunkte(c).filter(function(x){ return x.id===itemId; })[0]; if(!p || p.z==null) return;
+    var th=(c.thumbs||{})[_dqaTk(p.z)]; if(!th){ showToast('Für diese Stelle ist kein Vorschaubild gespeichert.'); return; }
+    var old=document.getElementById('dqa-frame'); if(old) old.remove();
+    var el=document.createElement('div'); el.id='dqa-frame'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
+    el.innerHTML='<img alt="Frame bei '+_dqaTc(p.z)+'" src="data:image/jpeg;base64,'+th+'"><div class="cap"><b>'+_dqaTc(p.z)+'</b> · '+_dqaEsc(p.t)+(p.d?('<br>'+_dqaEsc(p.d)):'')+'</div><button type="button">Schließen</button>';
+    document.body.appendChild(el);
+    var zu=function(){ try{ el.remove(); }catch(e){} };
+    el.querySelector('button').addEventListener('click', zu);
+    el.addEventListener('click', function(e){ if(e.target===el) zu(); });
+  }catch(e){}
+}
+
+// ── Anzeige ───────────────────────────────────────────────────────────────
+var DQA_GNAME = { datei:'Datei', bild:'Bild', textlogo:'Text & Logo', projekt:'Projekt', creative:'Creative Review' };
+var DQA_QUELLE = { lokal:'lokal gemessen', ki:'visuelle Prüfung', projekt:'Projektdaten' };
+function _dqaLieferStatus(pr, c){ var dl=pr && pr.delivery; return (dl && c && dl.fp===c.fp) ? dl.status : ''; }
+function _dqaItemHTML(id, c, p){
+  var tc=(p.z!=null)?'<span class="tc">'+_dqaTc(p.z)+'</span>':'';
+  var th=(p.z!=null && c.thumbs && c.thumbs[_dqaTk(p.z)]);
+  var arg=id+',\''+c.versionId+'\',\''+p.id+'\'';
+  var h='<div class="dqa-item '+p._e+'">'
+    +'<div class="dqa-item-k">'+tc+'<span>'+(DQA_GNAME[p.g]||'')+(p.nb?' · nicht beurteilbar':'')+' · '+(DQA_QUELLE[p.q]||'')+'</span></div>'
+    +'<div class="dqa-item-t">'+_dqaEsc(p.t)+'</div>'
+    +(p.d?'<div class="dqa-item-d">'+_dqaEsc(p.d)+'</div>':'')
+    +((p.erw||p.erk)?('<div class="dqa-cmp">'+(p.erw?'<span>Erwartet</span><b>'+_dqaEsc(p.erw)+'</b>':'')+(p.erk?'<span>Erkannt</span><b>'+_dqaEsc(p.erk)+'</b>':'')+'</div>'):'')
+    +'<div class="dqa-acts">'
+    +(th?'<button type="button" class="dqa-btn" onclick="dqaFrame('+arg+')">Frame ansehen</button>':'');
+  if(p.hart) h+='<span class="dqa-tag">nur mit einer neuen Exportdatei lösbar</span>';
+  else if(p._m==='zurueck') h+='<span class="dqa-tag">zurück zur Bearbeitung</span><button type="button" class="dqa-btn" onclick="dqaManuell('+arg+',\'reset\')">Zurücknehmen</button>';
+  else {
+    h+='<button type="button" class="dqa-btn dqa-btn--ok" onclick="dqaManuell('+arg+',\'bestaetigt\')">Bestätigt · ist korrekt</button>'
+      +'<button type="button" class="dqa-btn dqa-btn--back" onclick="dqaManuell('+arg+',\'zurueck\')">Zurück zur Bearbeitung</button>'
+      +(p._m==='spaeter'?'<span class="dqa-tag">später prüfen vermerkt</span>':'<button type="button" class="dqa-btn" onclick="dqaManuell('+arg+',\'spaeter\')">Später prüfen</button>');
+  }
+  return h+'</div></div>';
+}
+function _dqaCreativeHTML(id){
+  var d=fbProj(id), fv=Array.isArray(d.filmreviews)?d.filmreviews:[];
+  var l=fv.length?fv[fv.length-1]:null;
+  if(!l) return '<div class="dqa-cr"><div class="dqa-eyebrow">Letzter Creative Review</div><div class="l2">Noch keiner. Der Film-Direktor steht direkt darüber.</div></div>';
+  var rs=fdReviewStatus(l);
+  var offen=[];
+  if(rs.muss!==null) offen.push(rs.muss>0?((rs.mussUnsicher?'':rs.muss+' ')+'MUSS-Änderung'+(rs.muss===1||rs.mussUnsicher?'':'en')):'keine MUSS-Änderung');
+  if(rs.polish) offen.push(rs.polish+' Polish-Punkt'+(rs.polish===1?'':'e'));
+  return '<div class="dqa-cr"><div class="dqa-eyebrow">Letzter Creative Review</div>'
+    +'<div class="l1">Version '+l.version+(l.score!=null?(' · '+l.score+'/10'):'')+'</div>'
+    +(rs.stufe?'<div class="l2">Qualitätsstufe: '+_dqaEsc(rs.stufe)+'</div>':'')
+    +(offen.length?'<div class="l2">Noch offen laut Review: '+_dqaEsc(offen.join(' · '))+'</div>':'<div class="l2">MUSS-Status im Review nicht eindeutig lesbar.</div>')
+    +'<div class="l2">'+(l.fp?(l.datei?('Datei: '+_dqaEsc(l.datei)):'mit Datei-Abdruck'):'ohne Datei-Abdruck (älterer Review)')+'</div></div>';
+}
+function _dqaErgebnisHTML(id, c, aw, pr, d){
+  var st=aw.status, P=aw.punkte;
+  var bl=P.filter(function(p){ return p._e==='block'; }), wa=P.filter(function(p){ return p._e==='warn'; }), hi=P.filter(function(p){ return p._e==='info'; });
+  var ls=_dqaLieferStatus(pr, c);
+  var h='<div class="dqa-head"><div class="dqa-sym">'+DQA_SYM[st]+'</div><div style="flex:1;min-width:0">'
+    +'<div class="dqa-st">'+(ls==='DELIVERED'?'Ausgeliefert':(ls==='DELIVERY READY'?'Delivery Ready':DQA_LABEL[st]))+'</div>'
+    +'<div class="dqa-sub">'+_dqaEsc(c.filename)+' · '+_dqaMb(c.fileSize)+' · '+_fdTc(c.duration||0)+' · '+c.width+' × '+c.height+'<br>geprüft '+_dqaDatum(c.checkedAt)+(c.stichprobe?(' · Stichprobe aus '+c.stichprobe+' Bildern, nicht jedes Einzelbild'):'')+'</div></div></div>';
+  h+='<div class="dqa-sum">'+DQA_GRUPPEN.map(function(g){
+    var G=aw.gruppen[g[0]], v;
+    if(g[0]==='creative') v=G.block?'offen':(G.warn?'prüfen':(G.n?'bestanden':'–'));
+    else v=G.n?(G.ok+' / '+G.n+' bestanden'):'–';
+    return '<div><span>'+g[1]+'</span><b class="'+(G.block?'x':(G.warn?'w':''))+'">'+v+'</b></div>';
+  }).join('')+'<div><span>Auslieferung</span><b>'+(ls==='DELIVERED'?'delivered':(ls==='DELIVERY READY'?'ready':(st==='ok'?'Freigabe offen':'gesperrt')))+'</b></div></div>';
+  if(Date.parse(d.dqaVorgabenAt||0) > Date.parse(c.checkedAt||0)) h+='<div class="dqa-item-d" style="margin-top:8px">Die Ausgabevorgaben wurden nach dieser Prüfung geändert. Für einen Abgleich mit den neuen Vorgaben die Datei erneut prüfen.</div>';
+  if(bl.length) h+='<div class="dqa-sec"><div class="dqa-sec-h" style="color:var(--dqa-block)">'+(bl.length===1?'1 Blocker':bl.length+' Blocker')+'</div>'+bl.map(function(p){ return _dqaItemHTML(id,c,p); }).join('')+'</div>';
+  if(wa.length) h+='<div class="dqa-sec"><div class="dqa-sec-h" style="color:var(--dqa-warn)">Manuell prüfen · '+wa.length+'</div>'+wa.map(function(p){ return _dqaItemHTML(id,c,p); }).join('')+'</div>';
+  if(hi.length){
+    var hoff=(window._dqaHin===id);
+    h+='<div class="dqa-link" onclick="window._dqaHin=(window._dqaHin==='+id+'?null:'+id+');renderMod(\'projekte\')">'+hi.length+' Hinweis'+(hi.length===1?'':'e')+' · kein Auslieferungsproblem '+(hoff?'▾':'▸')+'</div>';
+    if(hoff) h+='<div class="dqa-list">'+hi.map(function(p){ return '<div class="dqa-row"><i></i><span class="r-t">'+(p.z!=null?_dqaTc(p.z)+' · ':'')+_dqaEsc(p.t)+'<br><small style="color:var(--m-ink-3)">'+_dqaEsc(p.d||'')+'</small></span></div>'; }).join('')+'</div>';
+  }
+  h+=_dqaCreativeHTML(id);
+  // Auslieferung
+  if(ls==='DELIVERED') h+='<div class="dqa-ready"><b>Delivered</b>Ausgeliefert am '+_dqaDatum(pr.delivery.deliveredAt)+'. Freigegeben am '+_dqaDatum(pr.delivery.at)+'.</div>';
+  else if(ls==='DELIVERY READY') h+='<div class="dqa-ready"><b>Delivery Ready · bereit für Kundenportal</b>Freigegeben am '+_dqaDatum(pr.delivery.at)+'. Das Kundenportal ist noch nicht verbunden, deshalb wurde nichts an die Kundin gesendet. Datei selbst übergeben und danach hier bestätigen.</div>'
+    +'<button type="button" class="dqa-btn dqa-btn--main" onclick="dqaAusgeliefert('+id+',\''+c.versionId+'\')">Als ausgeliefert markieren</button>';
+  else if(st==='ok') h+='<button type="button" class="dqa-btn dqa-btn--main" onclick="dqaFreigeben('+id+',\''+c.versionId+'\')">Für Auslieferung freigeben</button>'
+    +'<div class="dqa-item-d" style="text-align:center">Nichts wird automatisch an die Kundin geschickt. Du entscheidest.</div>';
+  // Alle Pruefpunkte, kompakt
+  var aoff=(window._dqaAlle===id);
+  h+='<div class="dqa-link" onclick="window._dqaAlle=(window._dqaAlle==='+id+'?null:'+id+');renderMod(\'projekte\')">Alle Prüfpunkte '+(aoff?'▾':'▸')+'</div>';
+  if(aoff){
+    h+=DQA_GRUPPEN.map(function(g){
+      var L=P.filter(function(p){ return p.g===g[0]; }); if(!L.length) return '';
+      return '<div class="dqa-sec"><div class="dqa-sec-h">'+g[1]+'</div><div class="dqa-list">'+L.map(function(p){
+        var stt=p._m==='bestaetigt'?'manuell bestätigt':(p.nb?'nicht beurteilbar':'');
+        return '<div class="dqa-row"><i class="'+(p._e==='info'?'':p._e)+'"></i><span class="r-t">'+_dqaEsc(p.t)+(stt?'<span class="dqa-tag">'+stt+'</span>':'')
+          +(p._m==='bestaetigt'?' <a href="javascript:void(0)" class="dqa-tag" style="color:var(--m-gold-deep)" onclick="dqaManuell('+id+',\''+c.versionId+'\',\''+p.id+'\',\'reset\')">zurücknehmen</a>':'')
+          +'</span><span class="r-d">'+_dqaEsc(String(p.d||'').slice(0,90))+'</span></div>';
+      }).join('')+'</div></div>';
+    }).join('');
+    var codec=[c.codec?(DQA_CODECS[c.codec]||c.codec):'', c.fps?String(c.fps).replace('.',',')+' fps':'', c.audioCodec?(DQA_CODECS[c.audioCodec]||c.audioCodec):''].filter(Boolean).join(' · ');
+    h+='<div class="dqa-hist">Datei-Abdruck '+_dqaEsc(String(c.fp).slice(0,14))+(c.fpArt==='metadaten'?' (nur Metadaten)':'')+(codec?(' · '+_dqaEsc(codec)):'')+'</div>';
+  }
+  // Erneut pruefen: visuelle Pruefung wiederholen oder komplett neu
+  h+='<label class="dqa-link" style="margin-left:'+(0)+'px;display:block">'+(c.kiStatus==='fehler'?'Visuelle Prüfung mit derselben Datei wiederholen':'Gleiche Datei komplett neu prüfen')+'<input type="file" accept="video/*,.mp4,.mov,.m4v" onchange="dqaPruefen('+id+', this, true)" style="display:none"></label>';
+  // Verlauf und Protokoll
+  var q=dqaDaten(d);
+  if(q.checks.length>1) h+='<div class="dqa-hist">Verlauf: '+q.checks.map(function(x){ var s2=dqaAuswertung(x).status; return '#'+(x.nr||'?')+' '+DQA_SYM[s2]+' '+_dqaEsc(String(x.filename||'').slice(0,28))+' ('+_dqaDatum(x.checkedAt).slice(0,6)+')'; }).join(' · ')+'</div>';
+  var prot=q.protokoll.filter(function(x){ return x.fp===c.fp; });
+  if(prot.length) h+='<div class="dqa-hist">Protokoll dieser Datei: '+prot.slice(-6).map(function(x){ return _dqaDatum(x.at)+' '+_dqaEsc({bestaetigt:'bestätigt',zurueck:'zurück zur Bearbeitung',spaeter:'später prüfen',reset:'zurückgenommen',freigegeben:'freigegeben',delivered:'ausgeliefert'}[x.aktion]||x.aktion)+': '+_dqaEsc(x.titel); }).join(' · ')+'</div>';
+  return h;
+}
+function _dqaVorgabenHTML(id, d){
+  var vg=d.dqaVorgaben||{}, offen=(window._dqaVg===id), fmt=DQA_FORMATE[vg.format];
+  var pk=fdPaketKey(d, _dqaProjekt(id)), P=(pk && typeof FD_PAKETE==='object')?FD_PAKETE[pk]:null;
+  var kurz=[fmt?(fmt.n+' '+fmt.w+':'+fmt.h):((vg.format==='frei'&&vg.freiW&&vg.freiH)?('Vorgabe '+vg.freiW+':'+vg.freiH):'Format fehlt'), vg.marke?('„'+vg.marke+'“'):'Markenname fehlt', d.dqaLogo?'Logo hinterlegt':'kein Logo', P?P.name:'Paket fehlt'].join(' · ');
+  var h='<div class="dqa-link" onclick="dqaVgToggle('+id+')">Ausgabevorgaben '+(offen?'▾':'▸')+'</div><div style="font-size:10.5px;color:var(--m-ink-3);margin-top:2px">'+_dqaEsc(kurz)+'</div>';
+  if(!offen) return h;
+  var inp=function(k, lbl, ph, typ, full){ return '<label'+(full?' class="full"':'')+'>'+lbl+'<input '+(typ?'type="'+typ+'" inputmode="decimal" ':'')+'value="'+_dqaEsc(vg[k]||'')+'" placeholder="'+_dqaEsc(ph)+'" onchange="dqaVgSet('+id+',\''+k+'\',this.value)"></label>'; };
+  h+='<div class="dqa-intro" style="margin-bottom:0">Nur eintragen, was mit der Kundin vereinbart ist. Leere Felder gelten als KEINE VORGABE HINTERLEGT. Das Paket kommt aus dem Film-Direktor'+(P?(': '+P.name):', dort ist noch keins gewählt')+'.</div>'
+    +'<div class="dqa-vg">'
+    +'<label class="full">Zielausgabe<select onchange="dqaVgSet('+id+',\'format\',this.value)"><option value="">keine Vorgabe</option>'
+    +Object.keys(DQA_FORMATE).map(function(k){ var F=DQA_FORMATE[k]; return '<option value="'+k+'"'+(vg.format===k?' selected':'')+'>'+F.n+' · '+F.w+':'+F.h+' · typisch '+F.minW+' × '+F.minH+'</option>'; }).join('')
+    +'<option value="frei"'+(vg.format==='frei'?' selected':'')+'>Andere Projektvorgabe</option></select></label>'
+    +(vg.format==='frei' ? (inp('freiW','Verhältnis Breite','z. B. 21','number')+inp('freiH','Verhältnis Höhe','z. B. 9','number')+inp('freiMinW','Mindestbreite px','optional','number')+inp('freiMinH','Mindesthöhe px','optional','number')) : '')
+    +inp('minDauer','Dauer mindestens (Sek.)','optional','number')+inp('maxDauer','Dauer höchstens (Sek.)','optional','number')
+    +inp('marke','Markenname im Film','z. B. STERNENAUGE','',true)
+    +inp('cta','CTA im Film','optional','',true)
+    +inp('website','Website','optional')+inp('instagram','Instagram-Name','optional')
+    +inp('version','Vereinbarte Version','z. B. V3 final','',true)
+    +'</div>'
+    +'<div class="dqa-logo">'+(d.dqaLogo?'<img alt="Original-Logo" src="'+d.dqaLogo+'"><span style="flex:1;font-size:11px;color:var(--m-ink-2)">Original-Logo hinterlegt</span><button type="button" class="dqa-btn" onclick="dqaLogoWeg('+id+')">Entfernen</button>'
+      :'<label class="dqa-btn" style="display:inline-flex;align-items:center">Original-Logo hinterlegen<input type="file" accept="image/png,image/jpeg,image/webp" onchange="dqaLogoSet('+id+', this)" style="display:none"></label><span style="font-size:10.5px;color:var(--m-ink-3)">für den visuellen Logo-Vergleich</span>')+'</div>';
+  return h;
+}
+function dqaKarte(id, d){
+  try{
+    var q=dqaDaten(d), c=q.checks.length?q.checks[q.checks.length-1]:null, pr=_dqaProjekt(id)||{};
+    var L=(window._dqaLauf && window._dqaLauf.id===id) ? window._dqaLauf : null;
+    var aw=(c && !L) ? dqaAuswertung(c) : null;
+    var h='<div class="dqa'+(aw?(' dqa--'+aw.status):'')+'" id="dqa-'+id+'">'
+      +'<div class="dqa-eyebrow">Finaler Delivery Check · Delivery QA</div>';
+    if(!c && !L) h+='<div class="dqa-intro">Letzte Prüfstufe nach dem Film-Direktor. Hier geht es nicht um Kreativität, sondern nur darum, ob genau diese Exportdatei fehlerfrei und sicher an die Kundin gehen kann: Datei, Format, Anfang, Ende, Text, Logo, Projektvorgaben und der Creative-Status. Was Mindéa nicht sicher prüfen kann, legt sie dir zur Bestätigung vor.</div>';
+    if(L) h+='<div class="dqa-run" id="dqa-run-'+id+'">'+_dqaLaufHTML(L)+'</div>';
+    else if(c) h+=_dqaErgebnisHTML(id, c, aw, pr, d);
+    if(!L){
+      h+= c ? '<label class="dqa-drop dqa-drop--small" style="margin-top:12px"><b>Neue Exportdatei prüfen</b><input type="file" accept="video/*,.mp4,.mov,.m4v" onchange="dqaPruefen('+id+', this)" style="display:none"></label>'
+            : '<label class="dqa-drop"><b>Finalen Film prüfen</b><small>MP4 oder MOV wählen. Die Datei bleibt auf deinem Gerät, zur visuellen Prüfung gehen nur Einzelbilder.</small><input type="file" accept="video/*,.mp4,.mov,.m4v" onchange="dqaPruefen('+id+', this)" style="display:none"></label>';
+      h+='<div style="margin-top:12px">'+_dqaVorgabenHTML(id, d)+'</div>';
+    }
+    return h+'</div>';
+  }catch(e){ return ''; }
+}
+// Kleine Marke in der Projektliste
+function dqaBadgeHTML(p){
+  try{
+    if(!p) return '';
+    var q=dqaDaten(fbProj(p.id)); if(!q.checks.length) return '';
+    var c=q.checks[q.checks.length-1], st=dqaAuswertung(c).status, ls=_dqaLieferStatus(p, c);
+    var t=ls==='DELIVERED'?'Delivered':(ls==='DELIVERY READY'?'Delivery Ready · bereit für Kundenportal':('Delivery QA · '+DQA_LABEL[st]+(p.prioQuelle==='delivery-qa'?' · höchste Priorität':'')));
+    return '<div class="dqa-badge '+(ls?'ok':st)+'"><i></i>'+_dqaEsc(t)+'</div>';
+  }catch(e){ return ''; }
+}
+
+// ── Luna ──────────────────────────────────────────────────────────────────
+// Luna macht aus dem Ergebnis eine konkrete Arbeitsuebergabe statt "Film pruefen".
+function dqaLunaUebergaben(maske){
+  var out=[];
+  try{
+    (lsGet('mindea-projekte',[])||[]).forEach(function(p){
+      if(!p || !p.id) return;
+      var q=dqaDaten(fbProj(p.id)); if(!q.checks.length) return;
+      var c=q.checks[q.checks.length-1], aw=dqaAuswertung(c), ls=_dqaLieferStatus(p, c);
+      if(ls==='DELIVERED') return;
+      var nm=maske?'das Kundenprojekt':(String(p.name||'').trim()||'das Kundenprojekt');
+      var Nm=nm.charAt(0).toUpperCase()+nm.slice(1);
+      if(ls==='DELIVERY READY'){ out.push({ pid:p.id, name:p.name, s:'ready', rang:3, t:'Der Film für '+nm+' ist freigegeben und bereit für das Kundenportal. Gesendet ist er noch nicht.' }); return; }
+      if(aw.status==='block'){
+        var b=aw.punkte.filter(function(x){ return x._e==='block'; }), top=b[0];
+        out.push({ pid:p.id, name:p.name, s:'block', rang:0, t:'Der Film für '+nm+' ist noch nicht auslieferungsbereit. '
+          +(top.z!=null?('Bei '+_dqaTc(top.z)+': '):'')+top.t+((top.erw&&top.erk)?(', erwartet '+top.erw+', erkannt '+top.erk):'')+'.'
+          +(b.length>1?(' Dazu '+(b.length-1)+' weitere'+(b.length===2?'r Blocker.':' Blocker.')):'')
+          +(p.prioQuelle==='delivery-qa'?(' Ich habe den Punkt bei '+nm+' als höchste Projektpriorität markiert.'):'') });
+      } else if(aw.status==='ok'){
+        out.push({ pid:p.id, name:p.name, s:'ok', rang:1, t:Nm+' ist technisch bereit zur Auslieferung. Ich brauche nur noch deine finale Freigabe.' });
+      } else {
+        var w=aw.punkte.filter(function(x){ return x._e==='warn'; });
+        out.push({ pid:p.id, name:p.name, s:'warn', rang:2, t:'Bei '+nm+' '+(w.length===1?'braucht ein Punkt':'brauchen '+w.length+' Punkte')+' aus dem Delivery Check deine Bestätigung, zuerst: '+w[0].t+'.' });
+      }
+    });
+  }catch(e){}
+  return out.sort(function(a,b){ return a.rang-b.rang; });
+}
+function dqaLunaCtx(){
+  try{
+    var u=dqaLunaUebergaben(false); if(!u.length) return '';
+    return '\n\nDELIVERY QA, finaler Auslieferungs-Check der Kundenfilme (Live-Stand):\n'+u.slice(0,5).map(function(x){ return '- '+x.t; }).join('\n')
+      +'\nREGEL: Sag nie, ein Film sei an eine Kundin gesendet oder ausgeliefert, solange hier nicht DELIVERED steht. Bei einem Blocker nennst du den konkreten Punkt mit Zeitcode statt nur Film pruefen.';
+  }catch(e){ return ''; }
+}
+function dqaOeffnen(pid){ try{ window._projDetail=pid; window._fbOffen=true; if(typeof openMod==='function') openMod('projekte'); }catch(e){} }
 function fbProjKey(id){ return 'mindea-fb-'+id; }
 function fbProj(id){
   try{ var v=lsGet(fbProjKey(id),{}); return (v&&typeof v==='object')?v:{}; }catch(e){ return {}; }
@@ -38892,6 +39931,8 @@ function fbCardHTML(id){
     }
     // v9.9.483: Film-Direktor als eigene Karte, unabhaengig davon, ob ein Konzept da ist.
     try{ konz += fdKarte(id, d); }catch(eFD){}
+    // v9.9.700: Delivery QA als zweite, getrennte Pruefstufe direkt unter dem Film-Direktor.
+    try{ konz += dqaKarte(id, d); }catch(eDQ){}
     var brief='';
     if(hatBrief){
       brief='<div style="margin-top:14px;padding:12px;border-radius:12px;background:rgba(46,125,94,.05);border-left:3px solid #2e7d5e">'
@@ -54625,6 +55666,91 @@ body.dark .m-ab-mindea .m-ab-l { color: var(--m-gold) !important; }
 .m-ab-gesamt .m-ab-l::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--m-line-2), transparent); }
 body.dark [style*="rgb(239, 224, 194)"], body.dark [style*="rgb(245, 239, 226)"], body.dark [style*="rgb(251, 247, 239)"], body.dark [style*="background: rgb(255, 255, 255)"] { background: var(--m-surface) !important; color: var(--m-ink) !important; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   29 · DELIVERY QA · Quality-Control-Bereich unter dem Film-Direktor
+   Ruhig wie ein Mastering-Pult: Espresso, Creme, Muted Gold. Statusfarben nur
+   als feine Linie und Punkt: Sage (bereit), gedaempftes Gold (pruefen), Terracotta (stopp).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dqa { --dqa-ok: var(--m-success); --dqa-warn: var(--m-gold-deep); --dqa-block: var(--m-warning);
+  margin-top: 14px; padding: 16px; border-radius: var(--m-r-md); background: var(--m-surface); border: 1px solid var(--m-line-2); box-shadow: var(--m-sh-1); }
+body.dark .dqa { --dqa-warn: var(--m-gold); }
+.dqa-eyebrow { font: 700 9.5px/1.2 var(--m-sans); letter-spacing: .24em; text-transform: uppercase; color: var(--m-ink-3); }
+.dqa-intro { font-size: 11.5px; color: var(--m-ink-2); line-height: 1.55; margin: 6px 0 12px; }
+.dqa-drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 92px; padding: 16px; border: 1px dashed var(--m-gold-line);
+  border-radius: var(--m-r-md); background: var(--m-gold-soft); color: var(--m-ink); cursor: pointer; text-align: center; -webkit-tap-highlight-color: transparent; }
+.dqa-drop b { font: 700 12.5px/1.2 var(--m-sans); letter-spacing: .18em; text-transform: uppercase; }
+.dqa-drop small { font-size: 11px; color: var(--m-ink-3); }
+.dqa-drop:active { transform: scale(.99); }
+.dqa-drop--small { min-height: 0; padding: 11px; flex-direction: row; }
+.dqa-drop--small b { font-size: 11px; }
+.dqa-run { margin-top: 10px; }
+.dqa-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
+.dqa-steps span { font: 600 8.5px/1.25 var(--m-sans); letter-spacing: .12em; text-transform: uppercase; color: var(--m-ink-3); padding-top: 7px; border-top: 2px solid var(--m-line-2); }
+.dqa-steps span.on { color: var(--m-ink); border-top-color: var(--m-gold); }
+.dqa-steps span.done { color: var(--m-ink-2); border-top-color: var(--m-gold-line); }
+.dqa-run-t { font-size: 11.5px; color: var(--m-ink-2); }
+.dqa-run-n { font-size: 10.5px; color: var(--m-ink-3); margin-top: 4px; }
+.dqa-head { display: flex; align-items: center; gap: 12px; padding: 14px 0 12px; border-bottom: 1px solid var(--m-line); }
+.dqa-sym { flex: none; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 600 18px/1 var(--m-sans); border: 1.5px solid currentColor; }
+.dqa-head .dqa-st { font: 600 21px/1.15 var(--m-serif); color: var(--m-ink); letter-spacing: .02em; }
+.dqa-head .dqa-sub { font-size: 11px; color: var(--m-ink-3); margin-top: 3px; }
+.dqa--ok .dqa-sym { color: var(--dqa-ok); } .dqa--warn .dqa-sym { color: var(--dqa-warn); } .dqa--block .dqa-sym { color: var(--dqa-block); }
+.dqa--ok { border-left: 3px solid var(--dqa-ok); } .dqa--warn { border-left: 3px solid var(--dqa-warn); } .dqa--block { border-left: 3px solid var(--dqa-block); }
+.dqa-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; padding: 10px 0 4px; }
+.dqa-sum div { display: flex; flex-direction: column; gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--m-line); font-size: 11px; min-width: 0; }
+.dqa-sum span { font: 700 9px/1.2 var(--m-sans); letter-spacing: .16em; text-transform: uppercase; color: var(--m-ink-3); }
+.dqa-sum b { font: 600 12px/1 var(--m-sans); color: var(--m-ink); font-variant-numeric: tabular-nums; }
+.dqa-sum b.w { color: var(--dqa-warn); } .dqa-sum b.x { color: var(--dqa-block); }
+.dqa-sec { margin-top: 14px; }
+.dqa-sec-h { font: 700 9.5px/1.2 var(--m-sans); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 8px; color: var(--m-ink-2); }
+.dqa-item { padding: 12px 12px 12px 14px; margin-bottom: 8px; border-radius: var(--m-r-sm); background: var(--m-sunken); border-left: 2px solid var(--m-line-2); }
+.dqa-item.block { border-left-color: var(--dqa-block); } .dqa-item.warn { border-left-color: var(--dqa-warn); } .dqa-item.ok { border-left-color: var(--dqa-ok); }
+.dqa-item-k { display: flex; gap: 8px; align-items: baseline; font: 700 9px/1.2 var(--m-sans); letter-spacing: .16em; text-transform: uppercase; color: var(--m-ink-3); }
+.dqa-item-k .tc { font: 600 13px/1 var(--m-sans); letter-spacing: 0; color: var(--m-ink); font-variant-numeric: tabular-nums; }
+.dqa-item-t { font-size: 13px; color: var(--m-ink); line-height: 1.5; margin-top: 5px; }
+.dqa-item-d { font-size: 11.5px; color: var(--m-ink-2); line-height: 1.5; margin-top: 4px; }
+.dqa-cmp { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin-top: 8px; font-size: 11.5px; }
+.dqa-cmp span { font: 700 9px/1.6 var(--m-sans); letter-spacing: .14em; text-transform: uppercase; color: var(--m-ink-3); }
+.dqa-cmp b { font-weight: 600; color: var(--m-ink); letter-spacing: .06em; }
+.dqa-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.dqa-btn { -webkit-appearance: none; appearance: none; min-height: 34px; padding: 0 12px; border-radius: var(--m-r-pill); border: 1px solid var(--m-line-2); background: var(--m-surface);
+  color: var(--m-ink); font: 600 10.5px/1 var(--m-sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; touch-action: manipulation; }
+.dqa-btn:active { transform: scale(.97); }
+.dqa-btn--ok { border-color: var(--dqa-ok); color: var(--dqa-ok); }
+.dqa-btn--back { border-color: var(--dqa-block); color: var(--dqa-block); }
+.dqa-btn--main { width: 100%; min-height: 46px; margin-top: 12px; background: var(--m-ink); border-color: var(--m-ink); color: var(--m-ink-inv); font-size: 11.5px; letter-spacing: .2em; }
+body.dark .dqa-btn--main { background: var(--m-gold); border-color: var(--m-gold); color: #1B140E; }
+.dqa-tag { display: inline-block; margin-left: 6px; font: 600 9px/1 var(--m-sans); letter-spacing: .12em; text-transform: uppercase; color: var(--m-ink-3); }
+.dqa-list { margin-top: 6px; }
+.dqa-row { display: flex; gap: 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--m-line); font-size: 11.5px; color: var(--m-ink-2); }
+.dqa-row i { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--m-ink-3); transform: translateY(-1px); }
+.dqa-row i.ok { background: var(--dqa-ok); } .dqa-row i.warn { background: var(--dqa-warn); } .dqa-row i.block { background: var(--dqa-block); }
+.dqa-row .r-t { flex: 1; color: var(--m-ink); } .dqa-row .r-d { color: var(--m-ink-3); text-align: right; max-width: 52%; }
+.dqa-link { display: inline-block; margin-top: 10px; font: 600 10.5px/1.4 var(--m-sans); letter-spacing: .12em; text-transform: uppercase; color: var(--m-gold-deep); cursor: pointer; }
+body.dark .dqa-link { color: var(--m-gold); }
+.dqa-cr { margin-top: 12px; padding: 11px 12px; border-radius: var(--m-r-sm); border: 1px solid var(--m-line); }
+.dqa-cr .l1 { font: 600 15px/1.3 var(--m-serif); color: var(--m-ink); margin-top: 4px; }
+.dqa-cr .l2 { font-size: 11px; color: var(--m-ink-2); margin-top: 3px; line-height: 1.5; }
+.dqa-ready { margin-top: 12px; padding: 12px; border-radius: var(--m-r-sm); background: var(--m-success-soft); font-size: 12px; color: var(--m-ink); line-height: 1.55; }
+.dqa-ready b { display: block; font: 700 10px/1.3 var(--m-sans); letter-spacing: .2em; text-transform: uppercase; color: var(--dqa-ok); margin-bottom: 3px; }
+.dqa-vg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.dqa-vg label { display: flex; flex-direction: column; gap: 4px; font: 700 8.5px/1.2 var(--m-sans); letter-spacing: .16em; text-transform: uppercase; color: var(--m-ink-3); }
+.dqa-vg label.full { grid-column: 1 / -1; }
+.dqa-vg input, .dqa-vg select { width: 100%; min-height: 38px; padding: 8px 10px; border: 1px solid var(--m-line-2); border-radius: var(--m-r-xs); background: var(--m-surface-2);
+  color: var(--m-ink); font: 400 13px/1.2 var(--m-sans); letter-spacing: 0; text-transform: none; }
+.dqa-logo { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.dqa-logo img { width: 64px; height: 40px; object-fit: contain; border-radius: 6px; background: repeating-conic-gradient(var(--m-sunken) 0 25%, var(--m-surface-2) 0 50%) 0 0 / 10px 10px; border: 1px solid var(--m-line); }
+.dqa-hist { margin-top: 12px; font-size: 10.5px; color: var(--m-ink-3); line-height: 1.7; }
+.dqa-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font: 600 9.5px/1 var(--m-sans); letter-spacing: .14em; text-transform: uppercase; color: var(--m-ink-2); }
+.dqa-badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--m-ink-3); }
+.dqa-badge.ok i { background: var(--m-success); } .dqa-badge.warn i { background: var(--m-gold); } .dqa-badge.block i { background: var(--m-warning); }
+#dqa-frame { position: fixed; inset: 0; z-index: 99999; background: rgba(20,15,11,.86); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 16px;
+  padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+#dqa-frame img { max-width: 100%; max-height: 74vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+#dqa-frame .cap { color: #F2E9DA; font-size: 12.5px; line-height: 1.5; margin-top: 14px; text-align: center; max-width: 520px; }
+#dqa-frame button { margin-top: 14px; min-height: 42px; padding: 0 22px; border-radius: 999px; border: 1px solid rgba(242,233,218,.4); background: none; color: #F2E9DA; font: 600 11px/1 var(--m-sans); letter-spacing: .18em; text-transform: uppercase; cursor: pointer; }
+@media (max-width: 380px) { .dqa-sum { grid-template-columns: 1fr; } .dqa-vg { grid-template-columns: 1fr; } }
+
 /* ─── 20 · BEWEGUNG REDUZIEREN ───────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -57771,13 +58897,24 @@ function azTagZeigen(el, t){
   /* ─── 7 · LUNA · Digital Chief of Staff ──────────────────────────────── */
   function lunaBoardHTML(){
     var lu = M.luna(), ins = M.insights({ kap:M.kapazitaet(), luna:lu }).filter(function(x){ return !/Entwurf vorbereitet/.test(x.t); });
-    var st = lu.status === 'waiting' ? ['waiting','wartet auf dich'] : ['ready','bereit'];
+    // Delivery QA: Blocker und fertige Freigaben sind Entscheidungen fuer Ivana
+    var dq = []; try{ dq = (typeof dqaLunaUebergaben === 'function') ? dqaLunaUebergaben(privacy()) : []; }catch(e){}
+    var dqEnt = dq.filter(function(x){ return x.s === 'block' || x.s === 'ok' || x.s === 'warn'; });
+    var st = (lu.status === 'waiting' || dqEnt.length) ? ['waiting','wartet auf dich'] : ['ready','bereit'];
     var H = '<aside id="m-luna-board" class="' + (M._lunaOpen ? 'is-open' : '') + '">'
       + '<div class="m-luna-head"><div class="m-luna-id"><div class="m-luna-mark">L</div><div><div class="m-luna-name">Luna</div><div class="m-luna-role">Digital Chief of Staff</div></div></div>'
       + '<span class="m-status m-status--' + st[0] + '"><i></i>' + st[1] + '</span>'
       + '<button type="button" class="m-luna-toggle" onclick="MindeaUI.lunaBoard()" aria-label="Arbeitsstand ein- oder ausblenden">'
-      + (lu.prepared.length + lu.decisions.length ? '<b>' + (lu.prepared.length + lu.decisions.length) + '</b>' : '') + '<span class="m-chev">›</span></button></div>'
+      + (lu.prepared.length + lu.decisions.length + dqEnt.length ? '<b>' + (lu.prepared.length + lu.decisions.length + dqEnt.length) + '</b>' : '') + '<span class="m-chev">›</span></button></div>'
       + '<div class="m-luna-body">';
+    if(dq.length){
+      var DQW = { block:'Noch nicht ausliefern', ok:'Bereit zur Auslieferung', warn:'Manuell prüfen', ready:'Delivery Ready' };
+      H += '<div class="m-luna-sec"><div class="m-eyebrow">Auslieferung</div>' + dq.slice(0, 3).map(function(x){
+        return '<div class="m-card ' + (x.s === 'block' ? 'm-card--decision' : 'm-card--luna') + ' m-handoff m-arrive"><div class="who">' + esc(privacy() ? 'KUNDENPROJEKT' : String(x.name || 'Kundenprojekt').toUpperCase()) + ' · Delivery QA</div>'
+          + '<div class="what">' + DQW[x.s] + '</div><div class="note">' + esc(x.t) + '</div>'
+          + '<div class="act"><button type="button" class="m-btn m-btn--sm" onclick="dqaOeffnen(' + (+x.pid) + ')">' + (x.s === 'ok' ? 'Freigeben' : 'Ansehen') + ' <span class="m-arrow">→</span></button></div></div>';
+      }).join('') + '</div>';
+    }
     var by = (lu.ap && lu.ap.preparedAt) ? esc(agoText(lu.ap.preparedAt)) + ' von Luna vorbereitet' : '';
     // Entscheidung
     if(lu.decisions.length){
